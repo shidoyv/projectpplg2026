@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lelana Jateng - Eksplorasi Destinasi Wisata</title>
+  <meta name="description" content="Lelana Jateng menyajikan panduan destinasi wisata unggulan di Jawa Tengah: Candi Borobudur, Dataran Tinggi Dieng, Kepulauan Karimunjawa, Candi Prambanan, dan Grojogan Sewu.">
+
+  <link rel="icon" type="image/png" href="assets/image-removebg-preview.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            script: ['"Alex Brush"', 'cursive'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .no-select {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .bg-canvas {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      transition: opacity 0.85s cubic-bezier(0.25, 1, 0.5, 1), transform 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+      will-change: opacity, transform;
+    }
+
+    @media (min-width: 1024px) {
+      .arc-pos-0 { transform: translateX(35px); }
+      .arc-pos-1 { transform: translateX(10px); }
+      .arc-pos-2 { transform: translateX(0px); }
+      .arc-pos-3 { transform: translateX(18px); }
+      .arc-pos-4 { transform: translateX(42px); }
+    }
+
+    .text-slide-trans {
+      transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+  </style>
+</head>
+
+<body class="h-full bg-[#080c10] text-white font-sans antialiased overflow-x-hidden md:overflow-hidden relative no-select flex flex-col justify-between">
+
+  <div id="bg-container" class="fixed inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
+    <div id="bg-canvas-a" class="bg-canvas opacity-100 scale-100"></div>
+    <div id="bg-canvas-b" class="bg-canvas opacity-0 scale-105"></div>
+    
+    <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-black/25"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/50"></div>
+  </div>
+
+  <div class="relative z-20 w-full max-w-[1440px] mx-auto h-full flex flex-col justify-between px-6 sm:px-10 lg:px-14 flex-1">
+
+    <header class="w-full py-6 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="#" class="flex items-center gap-3 group">
+          <img 
+            src="assets/image-removebg-preview.png" 
+            alt="Lelana Jateng Logo" 
+            class="h-9 md:h-11 w-auto object-contain drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)]"
+            onerror="this.src='https://placehold.co/160x50/transparent/white?text=Lelana+Jateng'"
+          />
+          <span class="text-base sm:text-lg md:text-xl font-bold tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+            Lelana Jateng
+          </span>
+        </a>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-white/80" aria-label="Navigasi Utama">
+        <span class="text-white font-semibold relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-white after:rounded-full cursor-default">
+          Beranda
+        </span>
+        <span class="text-white/75 hover:text-white transition-colors py-1 cursor-default">
+          Destinasi
+        </span>
+        <span class="text-white/75 hover:text-white transition-colors py-1 cursor-default">
+          Tiket
+        </span>
+        <span class="text-white/75 hover:text-white transition-colors py-1 cursor-default">
+          Riwayat
+        </span>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <button 
+          id="sound-toggle-btn" 
+          type="button" 
+          aria-label="Toggle Suara Gamelan" 
+          title="Nyalakan / Matikan Ketukan Gamelan"
+          class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-white bg-white/10 hover:bg-white/20 border border-white/25 rounded-full backdrop-blur-md transition-all shadow-sm group"
+        >
+          <svg id="sound-icon-on" class="w-3.5 h-3.5 text-amber-300 drop-shadow-[0_0_6px_rgba(252,211,77,0.8)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          </svg>
+          <svg id="sound-icon-off" class="w-3.5 h-3.5 text-white/50 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+          </svg>
+          <span id="sound-toggle-text" class="text-white/90 group-hover:text-white">Gamelan: Aktif</span>
+        </button>
+
+        <div class="px-4 py-1.5 text-xs font-medium text-white bg-white/15 border border-white/30 rounded-full backdrop-blur-md cursor-default">
+          Login
+        </div>
+      </div>
+    </header>
+
+    <main class="w-full py-4 md:py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center flex-1">
+      
+      <section class="lg:col-span-6 xl:col-span-7 flex flex-col justify-center text-left space-y-5">
+        
+        <div class="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md w-max">
+          <span class="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-black bg-white rounded-full">
+            New
+          </span>
+          <span id="hero-tagline" class="text-xs font-medium text-white/90 tracking-wide">
+            Warisan Dunia UNESCO
+          </span>
+        </div>
+
+        <div class="space-y-1">
+          <h1 id="hero-cursive-title" class="font-script text-5xl sm:text-6xl md:text-7xl text-white font-normal leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)] text-slide-trans">
+            Candi Borobudur
+          </h1>
+          <div id="hero-dest-name" class="text-xl sm:text-2xl font-light text-white/90 tracking-wide text-slide-trans">
+            Candi Borobudur, Magelang, Jawa Tengah
+          </div>
+        </div>
+
+        <p id="hero-description" class="text-sm sm:text-base text-white/85 leading-relaxed max-w-lg font-light drop-shadow text-slide-trans">
+          Jelajahi keagungan candi Buddha terbesar di dunia yang berdiri megah di hamparan lembah Menoreh. Nikmati pesona matahari terbit bernuansa magis di antara ratusan stupa relief bersejarah yang memikat jiwa.
+        </p>
+
+      </section>
+
+      <section class="lg:col-span-6 xl:col-span-5 flex items-center justify-center lg:justify-end relative" aria-label="Pilihan Destinasi">
+        
+        <div class="flex items-center gap-5 sm:gap-7">
+          
+          <div id="arc-destinations" class="flex flex-row lg:flex-col items-center lg:items-end gap-3.5 sm:gap-4 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 w-full lg:w-auto px-2">
+          </div>
+
+          <div class="hidden lg:flex flex-col gap-2 p-1.5 bg-black/30 border border-white/10 rounded-full backdrop-blur-sm" aria-hidden="true">
+            <div id="indicator-dot-0" class="w-2 h-2 rounded-full transition-all duration-300 bg-white scale-125 shadow-[0_0_8px_rgba(255,255,255,0.9)]"></div>
+            <div id="indicator-dot-1" class="w-2 h-2 rounded-full transition-all duration-300 bg-white/30"></div>
+            <div id="indicator-dot-2" class="w-2 h-2 rounded-full transition-all duration-300 bg-white/30"></div>
+            <div id="indicator-dot-3" class="w-2 h-2 rounded-full transition-all duration-300 bg-white/30"></div>
+            <div id="indicator-dot-4" class="w-2 h-2 rounded-full transition-all duration-300 bg-white/30"></div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+    <footer class="w-full py-4 flex items-center justify-between text-xs text-white/60">
+      <div>
+        <span>Lelana Jateng</span>
+        <span class="mx-2">•</span>
+        <span>Pesona Pariwisata Nusantara</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="footer-active-name" class="text-white/80 font-medium">01 Candi Borobudur</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    const destinations = [
+      {
+        id: 0,
+        number: "01",
+        name: "Candi Borobudur",
+        location: "Magelang, Jawa Tengah",
+        scriptTitle: "Candi Borobudur",
+        tagline: "Warisan Dunia UNESCO",
+        description: "Jelajahi keagungan candi Buddha terbesar di dunia yang berdiri megah di hamparan lembah Menoreh. Nikmati pesona matahari terbit bernuansa magis di antara ratusan stupa relief bersejarah yang memikat jiwa.",
+        image: "assets/borobudur.jpg",
+        thumb: "assets/borobudur.jpg"
+      },
+      {
+        id: 1,
+        number: "02",
+        name: "Dataran Tinggi Dieng",
+        location: "Wonosobo, Jawa Tengah",
+        scriptTitle: "Telaga Warna Dieng",
+        tagline: "Negeri Para Dewa",
+        description: "Saksikan fenomena telaga vulkanik memukau dengan gradasi warna air kehijauan di ketinggian 2.000 mdpl. Dikelilingi lanskap perbukitan sejuk berkabut dan gugusan candi purba penuh misteri.",
+        image: "assets/dieng-plateau.jpg",
+        thumb: "assets/dieng-plateau.jpg"
+      },
+      {
+        id: 2,
+        number: "03",
+        name: "Karimunjawa",
+        location: "Jepara, Jawa Tengah",
+        scriptTitle: "Surga Karimunjawa",
+        tagline: "Surga Bahari Tropis",
+        description: "Nikmati pesona gugusan pulau tropis berpasir putih selembut sutra dengan kejernihan air laut toska bergradasi. Jelajahi keindahan terumbu karang alami dan berenang bersama fauna laut eksotis.",
+        image: "assets/karimunjawa.jpg",
+        thumb: "assets/karimunjawa.jpg"
+      },
+      {
+        id: 3,
+        number: "04",
+        name: "Candi Prambanan",
+        location: "Klaten, Jawa Tengah",
+        scriptTitle: "Candi Prambanan",
+        tagline: "Mahakarya Candi Hindu",
+        description: "Kagumi kemegahan arsitektur candi Hindu tercantik dan termegah di Indonesia yang menjulang tinggi ke angkasa. Rasakan atmosfer magis kisah legenda Roro Jonggrang dan relief epos Ramayana.",
+        image: "assets/prambanan.jpg",
+        thumb: "assets/prambanan.jpg"
+      },
+      {
+        id: 4,
+        number: "05",
+        name: "Grojogan Sewu",
+        location: "Karanganyar, Jawa Tengah",
+        scriptTitle: "Grojogan Sewu Lawu",
+        tagline: "Kesejukan Lereng Lawu",
+        description: "Rasakan kesegaran gemuruh air terjun setinggi 81 meter yang memancar deras di lereng Gunung Lawu yang asri. Hawa sejuk hutan pinus nan rimbun menghadirkan ketenangan jiwa yang hakiki.",
+        image: "assets/grojogan-sewu.jpg",
+        thumb: "assets/grojogan-sewu.jpg"
+      }
+    ];
+
+    let currentIndex = 0;
+    let isCanvasAActive = true;
+    let autoSlideTimer = null;
+    let audioCtx = null;
+    let isSoundEnabled = true;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          audioCtx = new AudioContextClass();
+        }
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playGamelanSound(destIdx) {
+      if (!isSoundEnabled) return;
+      
+      const ctx = getAudioContext();
+      if (!ctx || ctx.state !== 'running') return;
+
+      const now = ctx.currentTime;
+
+      const gamelanPitches = [
+        { baseFreq: 220.0, isGong: true  },
+        { baseFreq: 275.0, isGong: false },
+        { baseFreq: 330.0, isGong: false },
+        { baseFreq: 412.5, isGong: false },
+        { baseFreq: 165.0, isGong: true  }
+      ];
+
+      const config = gamelanPitches[destIdx % gamelanPitches.length] || { baseFreq: 220, isGong: false };
+      const baseFreq = config.baseFreq;
+
+      const masterGain = ctx.createGain();
+      masterGain.connect(ctx.destination);
+      masterGain.gain.setValueAtTime(0.65, now);
+
+      const clickOsc = ctx.createOscillator();
+      const clickGain = ctx.createGain();
+      clickOsc.type = 'triangle';
+      clickOsc.frequency.setValueAtTime(baseFreq * 4.5, now);
+      clickOsc.frequency.exponentialRampToValueAtTime(baseFreq * 0.7, now + 0.035);
+      clickGain.gain.setValueAtTime(0.28, now);
+      clickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
+      clickOsc.connect(clickGain);
+      clickGain.connect(masterGain);
+      clickOsc.start(now);
+      clickOsc.stop(now + 0.045);
+
+      const partials = [
+        { ratio: 1.00, gain: 0.55, decay: 3.2, detune: 0 },
+        { ratio: 1.00, gain: 0.40, decay: 3.0, detune: 3.0 },
+        { ratio: 2.01, gain: 0.32, decay: 2.1, detune: 1.5 },
+        { ratio: 2.76, gain: 0.22, decay: 1.5, detune: -2.0 },
+        { ratio: 4.07, gain: 0.14, decay: 0.9, detune: 4.0 },
+        { ratio: 5.42, gain: 0.08, decay: 0.5, detune: -5.0 }
+      ];
+
+      if (config.isGong) {
+        partials.push({ ratio: 0.50, gain: 0.45, decay: 4.0, detune: 0 });
+      }
+
+      partials.forEach(({ ratio, gain, decay, detune }) => {
+        const osc = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+
+        osc.type = 'sine';
+        const targetFreq = (baseFreq * ratio) + detune;
+        
+        osc.frequency.setValueAtTime(targetFreq * 1.015, now);
+        osc.frequency.exponentialRampToValueAtTime(targetFreq, now + 0.05);
+
+        gainNode.gain.setValueAtTime(0.0001, now);
+        gainNode.gain.linearRampToValueAtTime(gain * 0.45, now + 0.006);
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, now + decay);
+
+        osc.connect(gainNode);
+        gainNode.connect(masterGain);
+
+        osc.start(now);
+        osc.stop(now + decay + 0.1);
+      });
+    }
+
+    function toggleSound() {
+      isSoundEnabled = !isSoundEnabled;
+      const iconOn = document.getElementById('sound-icon-on');
+      const iconOff = document.getElementById('sound-icon-off');
+      const text = document.getElementById('sound-toggle-text');
+      const btn = document.getElementById('sound-toggle-btn');
+
+      if (isSoundEnabled) {
+        iconOn.classList.remove('hidden');
+        iconOff.classList.add('hidden');
+        if (text) text.textContent = 'Gamelan: Aktif';
+        if (btn) btn.classList.add('bg-white/10');
+        getAudioContext();
+        playGamelanSound(currentIndex);
+      } else {
+        iconOn.classList.add('hidden');
+        iconOff.classList.remove('hidden');
+        if (text) text.textContent = 'Gamelan: Mute';
+        if (btn) btn.classList.remove('bg-white/10');
+      }
+    }
+
+    destinations.forEach(item => {
+      const img = new Image();
+      img.src = item.image;
+      const th = new Image();
+      th.src = item.thumb;
+    });
+
+    function renderArc() {
+      const container = document.getElementById('arc-destinations');
+      container.innerHTML = '';
+
+      destinations.forEach((dest, idx) => {
+        const isActive = idx === currentIndex;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.onclick = () => {
+          changeDestination(idx);
+          restartAutoSlide();
+        };
+        btn.className = `group relative flex items-center justify-end gap-3 sm:gap-4 p-1 rounded-full transition-all duration-300 focus:outline-none shrink-0 arc-pos-${idx} ${
+          isActive ? 'scale-105 z-10' : 'opacity-70 hover:opacity-100 scale-95 hover:scale-100'
+        }`;
+
+        btn.innerHTML = `
+          <div class="text-right hidden sm:flex flex-col justify-center transition-all duration-300">
+            <span class="text-xs sm:text-sm font-semibold tracking-tight ${
+              isActive ? 'text-white font-bold' : 'text-white/80 group-hover:text-white'
+            }">
+              ${dest.name}
+            </span>
+            <span class="text-[10px] sm:text-xs text-white/60 font-light">
+              ${dest.location}
+            </span>
+          </div>
+
+          <div class="relative flex items-center justify-center">
+            <div class="${
+              isActive ? 'p-1.5 rounded-full bg-white/15 ring-1 ring-white/40 shadow-2xl' : ''
+            }">
+              <div class="w-14 h-14 sm:w-16 sm:h-16 lg:w-[72px] lg:h-[72px] rounded-full overflow-hidden border border-white/60 transition-transform duration-300 group-hover:scale-105 bg-black/40">
+                <img 
+                  src="${dest.thumb}" 
+                  alt="${dest.name}" 
+                  class="w-full h-full object-cover block"
+                  loading="eager"
+                />
+              </div>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(btn);
+      });
+    }
+
+    function changeDestination(index) {
+      if (index === currentIndex && document.getElementById('bg-canvas-a').style.backgroundImage) return;
+
+      currentIndex = index;
+      const data = destinations[currentIndex];
+
+      playGamelanSound(currentIndex);
+
+      const canvasA = document.getElementById('bg-canvas-a');
+      const canvasB = document.getElementById('bg-canvas-b');
+
+      if (isCanvasAActive) {
+        canvasB.style.backgroundImage = `url('${data.image}')`;
+        canvasB.classList.remove('opacity-0', 'scale-105');
+        canvasB.classList.add('opacity-100', 'scale-100');
+
+        canvasA.classList.remove('opacity-100', 'scale-100');
+        canvasA.classList.add('opacity-0', 'scale-105');
+        isCanvasAActive = false;
+      } else {
+        canvasA.style.backgroundImage = `url('${data.image}')`;
+        canvasA.classList.remove('opacity-0', 'scale-105');
+        canvasA.classList.add('opacity-100', 'scale-100');
+
+        canvasB.classList.remove('opacity-100', 'scale-100');
+        canvasB.classList.add('opacity-0', 'scale-105');
+        isCanvasAActive = true;
+      }
+
+      const cursiveTitle = document.getElementById('hero-cursive-title');
+      const destName = document.getElementById('hero-dest-name');
+      const desc = document.getElementById('hero-description');
+      const tagline = document.getElementById('hero-tagline');
+      const footerActive = document.getElementById('footer-active-name');
+
+      [cursiveTitle, destName, desc].forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(8px)';
+      });
+
+      setTimeout(() => {
+        cursiveTitle.textContent = data.scriptTitle;
+        destName.textContent = `${data.name}, ${data.location}`;
+        desc.textContent = data.description;
+        tagline.textContent = data.tagline;
+        footerActive.textContent = `${data.number} ${data.name}`;
+
+        [cursiveTitle, destName, desc].forEach(el => {
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+        });
+      }, 150);
+
+      for (let i = 0; i < destinations.length; i++) {
+        const dot = document.getElementById(`indicator-dot-${i}`);
+        if (dot) {
+          if (i === currentIndex) {
+            dot.className = 'w-2 h-2 rounded-full transition-all duration-300 bg-white scale-125 shadow-[0_0_8px_rgba(255,255,255,0.9)]';
+          } else {
+            dot.className = 'w-2 h-2 rounded-full transition-all duration-300 bg-white/30';
+          }
+        }
+      }
+
+      renderArc();
+    }
+
+    function startAutoSlide() {
+      stopAutoSlide();
+      autoSlideTimer = setInterval(() => {
+        const nextIdx = (currentIndex + 1) % destinations.length;
+        changeDestination(nextIdx);
+      }, 8000);
+    }
+
+    function stopAutoSlide() {
+      if (autoSlideTimer) {
+        clearInterval(autoSlideTimer);
+        autoSlideTimer = null;
+      }
+    }
+
+    function restartAutoSlide() {
+      startAutoSlide();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        changeDestination((currentIndex + 1) % destinations.length);
+        restartAutoSlide();
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        changeDestination((currentIndex - 1 + destinations.length) % destinations.length);
+        restartAutoSlide();
+      } else if (['1', '2', '3', '4', '5'].includes(e.key)) {
+        changeDestination(parseInt(e.key, 10) - 1);
+        restartAutoSlide();
+      }
+    });
+
+    const unlockAudio = () => {
+      getAudioContext();
+      window.removeEventListener('click', unlockAudio);
+      window.removeEventListener('keydown', unlockAudio);
+      window.removeEventListener('touchstart', unlockAudio);
+    };
+    window.addEventListener('click', unlockAudio);
+    window.addEventListener('keydown', unlockAudio);
+    window.addEventListener('touchstart', unlockAudio);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const soundBtn = document.getElementById('sound-toggle-btn');
+      if (soundBtn) {
+        soundBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleSound();
+        });
+      }
+
+      document.getElementById('bg-canvas-a').style.backgroundImage = `url('${destinations[0].image}')`;
+      renderArc();
+      startAutoSlide();
+    });
+  </script>
+</body>
+</html>

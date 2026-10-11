@@ -1,0 +1,2031 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Buku Sketsa Destinasi - Lelana Jateng</title>
+  <meta name="description" content="Jurnal sketsa dan eksplorasi destinasi wisata budaya Jawa Tengah: Candi Borobudur, Dataran Tinggi Dieng, Kota Lama Semarang, Karimunjawa, Candi Prambanan, Lawang Sewu, Museum Ranggawarsita, Keraton Surakarta, dan Kawasan Batik Pekalongan.">
+
+  <link rel="icon" type="image/png" href="assets/image-removebg-preview.png">
+
+  <!-- Google Fonts: Instrument Serif, Newsreader, Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,200..700;1,6..72,200..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      /* Lelana Jateng Heritage Palette */
+      --paper: #F6F0E5;
+      --paper-soft: #E9DDC8;
+      --ink: #49382D;
+      --ink-soft: rgba(73, 56, 45, 0.68);
+      --ink-faint: rgba(73, 56, 45, 0.45);
+      --hairline: rgba(73, 56, 45, 0.16);
+      --earth: #B66F50;
+      --forest: #344B3D;
+      --forest-soft: rgba(52, 75, 61, 0.12);
+      --forest-hover: rgba(52, 75, 61, 0.22);
+      --gold: #B89A62;
+      --gold-soft: rgba(184, 154, 98, 0.20);
+      --main-text: #2B2721;
+      --display: 'Instrument Serif', Georgia, serif;
+      --font: 'Newsreader', Georgia, serif;
+      --sans: 'Plus Jakarta Sans', sans-serif;
+      --track-caps: .24em;
+      --track-nav: .06em;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      font-weight: 400;
+      background: var(--paper);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+    ::selection { background: rgba(73, 56, 45, 0.85); color: var(--paper); }
+
+    /* Focus accessibility (WCAG AA & R-32) */
+    :focus-visible {
+      outline: 2px solid var(--forest);
+      outline-offset: 3px;
+    }
+
+    /* Background ground */
+    .wash {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      background: url('assets/sketchbook/bg-wash.jpg') center top / cover no-repeat;
+      opacity: .88;
+    }
+    .wash:after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(246, 240, 229, .25) 0%, rgba(246, 240, 229, .70) 55%, var(--paper) 88%);
+    }
+
+    /* ---------------- Navigation Header ---------------- */
+    .top {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding-inline: clamp(16px, 4vw, 48px);
+      padding-block: 16px 52px;
+      pointer-events: none;
+      text-align: center;
+    }
+    .top > * { pointer-events: auto; }
+    .top:before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(180deg, rgba(246, 240, 229, .96), rgba(246, 240, 229, .75) 50%, rgba(246, 240, 229, 0));
+      -webkit-backdrop-filter: blur(12px) saturate(.95);
+      backdrop-filter: blur(12px) saturate(.95);
+      -webkit-mask-image: linear-gradient(180deg, #000 46%, transparent);
+      mask-image: linear-gradient(180deg, #000 46%, transparent);
+    }
+    .top-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .top-logo {
+      height: 28px;
+      width: auto;
+      object-contain: contain;
+      filter: drop-shadow(0 1px 3px rgba(73, 56, 45, 0.25));
+    }
+    .top .name {
+      font-family: var(--display);
+      font-size: clamp(24px, 2.4vw, 30px);
+      letter-spacing: .01em;
+      white-space: nowrap;
+      line-height: 1;
+      color: var(--ink);
+    }
+    .top nav {
+      display: flex;
+      gap: clamp(14px, 2vw, 26px);
+      font-size: 15px;
+      align-items: center;
+      letter-spacing: var(--track-nav);
+      font-weight: 400;
+    }
+    .top nav a {
+      color: var(--ink-soft);
+      transition: color .2s ease;
+      position: relative;
+      padding: 2px 4px;
+    }
+    .top nav a:hover { color: var(--ink); }
+    .top nav a[aria-current="page"] {
+      color: var(--ink);
+      font-weight: 500;
+    }
+    .top nav a[aria-current="page"]::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 4px;
+      right: 4px;
+      height: 1.5px;
+      background: var(--earth);
+      border-radius: 999px;
+    }
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-left: 4px;
+      padding-left: clamp(12px, 1.6vw, 20px);
+      border-left: 1px solid var(--hairline);
+    }
+    .top nav a.btn-nav-login,
+    .top nav a.btn-nav-cta,
+    .btn-nav-login,
+    .btn-nav-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 6px 20px;
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      color: #FFFFFF !important;
+      background: var(--forest);
+      border: 1px solid rgba(52, 75, 61, 0.5);
+      border-radius: 999px;
+      transition: background-color .2s ease, transform .2s ease, box-shadow .2s ease;
+      box-shadow: 0 2px 8px rgba(52, 75, 61, 0.28);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .top nav a.btn-nav-login:hover,
+    .top nav a.btn-nav-cta:hover,
+    .btn-nav-login:hover,
+    .btn-nav-cta:hover {
+      background: #25362B;
+      color: #FFFFFF !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(52, 75, 61, 0.38);
+    }
+    .top nav a.btn-nav-login span,
+    .top nav a.btn-nav-cta span,
+    .btn-nav-login span,
+    .btn-nav-cta span {
+      color: #FFFFFF !important;
+    }
+
+    /* Mobile toggle */
+    .mobile-menu-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--hairline);
+      border-radius: 50%;
+      background: rgba(246, 240, 229, 0.8);
+      color: var(--ink);
+      cursor: pointer;
+    }
+    .mobile-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 16px;
+      right: 16px;
+      background: var(--paper);
+      border: 1px solid var(--hairline);
+      border-radius: 16px;
+      box-shadow: 0 12px 28px rgba(73, 56, 45, 0.15);
+      padding: 16px;
+      flex-direction: column;
+      gap: 12px;
+      text-align: left;
+    }
+    .mobile-dropdown.open {
+      display: flex;
+    }
+    .mobile-dropdown a {
+      font-size: 15px;
+      color: var(--ink);
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+    .mobile-dropdown a:hover {
+      background: var(--paper-soft);
+    }
+
+    @media (max-width: 768px) {
+      .top nav { display: none; }
+      .mobile-menu-toggle { display: inline-flex; }
+      .top {
+        flex-direction: row;
+        justify-content: space-between;
+        padding-block: 14px 40px;
+      }
+      .top .name { font-size: 22px; }
+    }
+
+    /* ---------------- Hero Section ---------------- */
+    .hero {
+      position: relative;
+      display: grid;
+      justify-items: center;
+      align-content: center;
+      min-height: 100svh;
+      overflow-anchor: none;
+      padding: clamp(100px, 12svh, 140px) 0 clamp(64px, 8svh, 100px);
+    }
+    .botany {
+      position: absolute;
+      bottom: 0;
+      width: clamp(120px, 15vw, 250px);
+      opacity: .48;
+      pointer-events: none;
+      user-select: none;
+      z-index: 0;
+    }
+    .botany.l { left: clamp(-40px, -1vw, 0px); bottom: 2%; }
+    .botany.r { right: clamp(-30px, 0vw, 10px); bottom: -2%; width: clamp(100px, 12vw, 200px); }
+    @media (max-width: 900px) { .botany { display: none; } }
+
+    .hero-kicker {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: var(--track-caps);
+      text-align: center;
+      color: var(--ink-soft);
+      margin: 0 0 clamp(18px, 2.8vh, 32px);
+      text-transform: uppercase;
+      font-family: var(--sans);
+    }
+    .hero-down {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 0;
+      background: transparent;
+      padding: 10px 14px;
+      color: var(--ink);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      animation: cue-breathe 2.6s ease-in-out infinite;
+      z-index: 3;
+    }
+    .hero-down:hover { animation: none; opacity: 1; }
+    @keyframes cue-breathe {
+      0%, 100% { opacity: .20; }
+      50% { opacity: .75; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-down { animation: none; opacity: .5; }
+    }
+
+    /* ---------------- Sketchbook 3D Component ---------------- */
+    .hero, .hero * {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+    .hero img {
+      -webkit-user-drag: none;
+      user-drag: none;
+    }
+    .sb-wrap {
+      display: grid;
+      justify-items: center;
+      gap: 18px;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+    }
+    .sb-stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      position: relative;
+      touch-action: pan-y;
+    }
+    .sb-arrow {
+      flex: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 4px;
+      min-width: 44px;
+      min-height: 44px;
+      border: 0;
+      background: transparent;
+      color: var(--ink-faint);
+      cursor: pointer;
+      transition: color .2s ease, transform .2s ease;
+      -webkit-tap-highlight-color: transparent;
+      z-index: 70;
+    }
+    .sb-arrow:hover { color: var(--ink); transform: scale(1.1); }
+    .sb-arrow:active { transform: scale(0.95); }
+
+    .sb-3d {
+      position: relative;
+      flex: 1 1;
+      min-width: 0;
+      max-width: 1020px;
+      perspective: 2000px;
+      perspective-origin: 50% 50%;
+    }
+    .sb-tilt {
+      position: relative;
+      transform-style: preserve-3d;
+      transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--zoom, 1));
+      will-change: transform;
+    }
+    .sb-book {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1760/1240;
+      transform-style: preserve-3d;
+      z-index: 1;
+    }
+
+    /* Vintage Sketching Fountain Pen & Leather Loop */
+    .sb-pen-holder {
+      position: absolute;
+      top: 18%;
+      bottom: 18%;
+      right: clamp(-30px, -2.8vw, -18px);
+      width: clamp(26px, 3.2vw, 42px);
+      pointer-events: none;
+      user-select: none;
+      z-index: 12;
+      transform-style: preserve-3d;
+      transform: translateZ(10px);
+      filter: drop-shadow(6px 14px 16px rgba(73, 56, 45, 0.42)) drop-shadow(2px 4px 6px rgba(73, 56, 45, 0.28));
+      transition: transform 0.3s ease;
+    }
+
+    .sb-pen-holder svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      overflow: visible;
+    }
+
+    @media (max-width: 640px) {
+      .sb-pen-holder {
+        right: -16px;
+        width: 22px;
+      }
+    }
+
+    /* Ambient Cast Shadows */
+    .sb-cast {
+      position: absolute;
+      pointer-events: none;
+      transform-style: preserve-3d;
+      transform: translateZ(-20px);
+    }
+    .sb-cast.ambient {
+      left: 5%;
+      right: 5%;
+      top: 27%;
+      bottom: 2%;
+      background: radial-gradient(50% 50% at 50% 58%, rgba(73, 56, 45, .32) 0%, rgba(73, 56, 45, .18) 40%, rgba(73, 56, 45, 0) 74%);
+      filter: blur(26px);
+      opacity: calc(1 - var(--shade, 0) * .22);
+    }
+    .sb-cast.contact {
+      left: 9%;
+      right: 9%;
+      top: 62%;
+      bottom: 10%;
+      background: radial-gradient(50% 44% at 50% 42%, rgba(73, 56, 45, .38) 0%, rgba(73, 56, 45, .16) 48%, rgba(73, 56, 45, 0) 78%);
+      filter: blur(11px);
+      opacity: calc(1 - var(--shade, 0) * .35);
+    }
+    .sb-cast.hair {
+      left: 12%;
+      right: 12%;
+      top: 70%;
+      bottom: 17%;
+      background: radial-gradient(50% 52% at 50% 40%, rgba(73, 56, 45, .32) 0%, rgba(73, 56, 45, 0) 76%);
+      filter: blur(4px);
+      opacity: calc(1 - var(--shade, 0) * .55);
+    }
+
+    .sb-full { position: absolute; inset: 0; }
+    .sb-full img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 4px;
+      box-shadow: 0 4px 20px rgba(73, 56, 45, 0.12);
+    }
+    .sb-half {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 50%;
+      overflow-x: clip;
+      overflow-y: visible;
+    }
+    .sb-half.left { left: 0; }
+    .sb-half.right { left: 50%; }
+    .sb-half-img {
+      width: 200%;
+      max-width: none;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .sb-half-img.right { margin-left: -100%; }
+
+    .gutter-shade {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: clamp(28px, 5.5vw, 56px);
+      pointer-events: none;
+      z-index: 4;
+      -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 5.2%, #000 94.8%, transparent 100%);
+      mask-image: linear-gradient(180deg, transparent 0, #000 5.2%, #000 94.8%, transparent 100%);
+    }
+    .gutter-shade.left {
+      right: 0;
+      background: linear-gradient(270deg, rgba(73, 56, 45, .28), rgba(73, 56, 45, 0) 82%);
+    }
+    .gutter-shade.right {
+      left: 0;
+      background: linear-gradient(90deg, rgba(73, 56, 45, .22), rgba(73, 56, 45, 0) 82%);
+    }
+
+    /* ---- Curled Page Mesh (18 strips) ---- */
+    .curl {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: calc(var(--bw, 0px) * var(--span));
+      transform-style: preserve-3d;
+      z-index: 6;
+    }
+    .curl.next {
+      left: 50%;
+      transform-origin: left center;
+      transform: rotateY(calc(-1 * var(--tt, 0deg)));
+    }
+    .curl.prev {
+      right: 50%;
+      transform-origin: right center;
+      transform: rotateY(var(--tt, 0deg));
+    }
+    .strip {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: calc(var(--bw, 0px) * var(--span) / var(--n));
+      transform-style: preserve-3d;
+    }
+    .curl.next .strip { transform-origin: left center; }
+    .curl.prev .strip { transform-origin: right center; }
+    .curl.next > .strip { left: 0; }
+    .curl.prev > .strip { right: 0; left: auto; }
+    .curl.next .strip .strip { left: 100%; transform: rotateY(var(--td, 0deg)); }
+    .curl.prev .strip .strip { right: 100%; transform: rotateY(calc(-1 * var(--td, 0deg))); }
+    .face {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: -1.1px;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      background-repeat: no-repeat;
+      background-size: var(--bw, 0px) 100%;
+    }
+    .face.back { transform: rotateY(180deg); }
+    .face .sh, .face .gl {
+      -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 5.2%, #000 94.8%, transparent 100%);
+      mask-image: linear-gradient(180deg, transparent 0, #000 5.2%, #000 94.8%, transparent 100%);
+    }
+    .strip.edge .face .sh, .strip.edge .face .gl {
+      -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 9%, #000 91%, transparent 100%), var(--hf);
+      mask-image: linear-gradient(180deg, transparent 0, #000 9%, #000 91%, transparent 100%), var(--hf);
+      -webkit-mask-composite: source-in;
+      mask-composite: intersect;
+    }
+    .curl.next .strip.edge .face.front, .curl.prev .strip.edge .face.back {
+      --hf: linear-gradient(90deg, #000 0 22%, transparent 96%);
+    }
+    .curl.next .strip.edge .face.back, .curl.prev .strip.edge .face.front {
+      --hf: linear-gradient(270deg, #000 0 22%, transparent 96%);
+    }
+    .face .sh {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: var(--pg, 21.8%);
+      bottom: var(--pg, 21.8%);
+      pointer-events: none;
+    }
+    .curl.next .face.front .sh, .curl.prev .face.back .sh {
+      background: linear-gradient(90deg, rgba(73, 56, 45, var(--a1, 0)), rgba(73, 56, 45, var(--a2, 0)));
+    }
+    .curl.next .face.back .sh, .curl.prev .face.front .sh {
+      background: linear-gradient(90deg, rgba(73, 56, 45, var(--a2, 0)), rgba(73, 56, 45, var(--a1, 0)));
+    }
+    .face .gl {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: var(--pg, 21.8%);
+      bottom: var(--pg, 21.8%);
+      pointer-events: none;
+      background: #fffaf0;
+      opacity: calc(var(--shade, 0) * var(--lit, 1) * var(--lit, 1) * .20);
+    }
+
+    /* ---- Loupe (Magnifying Glass) ---- */
+    .loupe {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: var(--lr, 270px);
+      height: var(--lr, 270px);
+      pointer-events: none;
+      z-index: 80;
+      opacity: 0;
+      transition: opacity .25s ease;
+      will-change: transform;
+    }
+    .loupe.on { opacity: 1; }
+    .loupe.held .ring { cursor: grabbing; }
+    .loupe .ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      pointer-events: auto;
+      cursor: grab;
+      padding: calc(var(--lr, 270px) * .058);
+      box-shadow:
+        0 1px 2px rgba(73, 56, 45, .30),
+        0 10px 18px rgba(73, 56, 45, .24),
+        0 26px 40px rgba(73, 56, 45, .20),
+        0 48px 66px rgba(73, 56, 45, .13);
+    }
+    .loupe .ring:before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      background: linear-gradient(146deg,
+        #fdf7e9 0%, #e6d7b4 14%, #b89a62 32%, #7d6740 50%,
+        #cdbb92 66%, #f4ead3 80%, #9b8459 100%);
+      box-shadow:
+        inset 0 1px 1px rgba(255, 255, 255, .8),
+        inset 0 -2px 3px rgba(73, 56, 45, .5);
+      -webkit-mask-image: radial-gradient(circle closest-side at 50% 50%, transparent 0 88.2%, #000 89.8% 100%);
+      mask-image: radial-gradient(circle closest-side at 50% 50%, transparent 0 88.2%, #000 89.8% 100%);
+    }
+    .loupe .grip {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: calc(var(--lr, 270px) * .74);
+      height: calc(var(--lr, 270px) * .125);
+      transform-origin: 0 50%;
+      transform: rotate(40deg) translate(calc(var(--lr, 270px) * .33), -50%);
+      border-radius: calc(var(--lr, 270px) * .06);
+      pointer-events: auto;
+      cursor: grab;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, .46) 0 13%, rgba(255, 255, 255, 0) 44%, rgba(0, 0, 0, .26) 100%),
+        linear-gradient(90deg, #d9bd82 0 14%, #b89a62 14% 20%, #49382D 20% 62%, #382b22 62% 92%, #5a3d2280 92% 100%);
+      box-shadow: 0 8px 15px rgba(73, 56, 45, .26), 0 18px 26px rgba(73, 56, 45, .14);
+    }
+    .lens {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background-repeat: no-repeat;
+      overflow: hidden;
+      box-shadow:
+        inset 0 0 0 1px rgba(73, 56, 45, .55),
+        inset 0 4px 12px rgba(73, 56, 45, .28),
+        inset 0 -7px 16px rgba(255, 250, 240, .14);
+    }
+    .lens .mag { display: none; }
+    .zoomwrap {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0;
+    }
+    .zoominner { position: absolute; inset: 0; transform-origin: 0 0; }
+    .lens:before, .lens:after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .lens:before { z-index: 1; }
+    .lens:after { z-index: 2; }
+    .lens:before {
+      background: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0) 54%, rgba(73, 56, 45, .10) 76%, rgba(73, 56, 45, .34) 100%);
+      box-shadow:
+        inset 0 0 0 2px rgba(184, 154, 98, .30),
+        inset 0 0 0 4px rgba(182, 111, 80, .18);
+    }
+    .lens:after {
+      background:
+        radial-gradient(36% 26% at 29% 19%, rgba(255, 255, 255, .30), rgba(255, 255, 255, 0) 76%),
+        radial-gradient(24% 16% at 74% 86%, rgba(255, 255, 255, .12), rgba(255, 255, 255, 0) 80%),
+        linear-gradient(150deg, rgba(255, 255, 255, .06) 0 18%, rgba(255, 255, 255, 0) 42%);
+    }
+
+    /* ---- Controls Toolbar ---- */
+    .sb-tools {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--hairline);
+      border-radius: 999px;
+      padding: 5px 8px;
+      background: rgba(246, 240, 229, .75);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 8px rgba(73, 56, 45, 0.08);
+    }
+    .tool {
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      min-height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--ink-soft);
+      cursor: pointer;
+      transition: background-color .18s ease, color .18s ease;
+    }
+    .tool:hover { background: rgba(255, 252, 244, .95); color: var(--ink); }
+    .tool[aria-pressed="true"] {
+      background: var(--forest-soft);
+      color: var(--forest);
+    }
+    .tool:disabled { opacity: .32; cursor: default; background: transparent; }
+    .tool svg { width: 16px; height: 16px; display: block; }
+    .tool-sep { width: 1px; height: 18px; background: var(--hairline); margin: 0 3px; }
+    .zoom-read {
+      font-size: 11px;
+      letter-spacing: .1em;
+      color: var(--ink-faint);
+      min-width: 44px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+      font-family: var(--sans);
+      font-weight: 500;
+    }
+    @media (pointer: coarse) { .loupe { display: none; } }
+
+    /* Page Turn Touch Zones */
+    .sb-zone {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border: 0;
+      background: transparent;
+      cursor: grab;
+      z-index: 60;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .sb-zone:active { cursor: grabbing; }
+    .sb-prev { left: 0; width: 50%; }
+    .sb-next { right: 0; width: 50%; }
+
+    /* Captions */
+    .sb-captions { display: grid; justify-items: center; text-align: center; }
+    .sb-captions > * { grid-area: 1/1; margin: 0; }
+    .sb-caption {
+      font-size: 14px;
+      letter-spacing: var(--track-caps);
+      text-transform: uppercase;
+      color: var(--ink);
+      font-weight: 500;
+      font-family: var(--sans);
+      animation: sb-cap-in .5s ease both;
+    }
+    .sb-caption.live { animation: none; }
+    @keyframes sb-cap-in { 0% { opacity: 0; } }
+
+    .sb-hint {
+      margin: 0;
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      font-family: var(--sans);
+      transition: opacity .4s ease;
+      text-align: center;
+    }
+    .sb-hint.gone { opacity: 0; pointer-events: none; }
+
+    /* ---------------- About / Editorial Notes ---------------- */
+    .rule {
+      width: min(88%, 940px);
+      height: 1px;
+      background: var(--hairline);
+      margin: 0 auto;
+    }
+    .rule.short { width: min(60%, 540px); }
+
+    .about {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: clamp(24px, 5vw, 64px);
+      width: min(88%, 940px);
+      margin: 0 auto;
+      padding: clamp(60px, 9vh, 90px) 0;
+    }
+    .section-label {
+      font-size: 12px;
+      letter-spacing: var(--track-caps);
+      text-transform: uppercase;
+      color: var(--earth);
+      font-family: var(--sans);
+      font-weight: 600;
+      margin: 0 0 16px;
+    }
+    .bio {
+      font-size: clamp(17px, 1.7vw, 20px);
+      line-height: 1.65;
+      font-weight: 400;
+      color: var(--main-text);
+      margin: 0;
+    }
+    .bio-link {
+      color: var(--forest);
+      text-decoration: underline;
+      text-decoration-color: rgba(52, 75, 61, 0.35);
+      text-underline-offset: 3px;
+      transition: text-decoration-color .2s ease;
+    }
+    .bio-link:hover {
+      text-decoration-color: var(--forest);
+    }
+    .bloom {
+      width: clamp(110px, 15vw, 190px);
+      opacity: .65;
+      pointer-events: none;
+    }
+    @media (max-width: 680px) {
+      .about { grid-template-columns: 1fr; gap: 24px; }
+      .bloom { display: none; }
+    }
+
+    /* ---------------- Destination Index (Plates) ---------------- */
+    .plates {
+      width: min(88%, 940px);
+      margin: 0 auto;
+      padding: clamp(50px, 8vh, 80px) 0;
+    }
+    .plate-list {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0 0;
+      display: grid;
+      gap: 10px;
+    }
+    .plate {
+      display: grid;
+      grid-template-columns: 36px 1fr auto;
+      align-items: baseline;
+      gap: clamp(12px, 2.5vw, 28px);
+      width: 100%;
+      padding: 14px 18px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+      color: var(--ink);
+      transition: background-color .2s ease, border-color .2s ease, transform .2s ease;
+    }
+    .plate:hover {
+      background: rgba(233, 221, 200, 0.55);
+      border-color: rgba(73, 56, 45, 0.12);
+      transform: translateX(4px);
+    }
+    .plate[aria-current="true"] {
+      background: var(--paper-soft);
+      border-color: rgba(73, 56, 45, 0.20);
+      box-shadow: 0 2px 8px rgba(73, 56, 45, 0.06);
+    }
+    .plate .n {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--earth);
+      letter-spacing: .08em;
+    }
+    .plate .t {
+      font-family: var(--display);
+      font-size: clamp(20px, 2.1vw, 26px);
+      letter-spacing: 0.01em;
+      color: var(--ink);
+    }
+    .plate .p {
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--ink-soft);
+      font-weight: 400;
+    }
+
+    /* ---------------- Footer ---------------- */
+    .foot {
+      text-align: center;
+      padding: 48px 16px 56px;
+      font-size: 13px;
+      color: var(--ink-soft);
+      letter-spacing: 0.04em;
+      font-family: var(--sans);
+      margin: 0;
+    }
+
+    @media (max-width: 640px) {
+      .top .name { font-size: 20px; }
+      .hero-kicker { font-size: 10.5px; }
+      .sb-hint { font-size: 9.5px; }
+      .plate {
+        grid-template-columns: 28px 1fr;
+        gap: 8px;
+        padding: 12px 14px;
+      }
+      .plate .p {
+        grid-column: 2;
+        font-size: 11.5px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wash" aria-hidden="true"></div>
+
+  <main class="page home">
+
+    <!-- Top Navigation Header -->
+    <header class="top">
+      <div class="top-brand">
+        <a href="index.html" class="flex items-center gap-2 group">
+          <img src="assets/image-removebg-preview.png" alt="Logo Lelana Jateng" class="top-logo">
+        </a>
+        <a class="name" href="index.html">Lelana Jateng</a>
+      </div>
+
+      <nav aria-label="Navigasi Utama">
+        <a href="index.html">Beranda</a>
+        <a href="destinasi.html" aria-current="page">Destinasi</a>
+        <a href="#sketchbook">Buku Sketsa</a>
+        <a href="#about">Catatan</a>
+        <a href="#plates">Indeks</a>
+
+        <div class="top-actions">
+          <a href="#login" class="btn-nav-login" style="color: #ffffff !important;">
+            <span style="color: #ffffff !important; font-weight: 600;">Login</span>
+          </a>
+        </div>
+      </nav>
+
+      <!-- Mobile Menu Toggle -->
+      <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Buka menu navigasi" aria-expanded="false">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="4" y1="7" x2="20" y2="7"></line>
+          <line x1="4" y1="12" x2="20" y2="12"></line>
+          <line x1="4" y1="17" x2="20" y2="17"></line>
+        </svg>
+      </button>
+
+      <!-- Mobile Dropdown -->
+      <div class="mobile-dropdown" id="mobileDropdown">
+        <a href="index.html">Beranda</a>
+        <a href="destinasi.html" style="font-weight: 600; color: var(--earth);">Destinasi</a>
+        <a href="#sketchbook">Buku Sketsa</a>
+        <a href="#about">Catatan Perjalanan</a>
+        <a href="#plates">Daftar Destinasi</a>
+        <a href="#login" style="display: flex; align-items: center; justify-content: center; margin-top: 6px; padding: 8px 16px; font-weight: 600; color: #ffffff !important; background: var(--forest); border-radius: 999px; text-decoration: none;">Login</a>
+      </div>
+    </header>
+
+    <!-- Hero Section / 3D Sketchbook -->
+    <section id="sketchbook" class="hero" aria-label="Buku Sketsa Interaktif Lelana Jateng">
+      <img class="botany l" src="assets/sketchbook/botany-left.png" alt="" aria-hidden="true">
+      <img class="botany r" src="assets/sketchbook/botany-right.png" alt="" aria-hidden="true">
+
+      <p class="hero-kicker">Sketsa Perjalanan / Eksplorasi Budaya / Jawa Tengah</p>
+
+      <div class="sb-wrap" id="sbWrap">
+        <!-- Motion blur SVG filters -->
+        <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+          <filter id="sb-mblur-1"><feGaussianBlur stdDeviation="5 0"/></filter>
+          <filter id="sb-mblur-2"><feGaussianBlur stdDeviation="14 0"/></filter>
+        </svg>
+
+        <div class="sb-stage" id="sbStage">
+          <!-- Previous page button -->
+          <button class="sb-arrow left" id="sbLeft" aria-label="Halaman Sebelumnya" title="Halaman Sebelumnya">
+            <svg viewBox="0 0 14 44" width="14" height="44" fill="none" aria-hidden="true">
+              <polyline points="11,3 3,22 11,41" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <!-- 3D Stage -->
+          <div class="sb-3d" id="sb3d">
+            <div class="sb-tilt" id="sbTilt">
+              <div class="sb-cast ambient" aria-hidden="true"></div>
+              <div class="sb-cast contact" aria-hidden="true"></div>
+              <div class="sb-cast hair" aria-hidden="true"></div>
+              <div class="sb-book" id="sbBook"></div>
+              <!-- Vintage Sketching Fountain Pen & Leather Loop -->
+              <div class="sb-pen-holder" id="sbPenHolder" aria-hidden="true">
+                <svg viewBox="0 0 60 480" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="leather-grad" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stop-color="#4a301c" />
+                      <stop offset="25%" stop-color="#734b2e" />
+                      <stop offset="60%" stop-color="#8a5a37" />
+                      <stop offset="100%" stop-color="#432b19" />
+                    </linearGradient>
+                    <linearGradient id="barrel-grad" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stop-color="#141a17" />
+                      <stop offset="28%" stop-color="#24342c" />
+                      <stop offset="50%" stop-color="#3d5447" />
+                      <stop offset="72%" stop-color="#1e2c25" />
+                      <stop offset="100%" stop-color="#0e1311" />
+                    </linearGradient>
+                    <linearGradient id="gold-grad" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stop-color="#a47728" />
+                      <stop offset="35%" stop-color="#f5d67b" />
+                      <stop offset="55%" stop-color="#fff0b8" />
+                      <stop offset="80%" stop-color="#d4a73e" />
+                      <stop offset="100%" stop-color="#8a5e19" />
+                    </linearGradient>
+                    <linearGradient id="clip-grad" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stop-color="#f0cb68" />
+                      <stop offset="40%" stop-color="#fff2c2" />
+                      <stop offset="100%" stop-color="#b6892f" />
+                    </linearGradient>
+                  </defs>
+                  <!-- Leather Base Tab -->
+                  <rect x="2" y="195" width="38" height="56" rx="6" fill="url(#leather-grad)" stroke="#382212" stroke-width="1.2" />
+                  <line x1="7" y1="200" x2="7" y2="246" stroke="#d5ab79" stroke-width="1.2" stroke-dasharray="3,3" opacity="0.75" />
+
+                  <!-- Pen Top Finial (Gold) -->
+                  <rect x="23" y="18" width="16" height="7" rx="3" fill="url(#gold-grad)" />
+
+                  <!-- Pen Cap -->
+                  <rect x="21" y="24" width="20" height="135" rx="5" fill="url(#barrel-grad)" />
+                  <line x1="28" y1="28" x2="28" y2="154" stroke="#ffffff" stroke-width="1" opacity="0.35" />
+
+                  <!-- Gold Center Ring / Band -->
+                  <rect x="20" y="157" width="22" height="10" rx="1.5" fill="url(#gold-grad)" />
+                  <line x1="20" y1="162" x2="42" y2="162" stroke="#684714" stroke-width="0.8" />
+
+                  <!-- Pen Barrel -->
+                  <path d="M 22 167 L 40 167 L 39 395 C 39 408, 37 420, 31 432 C 25 420, 23 408, 23 395 Z" fill="url(#barrel-grad)" />
+                  <line x1="28" y1="172" x2="28" y2="415" stroke="#ffffff" stroke-width="0.9" opacity="0.32" />
+
+                  <!-- Barrel End Band (Gold) -->
+                  <rect x="24.5" y="418" width="13" height="4" rx="1" fill="url(#gold-grad)" />
+                  <path d="M 25.5 422 L 36.5 422 L 34 445 C 33 448, 29 448, 28 445 Z" fill="url(#gold-grad)" />
+
+                  <!-- Pocket Clip (Gold) -->
+                  <path d="M 28 32 L 34 32 L 33 130 C 33 136, 30 138, 30 144 C 30 138, 27 136, 27 130 Z" fill="url(#clip-grad)" />
+                  <circle cx="30" cy="143" r="3.2" fill="url(#gold-grad)" />
+
+                  <!-- Leather Loop Front Strap (Wrapping over pen) -->
+                  <rect x="16" y="202" width="30" height="42" rx="5" fill="url(#leather-grad)" stroke="#382212" stroke-width="1.2" />
+                  <line x1="19" y1="206" x2="19" y2="240" stroke="#d5ab79" stroke-width="1" stroke-dasharray="2.5,2.5" opacity="0.75" />
+                  <line x1="43" y1="206" x2="43" y2="240" stroke="#d5ab79" stroke-width="1" stroke-dasharray="2.5,2.5" opacity="0.75" />
+                </svg>
+              </div>
+            </div>
+
+            <!-- Magnified Loupe Copy Layer -->
+            <div class="zoomwrap" id="zoomWrap" aria-hidden="true">
+              <div class="zoominner" id="zoomInner"></div>
+            </div>
+
+            <!-- Draggable Magnifying Glass -->
+            <div class="loupe" id="loupe">
+              <span class="grip" aria-hidden="true"></span>
+              <span class="ring" aria-hidden="true">
+                <span class="lens" id="loupeLens">
+                  <span class="mag" id="loupeMag"></span>
+                </span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Next page button -->
+          <button class="sb-arrow right" id="sbRight" aria-label="Halaman Selanjutnya" title="Halaman Selanjutnya">
+            <svg viewBox="0 0 14 44" width="14" height="44" fill="none" aria-hidden="true">
+              <polyline points="3,3 11,22 3,41" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Captions -->
+        <div class="sb-captions" id="sbCaptions" aria-live="polite"></div>
+
+        <!-- View Controls Toolbar -->
+        <div class="sb-tools" role="group" aria-label="Kontrol Tampilan">
+          <button class="tool" id="zOut" aria-label="Perkecil Zoom" title="Perkecil">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+              <circle cx="8.6" cy="8.6" r="5.6"/>
+              <path d="M12.8 12.8 17.4 17.4M6.2 8.6h4.8"/>
+            </svg>
+          </button>
+
+          <span class="zoom-read" id="zRead" aria-label="Tingkat Zoom">100%</span>
+
+          <button class="tool" id="zIn" aria-label="Perbesar Zoom" title="Perbesar">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+              <circle cx="8.6" cy="8.6" r="5.6"/>
+              <path d="M12.8 12.8 17.4 17.4M6.2 8.6h4.8M8.6 6.2v4.8"/>
+            </svg>
+          </button>
+
+          <span class="tool-sep" aria-hidden="true"></span>
+
+          <button class="tool" id="loupeBtn" aria-label="Kaca Pembesar" aria-pressed="true" title="Sakelar Kaca Pembesar">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+              <circle cx="8.8" cy="8.8" r="5.8"/>
+              <path d="M13 13l4.4 4.4"/>
+              <path d="M6.4 7.2a3.2 3.2 0 0 1 2.4-1.4" opacity=".55"/>
+            </svg>
+          </button>
+
+          <span class="tool-sep" aria-hidden="true"></span>
+
+          <button class="tool" id="soundBtn" aria-label="Efek Suara Halaman" aria-pressed="true" title="Sakelar Efek Suara Halaman (Aktif)">
+            <svg class="icon-sound-on" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="8 5 4 8 2 8 2 12 4 12 8 15 8 5" fill="currentColor" fill-opacity="0.2"/>
+              <path d="M12 7.5a3.8 3.8 0 0 1 0 5"/>
+              <path d="M14.5 5a7 7 0 0 1 0 10"/>
+            </svg>
+            <svg class="icon-sound-off" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+              <polygon points="8 5 4 8 2 8 2 12 4 12 8 15 8 5" fill="currentColor" fill-opacity="0.2"/>
+              <line x1="12" y1="7.5" x2="16.5" y2="12.5"/>
+              <line x1="16.5" y1="7.5" x2="12" y2="12.5"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Interaction Hint -->
+        <p class="sb-hint" id="sbHint">Geser sudut halaman untuk membalik · Tarik kaca pembesar untuk melihat detail</p>
+      </div>
+
+      <!-- Scroll to next section button -->
+      <button class="hero-down" id="heroDown" aria-label="Gulir ke Catatan Perjalanan" title="Gulir ke Catatan Perjalanan">
+        <svg viewBox="0 0 44 22" width="34" height="17" fill="none" aria-hidden="true">
+          <polyline points="3,3 22,11 41,3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="3,11 22,19 41,11" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </section>
+
+    <div class="rule" aria-hidden="true"></div>
+
+    <!-- Editorial Notes Section -->
+    <section id="about" class="about" aria-labelledby="about-heading">
+      <div>
+        <p class="section-label" id="about-heading">Catatan Perjalanan</p>
+        <p class="bio">
+          Lelana Jateng adalah jurnal penjelajahan visual yang merangkum keanggunan warisan budaya dan bentang alam Jawa Tengah. Dari kemegahan stupa batu Candi Borobudur di fajar lembah Menoreh, sejuknya kabut Dataran Tinggi Dieng, deretan koridor megah Lawang Sewu, hingga helai kain canting pesisir Pekalongan. Buku sketsa ini merekam setiap sudut dengan lambat melalui goresan tinta, cat air lembut, dan catatan lapangan, mengajak Anda merasakan kembali denyut sejarah dan ketenangan tanah Jawa.
+        </p>
+      </div>
+      <img class="bloom" src="assets/sketchbook/bloom.png" alt="" aria-hidden="true">
+    </section>
+
+    <div class="rule short" aria-hidden="true"></div>
+
+    <!-- Plates Index Section -->
+    <section id="plates" class="plates" aria-labelledby="plates-heading">
+      <p class="section-label" id="plates-heading">Daftar Destinasi Jawa Tengah</p>
+      <ol class="plate-list" id="plateList" aria-label="Daftar 9 Pelat Destinasi"></ol>
+    </section>
+
+    <div class="rule short" aria-hidden="true"></div>
+
+    <!-- Footer -->
+    <footer class="foot" id="contact">
+      Lelana Jateng · Jurnal Wisata Jawa Tengah · Pesona Pariwisata Nusantara
+    </footer>
+
+  </main>
+
+  <!-- MengToSketchbook Engine Script -->
+  <script>
+    /* =====================================================================
+       Lelana Jateng — Travel Sketchbook Engine
+       Original Component: MengToSketchbookLandingPage (ThreeUI registered source)
+       Runtime: Full HTML + DOM/CSS + JavaScript.
+       ===================================================================== */
+    const Q = new URLSearchParams(location.search);
+    const DIR = 'assets/sketchbook/';
+
+    /* ------------------------------------------------- page sound engine */
+    const PageAudio = (() => {
+      let ctx = null;
+      let enabled = true;
+      let fallbackAudio = null;
+
+      function initAudio() {
+        if (!ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            ctx = new AudioCtx();
+          }
+        }
+        if (ctx && ctx.state === 'suspended') {
+          ctx.resume().catch(() => {});
+        }
+      }
+
+      try {
+        fallbackAudio = new Audio(DIR + 'page-flip.wav');
+        fallbackAudio.volume = 0.65;
+      } catch (e) {}
+
+      function playSynth(dir) {
+        if (!ctx) initAudio();
+        if (!ctx) {
+          if (fallbackAudio) {
+            fallbackAudio.currentTime = 0;
+            fallbackAudio.play().catch(() => {});
+          }
+          return;
+        }
+        if (ctx.state === 'suspended') {
+          ctx.resume().catch(() => {});
+        }
+
+        const t = ctx.currentTime;
+        const isNext = dir !== 'prev';
+        const dur = 0.22 + Math.random() * 0.05;
+
+        // 1. Friction & Air displacement: pink/white noise through resonant bandpass
+        const bufferSize = Math.floor(ctx.sampleRate * dur);
+        const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+
+        let b0 = 0, b1 = 0, b2 = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          b0 = 0.99765 * b0 + white * 0.0990460;
+          b1 = 0.96300 * b1 + white * 0.2965164;
+          b2 = 0.57000 * b2 + white * 1.0526913;
+          output[i] = (b0 + b1 + b2 + white * 0.1848) * 0.16;
+        }
+
+        const noiseNode = ctx.createBufferSource();
+        noiseNode.buffer = noiseBuffer;
+
+        const bandpass = ctx.createBiquadFilter();
+        bandpass.type = 'bandpass';
+        const startFreq = isNext ? (1650 + Math.random() * 150) : (1500 + Math.random() * 150);
+        const endFreq = 700 + Math.random() * 80;
+        bandpass.frequency.setValueAtTime(startFreq, t);
+        bandpass.frequency.exponentialRampToValueAtTime(endFreq, t + dur * 0.85);
+        bandpass.Q.setValueAtTime(2.2, t);
+
+        const highpass = ctx.createBiquadFilter();
+        highpass.type = 'highpass';
+        highpass.frequency.setValueAtTime(320, t);
+
+        const noiseGain = ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.001, t);
+        noiseGain.gain.linearRampToValueAtTime(0.38, t + 0.022);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+        noiseNode.connect(bandpass);
+        bandpass.connect(highpass);
+        highpass.connect(noiseGain);
+        noiseGain.connect(ctx.destination);
+
+        noiseNode.start(t);
+        noiseNode.stop(t + dur);
+
+        // 2. Paper Landing / Flutter Body (soft low thump when leaf lands)
+        const thumpOsc = ctx.createOscillator();
+        const thumpGain = ctx.createGain();
+        thumpOsc.type = 'sine';
+
+        const thumpStart = t + 0.045;
+        const thumpDur = 0.075;
+        thumpOsc.frequency.setValueAtTime(145 + Math.random() * 15, thumpStart);
+        thumpOsc.frequency.exponentialRampToValueAtTime(65, thumpStart + thumpDur);
+
+        thumpGain.gain.setValueAtTime(0.001, thumpStart);
+        thumpGain.gain.linearRampToValueAtTime(0.18, thumpStart + 0.012);
+        thumpGain.gain.exponentialRampToValueAtTime(0.001, thumpStart + thumpDur);
+
+        thumpOsc.connect(thumpGain);
+        thumpGain.connect(ctx.destination);
+
+        thumpOsc.start(thumpStart);
+        thumpOsc.stop(thumpStart + thumpDur);
+
+        // 3. Crisp Paper Edge Snap (micro high frequency rustle)
+        const snapLen = Math.floor(ctx.sampleRate * 0.035);
+        const snapBuf = ctx.createBuffer(1, snapLen, ctx.sampleRate);
+        const snapData = snapBuf.getChannelData(0);
+        for (let j = 0; j < snapLen; j++) {
+          snapData[j] = (Math.random() * 2 - 1) * Math.exp(-j / (snapLen * 0.3));
+        }
+        const snapOsc = ctx.createBufferSource();
+        snapOsc.buffer = snapBuf;
+
+        const snapFilter = ctx.createBiquadFilter();
+        snapFilter.type = 'bandpass';
+        snapFilter.frequency.setValueAtTime(3200 + Math.random() * 300, t);
+        snapFilter.Q.setValueAtTime(1.8, t);
+
+        const snapGain = ctx.createGain();
+        const snapTime = t + 0.03;
+        snapGain.gain.setValueAtTime(0.12, snapTime);
+        snapGain.gain.exponentialRampToValueAtTime(0.001, snapTime + 0.035);
+
+        snapOsc.connect(snapFilter);
+        snapFilter.connect(snapGain);
+        snapGain.connect(ctx.destination);
+
+        snapOsc.start(snapTime);
+        snapOsc.stop(snapTime + 0.04);
+      }
+
+      function play(dir) {
+        if (!enabled) return;
+        try {
+          playSynth(dir);
+        } catch (e) {
+          if (fallbackAudio) {
+            fallbackAudio.currentTime = 0;
+            fallbackAudio.play().catch(() => {});
+          }
+        }
+      }
+
+      function toggle() {
+        initAudio();
+        enabled = !enabled;
+        return enabled;
+      }
+
+      function isEnabled() {
+        return enabled;
+      }
+
+      const unlockEvents = ['pointerdown', 'keydown', 'click', 'touchstart'];
+      function onFirstUserGesture() {
+        initAudio();
+        unlockEvents.forEach(evt => window.removeEventListener(evt, onFirstUserGesture, true));
+      }
+      unlockEvents.forEach(evt => window.addEventListener(evt, onFirstUserGesture, { capture: true, once: true }));
+
+      return {
+        play,
+        toggle,
+        isEnabled,
+        init: initAudio
+      };
+    })();
+
+    const PAGES = [
+      { file: 'borobudur.jpg',         title: 'Candi Borobudur',                 place: 'Magelang, Jawa Tengah' },
+      { file: 'dieng.jpg',             title: 'Dataran Tinggi Dieng',            place: 'Wonosobo & Banjarnegara' },
+      { file: 'kota-lama.jpg',         title: 'Kota Lama Semarang',              place: 'Semarang, Jawa Tengah' },
+      { file: 'karimunjawa.jpg',       title: 'Kepulauan Karimunjawa',           place: 'Jepara, Jawa Tengah' },
+      { file: 'prambanan.jpg',         title: 'Candi Prambanan',                 place: 'Klaten, Jawa Tengah' },
+      { file: 'lawang-sewu.jpg',       title: 'Lawang Sewu',                     place: 'Semarang, Jawa Tengah' },
+      { file: 'ranggawarsita.jpg',     title: 'Museum Ranggawarsita',            place: 'Semarang, Jawa Tengah' },
+      { file: 'keraton-surakarta.jpg', title: 'Keraton Surakarta Hadiningrat',   place: 'Surakarta, Jawa Tengah' },
+      { file: 'batik-pekalongan.jpg',  title: 'Kawasan Batik Pekalongan',        place: 'Pekalongan, Jawa Tengah' }
+    ];
+
+    PAGES.forEach(p => p.url = DIR + p.file);
+    const M = PAGES.length, LAND = 0;
+
+    const wrap = document.getElementById('sbWrap');
+    const stage = document.getElementById('sbStage');
+    const sb3d = document.getElementById('sb3d');
+    const book = document.getElementById('sbBook');
+    const capBox = document.getElementById('sbCaptions');
+    const hint = document.getElementById('sbHint');
+    const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ------------------------------------------------ the turning leaf */
+    const N = 18;            /* strips for smooth curve */
+    const SPAN = 0.449;      /* gutter to outer page edge */
+    const BETA = 0.60;       /* peak curl radians */
+    let idx = 0, turn = null;
+    let strips = [];
+
+    function el(t, c) {
+      const e = document.createElement(t);
+      if (c) e.className = c;
+      return e;
+    }
+
+    function imgEl(i, side) {
+      const im = new Image();
+      im.className = 'sb-half-img ' + side;
+      im.draggable = false;
+      im.alt = PAGES[i].title;
+      im.src = PAGES[i].url;
+      return im;
+    }
+
+    function halfEl(pos, i) {
+      const d = el('div', 'sb-half ' + pos);
+      d.appendChild(imgEl(i, pos));
+      d.appendChild(el('div', 'gutter-shade ' + pos));
+      return d;
+    }
+
+    /* Build strip chain once per turn */
+    function buildCurl(dir, from, to) {
+      strips = [];
+      const c = el('div', 'curl ' + dir);
+      c.style.setProperty('--n', N);
+      c.style.setProperty('--span', SPAN);
+      let host = c;
+
+      for (let i = 0; i < N; i++) {
+        const s = el('div', 'strip');
+        s.style.setProperty('--i', i);
+        const gut = 'calc(var(--bw) * 0.5)';
+        const sw = 'calc(var(--bw) * ' + SPAN + ' / ' + N + ')';
+        const A = 'calc(-1 * (' + gut + ' + ' + i + ' * ' + sw + '))';
+        const B = 'calc(' + (i + 1) + ' * ' + sw + ' - ' + gut + ')';
+
+        const f = el('div', 'face front'), b = el('div', 'face back');
+        const dress = (e, url, px) => {
+          e.style.backgroundImage = 'url(' + url + ')';
+          e.style.backgroundPositionX = px;
+        };
+
+        dress(f, PAGES[from].url, dir === 'next' ? A : B);
+        dress(b, PAGES[to].url,   dir === 'next' ? B : A);
+
+        f.appendChild(el('div', 'sh'));
+        f.appendChild(el('div', 'gl'));
+        b.appendChild(el('div', 'sh'));
+        b.appendChild(el('div', 'gl'));
+
+        s.appendChild(f);
+        s.appendChild(b);
+        if (i === N - 1) s.classList.add('edge');
+        host.appendChild(s);
+        host = s;
+        strips.push(s);
+      }
+      return c;
+    }
+
+    function applyTurn(t) {
+      const th = Math.PI * t;
+      const beta = BETA * Math.sin(Math.PI * t);
+      const D = 180 / Math.PI;
+      const tt = th + beta, td = 2 * beta / N;
+
+      sb3d.style.setProperty('--tt', (tt * D).toFixed(2) + 'deg');
+      sb3d.style.setProperty('--td', (td * D).toFixed(3) + 'deg');
+      sb3d.style.setProperty('--shade', Math.sin(Math.PI * t).toFixed(3));
+      fadeCaption(t);
+
+      for (let i = 0; i < strips.length; i++) {
+        const l1 = Math.abs(Math.cos(tt - i * td));
+        const l2 = Math.abs(Math.cos(tt - (i + 1) * td));
+        const st = strips[i].style;
+        st.setProperty('--lit', l1.toFixed(3));
+        st.setProperty('--a1', ((1 - l1) * .62).toFixed(3));
+        st.setProperty('--a2', ((1 - l2) * .62).toFixed(3));
+      }
+    }
+
+    function paint() {
+      book.textContent = '';
+      if (!turn) {
+        const f = el('div', 'sb-full');
+        const im = new Image();
+        im.src = PAGES[idx].url;
+        im.alt = PAGES[idx].title;
+        im.draggable = false;
+        f.appendChild(im);
+        book.appendChild(f);
+        sb3d.style.setProperty('--shade', '0');
+      } else {
+        const next = turn.dir === 'next';
+        book.appendChild(halfEl('left', next ? turn.from : turn.to));
+        book.appendChild(halfEl('right', next ? turn.to : turn.from));
+        book.appendChild(buildCurl(turn.dir, turn.from, turn.to));
+        applyTurn(turn.t);
+      }
+
+      const a = el('button', 'sb-zone sb-prev'), b = el('button', 'sb-zone sb-next');
+      a.setAttribute('aria-label', 'Halaman Sebelumnya');
+      b.setAttribute('aria-label', 'Halaman Selanjutnya');
+      book.appendChild(a);
+      book.appendChild(b);
+
+      layout();
+      caption();
+      marks();
+      if (typeof syncZoomLayer === 'function') syncZoomLayer();
+      if (typeof placeLoupe === 'function') placeLoupe();
+    }
+
+    let capOut = null, capIn = null;
+    function caption() {
+      capBox.textContent = '';
+      capOut = capIn = null;
+      if (turn) {
+        capOut = el('p', 'sb-caption live');
+        capOut.textContent = PAGES[turn.from].title;
+        capBox.appendChild(capOut);
+        capIn = el('p', 'sb-caption live');
+        capIn.textContent = PAGES[turn.to].title;
+        capBox.appendChild(capIn);
+        fadeCaption(turn.t);
+      } else {
+        const p = el('p', 'sb-caption');
+        p.textContent = PAGES[idx].title;
+        capBox.appendChild(p);
+      }
+    }
+
+    function fadeCaption(t) {
+      if (!capOut || !capIn) return;
+      const out = 1 - Math.max(0, Math.min(1, (t - 0.10) / 0.28));
+      const inn = Math.max(0, Math.min(1, (t - 0.56) / 0.30));
+      capOut.style.opacity = out.toFixed(3);
+      capIn.style.opacity = inn.toFixed(3);
+    }
+
+    function layout() {
+      sb3d.style.setProperty('--bw', book.clientWidth + 'px');
+    }
+    addEventListener('resize', layout);
+
+    /* ------------------------------------------------------ spring loop */
+    let spring = null;
+    function animateTo(target, onDone, stiff, damp) {
+      spring = { kind: 'spring', v: 0, target: target, done: onDone, k: stiff || 150, c: damp || 22 };
+      kick();
+    }
+
+    function tweenTo(target, dur, onDone) {
+      spring = { kind: 'tween', from: turn ? turn.t : 0, target: target, dur: dur, e: 0, done: onDone };
+      kick();
+    }
+
+    let raf = null, last = 0;
+    function tick(now) {
+      raf = null;
+      const dt = Math.min(0.032, (now - last) / 1000 || 0.016);
+      last = now;
+
+      if (spring && turn) {
+        const s = spring;
+        if (s.kind === 'tween') {
+          s.e += dt;
+          const k = Math.min(1, s.e / s.dur);
+          turn.t = s.from + (s.target - s.from) * k;
+          applyTurn(turn.t);
+          if (k >= 1) {
+            spring = null;
+            const d = s.done;
+            d && d();
+          }
+        } else {
+          const x = turn.t - s.target;
+          s.v += (-s.k * x - s.c * s.v) * dt;
+          turn.t += s.v * dt;
+          if (Math.abs(turn.t - s.target) < 0.002 && Math.abs(s.v) < 0.02) {
+            turn.t = s.target;
+            spring = null;
+            applyTurn(turn.t);
+            const d = s.done;
+            d && d();
+          } else {
+            applyTurn(turn.t);
+          }
+        }
+      }
+
+      viewSpring();
+      const lmoved = loupeEase();
+      if ((spring || viewActive || lmoved) && raf === null) {
+        raf = requestAnimationFrame(tick);
+      }
+    }
+
+    function kick() {
+      if (raf === null) {
+        last = performance.now();
+        raf = requestAnimationFrame(tick);
+      }
+    }
+
+    /* ------------------------------------------- tilt + zoom of the book */
+    const TILT_X = 4.5, TILT_Y = 7;
+    const ZOOM_MIN = 0.9, ZOOM_MAX = 1.5;
+    const view = { rx: 0, ry: 0, z: 1, trx: 0, try_: 0, tz: 1 };
+    let viewActive = false;
+    let lastZ = 1;
+
+    function applyView() {
+      sb3d.style.setProperty('--rx', view.rx.toFixed(2) + 'deg');
+      sb3d.style.setProperty('--ry', view.ry.toFixed(2) + 'deg');
+      sb3d.style.setProperty('--zoom', view.z.toFixed(3));
+      if (view.z !== lastZ) {
+        lastZ = view.z;
+        if (typeof placeLoupe === 'function') placeLoupe();
+      }
+    }
+
+    function viewSpring() {
+      const e = 0.14;
+      let moved = false;
+      for (const [k, t] of [['rx', 'trx'], ['ry', 'try_'], ['z', 'tz']]) {
+        const d = view[t] - view[k];
+        if (Math.abs(d) > 0.0006) {
+          view[k] += d * e;
+          moved = true;
+        } else {
+          view[k] = view[t];
+        }
+      }
+      if (moved) applyView();
+      viewActive = moved;
+      return moved;
+    }
+
+    function setView(rx, ry, z) {
+      view.trx = Math.max(-TILT_X, Math.min(TILT_X, rx));
+      view.try_ = Math.max(-TILT_Y, Math.min(TILT_Y, ry));
+      view.tz = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, z));
+      viewActive = true;
+      kick();
+      if (typeof syncZoom === 'function') syncZoom();
+    }
+
+    function tiltTo(cx, cy) {
+      if (drag) return;
+      const r = book.getBoundingClientRect();
+      if (!r.width) return;
+      const nx = Math.max(-1, Math.min(1, (cx - (r.left + r.width / 2)) / (r.width * 0.62)));
+      const ny = Math.max(-1, Math.min(1, (cy - (r.top + r.height / 2)) / (r.height * 0.9)));
+      setView(-ny * TILT_X, nx * TILT_Y, view.tz);
+    }
+
+    addEventListener('pointermove', e => {
+      if (e.pointerType === 'touch') return;
+      tiltTo(e.clientX, e.clientY);
+    }, { passive: true });
+
+    addEventListener('pointerout', e => {
+      if (!e.relatedTarget) setView(0, 0, view.tz);
+    });
+    addEventListener('blur', () => setView(0, 0, view.tz));
+
+    stage.addEventListener('dblclick', () => setView(view.trx, view.try_, 1));
+
+    /* ------------------------------------------------------- pointer work */
+    let drag = null;
+    function bookRect() { return book.getBoundingClientRect(); }
+    function hideHint() { hint.classList.add('gone'); }
+
+    stage.addEventListener('pointerdown', e => {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      const onBook = e.target.closest('.sb-zone');
+      stage.setPointerCapture(e.pointerId);
+      hideHint();
+      if (!onBook || introOn) return;
+      const r = bookRect();
+      const dir = (e.clientX - r.left) / r.width > 0.5 ? 'next' : 'prev';
+      startTurn(dir, 0);
+      drag = { dir: dir, x0: e.clientX, w: r.width, moved: 0, vel: 0, tPrev: performance.now() };
+    });
+
+    stage.addEventListener('pointermove', e => {
+      if (!drag) return;
+      const dx = e.clientX - drag.x0;
+      drag.moved = Math.max(drag.moved, Math.abs(dx));
+      const raw = (drag.dir === 'next' ? -dx : dx) / (drag.w * 0.62);
+      const t = Math.max(0, Math.min(1, raw));
+      const now = performance.now();
+      drag.vel = (t - (turn ? turn.t : 0)) / Math.max(0.001, (now - drag.tPrev) / 1000);
+      drag.tPrev = now;
+      if (turn) { turn.t = t; applyTurn(t); }
+    });
+
+    function endDrag(e) {
+      if (!drag) return;
+      const d = drag;
+      drag = null;
+      if (!turn) return;
+      if (d.moved < 6) {
+        PageAudio.play(turn.dir);
+        commit();
+        return;
+      }
+      const go = turn.t > 0.42 || d.vel > 1.1;
+      if (go) {
+        PageAudio.play(turn.dir);
+        commit();
+      } else {
+        cancel();
+      }
+    }
+
+    stage.addEventListener('dragstart', e => e.preventDefault());
+    stage.addEventListener('selectstart', e => e.preventDefault());
+    stage.addEventListener('pointerup', endDrag);
+    stage.addEventListener('pointercancel', endDrag);
+
+    /* ------------------------------------------------------ turn control */
+    function startTurn(dir, t) {
+      spring = null;
+      if (turn) { idx = turn.to; turn = null; }
+      if (typeof shoveLoupe === 'function') shoveLoupe(dir);
+      const from = idx;
+      turn = { dir: dir, from: from, to: dir === 'next' ? (from + 1) % M : (from - 1 + M) % M, t: t || 0 };
+      paint();
+    }
+
+    function commit() {
+      if (!turn) return;
+      if (REDUCED) {
+        idx = turn.to;
+        turn = null;
+        paint();
+        return;
+      }
+      animateTo(1, () => {
+        idx = turn.to;
+        turn = null;
+        paint();
+      }, 170, 26);
+      kick();
+    }
+
+    function cancel() {
+      if (!turn) return;
+      animateTo(0, () => {
+        turn = null;
+        paint();
+      }, 150, 24);
+      kick();
+    }
+
+    function step(dir) {
+      if (introOn) endIntro();
+      if (turn) { idx = turn.to; turn = null; }
+      PageAudio.play(dir);
+      startTurn(dir, 0);
+      commit();
+    }
+
+    function goTo(i) {
+      if (introOn) endIntro();
+      if (i === idx) return;
+      if (turn) { idx = turn.to; turn = null; }
+      const fwd = (i - idx + M) % M, back = (idx - i + M) % M;
+      if (Math.min(fwd, back) === 1) {
+        step(fwd === 1 ? 'next' : 'prev');
+        return;
+      }
+      PageAudio.play(fwd < back ? 'next' : 'prev');
+      idx = i;
+      paint();
+    }
+
+    document.getElementById('sbLeft').onclick = () => step('prev');
+    document.getElementById('sbRight').onclick = () => step('next');
+
+    addEventListener('keydown', e => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const t = e.target;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+      e.preventDefault();
+      hideHint();
+      step(e.key === 'ArrowRight' ? 'next' : 'prev');
+    });
+
+    document.getElementById('heroDown').onclick = () => {
+      document.getElementById('about').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    /* --------------------------------------------------- loupe + controls */
+    const loupe = document.getElementById('loupe');
+    const lens = document.getElementById('loupeLens');
+    const mag = document.getElementById('loupeMag');
+    const zRead = document.getElementById('zRead');
+    const loupeBtn = document.getElementById('loupeBtn');
+    const zInBtn = document.getElementById('zIn'), zOutBtn = document.getElementById('zOut');
+    const MAG = 2.3;
+    let loupeOn = true, lx = null, ly = null, lgrab = null, lTarget = null;
+
+    function loupeSize() {
+      return Math.round(Math.max(165, Math.min(262, book.clientWidth * 0.235)));
+    }
+
+    function bookBox() {
+      return { x: 0, y: 0, w: book.clientWidth, h: book.clientHeight };
+    }
+
+    function restLoupe() {
+      const b = bookBox();
+      lx = b.x + b.w * 0.88;
+      ly = b.y + b.h * 0.855;
+      placeLoupe();
+    }
+
+    const zoomWrap = document.getElementById('zoomWrap');
+    const zoomInner = document.getElementById('zoomInner');
+
+    function syncZoomLayer() {
+      zoomInner.textContent = '';
+      for (const c of book.children) {
+        if (c.classList.contains('sb-zone')) continue;
+        zoomInner.appendChild(c.cloneNode(true));
+      }
+    }
+
+    function placeLoupe() {
+      if (lx === null) return;
+      const B = bookBox(), bw = B.w, bh = B.h;
+      if (!bw) return;
+      const R = loupeSize() / 2, bez = R * 2 * 0.058;
+      loupe.style.setProperty('--lr', R * 2 + 'px');
+      loupe.style.transform = 'translate3d(' + (lx - R).toFixed(1) + 'px,' + (ly - R).toFixed(1) + 'px,0)';
+      if (loupeOn) loupe.classList.add('on');
+
+      const z = view.z, cx = bw / 2, cy = bh / 2;
+      const x0 = cx + (bw * .051 - cx) * z, x1 = cx + (bw * .949 - cx) * z;
+      const y0 = cy + (bh * .218 - cy) * z, y1 = cy + (bh * .782 - cy) * z;
+
+      const nx = Math.max(x0, Math.min(lx, x1));
+      const ny = Math.max(y0, Math.min(ly, y1));
+      const inside = (lx > x0 && lx < x1 && ly > y0 && ly < y1)
+        ? Math.min(lx - x0, x1 - lx, ly - y0, y1 - ly)
+        : -Math.hypot(lx - nx, ly - ny);
+      const k = Math.max(0, Math.min(1, (inside + R * 0.30) / (R * 0.55)));
+
+      zoomWrap.style.opacity = (loupeOn ? k : 0).toFixed(3);
+      if (k <= 0.002) return;
+      const r = (R - bez).toFixed(1);
+      const mask = 'radial-gradient(circle ' + r + 'px at ' + lx.toFixed(1) + 'px ' + ly.toFixed(1) + 'px,#000 calc(100% - 1px),transparent 100%)';
+      zoomWrap.style.webkitMaskImage = mask;
+      zoomWrap.style.maskImage = mask;
+
+      const px = cx + (lx - cx) / z, py = cy + (ly - cy) / z, s = MAG * z;
+      zoomInner.style.transform = 'translate(' + (lx - px * s).toFixed(1) + 'px,' + (ly - py * s).toFixed(1) + 'px) scale(' + s.toFixed(4) + ')';
+    }
+
+    function shoveLoupe(dir) {
+      if (!loupeOn || lx === null || lgrab) return;
+      const b = bookBox();
+      const nx = (b.w / 2 + (lx - b.x - b.w / 2) / view.z) / b.w;
+      const ny = (b.h / 2 + (ly - b.y - b.h / 2) / view.z) / b.h;
+      if (nx < 0.02 || nx > 0.98 || ny < 0.17 || ny > 0.83) return;
+      lTarget = { x: b.x + b.w * (dir === 'next' ? 0.12 : 0.88), y: b.y + b.h * 0.855 };
+      kick();
+    }
+
+    function loupeEase() {
+      if (!lTarget) return false;
+      if (lgrab) { lTarget = null; return false; }
+      const dx = lTarget.x - lx, dy = lTarget.y - ly;
+      if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
+        lx = lTarget.x;
+        ly = lTarget.y;
+        lTarget = null;
+        placeLoupe();
+        return false;
+      }
+      lx += dx * 0.17;
+      ly += dy * 0.17;
+      placeLoupe();
+      return true;
+    }
+
+    loupe.addEventListener('pointerdown', e => {
+      if (!loupeOn || e.button !== 0) return;
+      e.preventDefault();
+      e.stopPropagation();
+      lTarget = null;
+      lgrab = { cx: e.clientX, cy: e.clientY, lx0: lx, ly0: ly };
+      loupe.classList.add('held');
+      loupe.setPointerCapture(e.pointerId);
+      hideHint();
+    });
+
+    loupe.addEventListener('pointermove', e => {
+      if (!lgrab) return;
+      const b = bookBox(), R = loupeSize() / 2;
+      lx = Math.max(b.x - R * 0.7, Math.min(b.x + b.w + R * 0.7, lgrab.lx0 + (e.clientX - lgrab.cx)));
+      ly = Math.max(b.y - R * 0.7, Math.min(b.y + b.h + R * 1.0, lgrab.ly0 + (e.clientY - lgrab.cy)));
+      placeLoupe();
+    });
+
+    function dropLoupe() {
+      lgrab = null;
+      loupe.classList.remove('held');
+    }
+    loupe.addEventListener('pointerup', dropLoupe);
+    loupe.addEventListener('pointercancel', dropLoupe);
+
+    loupeBtn.onclick = () => {
+      loupeOn = !loupeOn;
+      loupeBtn.setAttribute('aria-pressed', String(loupeOn));
+      loupe.classList.toggle('on', loupeOn);
+      if (loupeOn && lx === null) restLoupe();
+    };
+
+    const soundBtn = document.getElementById('soundBtn');
+    if (soundBtn) {
+      soundBtn.onclick = () => {
+        const on = PageAudio.toggle();
+        soundBtn.setAttribute('aria-pressed', String(on));
+        soundBtn.title = on ? 'Sakelar Efek Suara Halaman (Aktif)' : 'Sakelar Efek Suara Halaman (Nonaktif)';
+        const iconOn = soundBtn.querySelector('.icon-sound-on');
+        const iconOff = soundBtn.querySelector('.icon-sound-off');
+        if (iconOn && iconOff) {
+          iconOn.style.display = on ? 'block' : 'none';
+          iconOff.style.display = on ? 'none' : 'block';
+        }
+      };
+    }
+
+    addEventListener('resize', () => {
+      lx = null;
+      restLoupe();
+    });
+
+    function syncZoom() {
+      zRead.textContent = Math.round(view.tz * 100) + '%';
+      zOutBtn.disabled = view.tz <= ZOOM_MIN + 0.001;
+      zInBtn.disabled = view.tz >= ZOOM_MAX - 0.001;
+    }
+    zInBtn.onclick = () => { setView(view.trx, view.try_, view.tz * 1.16); hideHint(); };
+    zOutBtn.onclick = () => { setView(view.trx, view.try_, view.tz / 1.16); hideHint(); };
+
+    /* --------------------------------------------------------- the index */
+    const plateList = document.getElementById('plateList');
+    PAGES.forEach((p, i) => {
+      const li = el('li');
+      const b = el('button', 'plate');
+      b.innerHTML = '<span class="n">' + String(i + 1).padStart(2, '0') + '</span>' +
+                    '<span class="t"></span><span class="p"></span>';
+      b.querySelector('.t').textContent = p.title;
+      b.querySelector('.p').textContent = p.place;
+      b.onclick = () => {
+        goTo(i);
+        document.getElementById('sketchbook').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
+      li.appendChild(b);
+      plateList.appendChild(li);
+    });
+
+    function marks() {
+      const cur = turn ? turn.to : idx;
+      plateList.querySelectorAll('.plate').forEach((b, i) => {
+        b.setAttribute('aria-current', i === cur ? 'true' : 'false');
+      });
+    }
+
+    /* ---------------------------------------------------------- the riffle */
+    let riffle = null, riffleAt = 0, introOn = false;
+    function endIntro() {
+      introOn = false;
+      wrap.classList.remove('intro', 'b2');
+    }
+
+    function riffleStep() {
+      const s = riffle[riffleAt];
+      wrap.classList.toggle('b2', s.bell > 0.55);
+      startTurn('next', 0);
+      tweenTo(1, s.dur, () => {
+        idx = turn.to;
+        turn = null;
+        riffleAt++;
+        if (introOn && riffleAt < riffle.length) {
+          paint();
+          riffleStep();
+        } else {
+          endIntro();
+          paint();
+        }
+      });
+    }
+
+    function startIntro() {
+      const coarse = matchMedia('(max-width: 640px), (pointer: coarse)').matches;
+      if (coarse || REDUCED || Q.has('nointro')) {
+        idx = LAND;
+        paint();
+        return;
+      }
+      const steps = M + LAND;
+      riffle = [];
+      for (let r = 0; r < steps; r++) {
+        const bell = Math.sin(Math.PI * (r / (steps - 1)));
+        riffle.push({ bell: bell, dur: 0.26 - 0.19 * bell });
+      }
+      riffleAt = 0;
+      introOn = true;
+      wrap.classList.add('intro');
+      riffleStep();
+    }
+
+    /* Mobile Menu Toggle Handler */
+    const mobileToggle = document.getElementById('mobileMenuToggle');
+    const mobileDropdown = document.getElementById('mobileDropdown');
+    if (mobileToggle && mobileDropdown) {
+      mobileToggle.addEventListener('click', () => {
+        const isExp = mobileToggle.getAttribute('aria-expanded') === 'true';
+        mobileToggle.setAttribute('aria-expanded', String(!isExp));
+        mobileDropdown.classList.toggle('open', !isExp);
+      });
+      mobileDropdown.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', () => {
+          mobileToggle.setAttribute('aria-expanded', 'false');
+          mobileDropdown.classList.remove('open');
+        });
+      });
+    }
+
+    /* ------------------------------------------------------------- boot */
+    (async function boot() {
+      idx = Q.has('shot') ? (parseInt(Q.get('shot'), 10) || 0) % M : 0;
+      paint();
+      applyView();
+
+      await Promise.all(PAGES.map(p => {
+        const im = new Image();
+        im.src = p.url;
+        return im.decode ? im.decode().catch(() => {}) : new Promise(r => { im.onload = im.onerror = r; });
+      }));
+
+      if (document.fonts && document.fonts.ready) await document.fonts.ready.catch(() => {});
+      syncZoom();
+      restLoupe();
+      document.body.dataset.ready = '1';
+
+      if (Q.has('shot')) {
+        if (Q.has('t')) { startTurn(Q.get('dir') || 'next', parseFloat(Q.get('t'))); }
+        return;
+      }
+      setTimeout(startIntro, 220);
+    })();
+  </script>
+</body>
+</html>

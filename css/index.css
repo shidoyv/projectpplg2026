@@ -1,0 +1,25 @@
+.no-select {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .bg-canvas {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      transition: opacity 0.85s cubic-bezier(0.25, 1, 0.5, 1), transform 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+      will-change: opacity, transform;
+    }
+
+    @media (min-width: 1024px) {
+      .arc-pos-0 { transform: translateX(35px); }
+      .arc-pos-1 { transform: translateX(10px); }
+      .arc-pos-2 { transform: translateX(0px); }
+      .arc-pos-3 { transform: translateX(18px); }
+      .arc-pos-4 { transform: translateX(42px); }
+    }
+
+    .text-slide-trans {
+      transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }

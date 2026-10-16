@@ -1,68 +1,53 @@
 <!doctype html>
 <html lang="id">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Buku Sketsa Destinasi - Lelana Jateng</title>
-  <meta name="description" content="Jurnal sketsa dan eksplorasi destinasi wisata budaya Jawa Tengah: Candi Borobudur, Dataran Tinggi Dieng, Kota Lama Semarang, Karimunjawa, Candi Prambanan, Lawang Sewu, Museum Ranggawarsita, Keraton Surakarta, dan Kawasan Batik Pekalongan.">
+  <meta name="description"
+    content="Jurnal sketsa dan eksplorasi destinasi wisata budaya Jawa Tengah: Candi Borobudur, Dataran Tinggi Dieng, Kota Lama Semarang, Karimunjawa, Candi Prambanan, Lawang Sewu, Museum Ranggawarsita, Keraton Surakarta, dan Kawasan Batik Pekalongan.">
 
   <link rel="icon" type="image/png" href="assets/image-removebg-preview.png">
+
+  <!-- Immediate seamless navigation to unified page where Beranda is directly accessible on scroll up -->
+  <script>
+    if (window.location.pathname.endsWith('destinasi.html') || window.location.href.includes('destinasi.html')) {
+      window.location.replace('index.html#destinasi');
+    }
+  </script>
 
   <!-- Google Fonts: Instrument Serif, Newsreader, Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,200..700;1,6..72,200..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,200..700;1,6..72,200..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
 
   <link rel="stylesheet" href="css/destinasi.css">
 </head>
 
-<body>
+<body class="destinasi-standalone">
   <div class="wash" aria-hidden="true"></div>
 
+  <!-- Top Navigation Header -->
+  <header class="top">
+    <a href="index.html#beranda" class="top-brand" title="Lelana Jateng">
+      <img src="assets/image-removebg-preview.png" alt="Lelana Jateng Logo" class="top-logo">
+      <span class="name">Lelana Jateng</span>
+    </a>
+    <nav aria-label="Navigasi Utama">
+      <a href="index.html#beranda">Beranda</a>
+      <a href="index.html#destinasi" aria-current="page">Destinasi</a>
+      <a href="studio-canting.html">Studio Canting</a>
+      <a href="arvr.html">AR/VR</a>
+      <div class="top-actions">
+        <a href="studio-canting.html" class="btn-nav-login" style="font-size:12px; padding:4px 14px;">Membatik</a>
+      </div>
+    </nav>
+  </header>
+
   <main class="page home">
-
-    <!-- Top Navigation Header -->
-    <header class="top">
-      <div class="top-brand">
-        <a href="index.html" class="flex items-center gap-2 group">
-          <img src="assets/image-removebg-preview.png" alt="Logo Lelana Jateng" class="top-logo">
-        </a>
-        <a class="name" href="index.html">Lelana Jateng</a>
-      </div>
-
-      <nav aria-label="Navigasi Utama">
-        <a href="index.html">Beranda</a>
-        <a href="destinasi.html" aria-current="page">Destinasi</a>
-        <a href="#sketchbook">Buku Sketsa</a>
-        <a href="#about">Catatan</a>
-        <a href="#plates">Indeks</a>
-
-        <div class="top-actions">
-          <a href="#login" class="btn-nav-login" style="color: #ffffff !important;">
-            <span style="color: #ffffff !important; font-weight: 600;">Login</span>
-          </a>
-        </div>
-      </nav>
-
-      <!-- Mobile Menu Toggle -->
-      <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Buka menu navigasi" aria-expanded="false">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <line x1="4" y1="7" x2="20" y2="7"></line>
-          <line x1="4" y1="12" x2="20" y2="12"></line>
-          <line x1="4" y1="17" x2="20" y2="17"></line>
-        </svg>
-      </button>
-
-      <!-- Mobile Dropdown -->
-      <div class="mobile-dropdown" id="mobileDropdown">
-        <a href="index.html">Beranda</a>
-        <a href="destinasi.html" style="font-weight: 600; color: var(--earth);">Destinasi</a>
-        <a href="#sketchbook">Buku Sketsa</a>
-        <a href="#about">Catatan Perjalanan</a>
-        <a href="#plates">Daftar Destinasi</a>
-        <a href="#login" style="display: flex; align-items: center; justify-content: center; margin-top: 6px; padding: 8px 16px; font-weight: 600; color: #ffffff !important; background: var(--forest); border-radius: 999px; text-decoration: none;">Login</a>
-      </div>
-    </header>
 
     <!-- Hero Section / 3D Sketchbook -->
     <section id="sketchbook" class="hero" aria-label="Buku Sketsa Interaktif Lelana Jateng">
@@ -74,15 +59,20 @@
       <div class="sb-wrap" id="sbWrap">
         <!-- Motion blur SVG filters -->
         <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-          <filter id="sb-mblur-1"><feGaussianBlur stdDeviation="5 0"/></filter>
-          <filter id="sb-mblur-2"><feGaussianBlur stdDeviation="14 0"/></filter>
+          <filter id="sb-mblur-1">
+            <feGaussianBlur stdDeviation="5 0" />
+          </filter>
+          <filter id="sb-mblur-2">
+            <feGaussianBlur stdDeviation="14 0" />
+          </filter>
         </svg>
 
         <div class="sb-stage" id="sbStage">
           <!-- Previous page button -->
           <button class="sb-arrow left" id="sbLeft" aria-label="Halaman Sebelumnya" title="Halaman Sebelumnya">
             <svg viewBox="0 0 14 44" width="14" height="44" fill="none" aria-hidden="true">
-              <polyline points="11,3 3,22 11,41" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="11,3 3,22 11,41" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
           </button>
 
@@ -124,8 +114,10 @@
                     </linearGradient>
                   </defs>
                   <!-- Leather Base Tab -->
-                  <rect x="2" y="195" width="38" height="56" rx="6" fill="url(#leather-grad)" stroke="#382212" stroke-width="1.2" />
-                  <line x1="7" y1="200" x2="7" y2="246" stroke="#d5ab79" stroke-width="1.2" stroke-dasharray="3,3" opacity="0.75" />
+                  <rect x="2" y="195" width="38" height="56" rx="6" fill="url(#leather-grad)" stroke="#382212"
+                    stroke-width="1.2" />
+                  <line x1="7" y1="200" x2="7" y2="246" stroke="#d5ab79" stroke-width="1.2" stroke-dasharray="3,3"
+                    opacity="0.75" />
 
                   <!-- Pen Top Finial (Gold) -->
                   <rect x="23" y="18" width="16" height="7" rx="3" fill="url(#gold-grad)" />
@@ -139,7 +131,8 @@
                   <line x1="20" y1="162" x2="42" y2="162" stroke="#684714" stroke-width="0.8" />
 
                   <!-- Pen Barrel -->
-                  <path d="M 22 167 L 40 167 L 39 395 C 39 408, 37 420, 31 432 C 25 420, 23 408, 23 395 Z" fill="url(#barrel-grad)" />
+                  <path d="M 22 167 L 40 167 L 39 395 C 39 408, 37 420, 31 432 C 25 420, 23 408, 23 395 Z"
+                    fill="url(#barrel-grad)" />
                   <line x1="28" y1="172" x2="28" y2="415" stroke="#ffffff" stroke-width="0.9" opacity="0.32" />
 
                   <!-- Barrel End Band (Gold) -->
@@ -147,13 +140,17 @@
                   <path d="M 25.5 422 L 36.5 422 L 34 445 C 33 448, 29 448, 28 445 Z" fill="url(#gold-grad)" />
 
                   <!-- Pocket Clip (Gold) -->
-                  <path d="M 28 32 L 34 32 L 33 130 C 33 136, 30 138, 30 144 C 30 138, 27 136, 27 130 Z" fill="url(#clip-grad)" />
+                  <path d="M 28 32 L 34 32 L 33 130 C 33 136, 30 138, 30 144 C 30 138, 27 136, 27 130 Z"
+                    fill="url(#clip-grad)" />
                   <circle cx="30" cy="143" r="3.2" fill="url(#gold-grad)" />
 
                   <!-- Leather Loop Front Strap (Wrapping over pen) -->
-                  <rect x="16" y="202" width="30" height="42" rx="5" fill="url(#leather-grad)" stroke="#382212" stroke-width="1.2" />
-                  <line x1="19" y1="206" x2="19" y2="240" stroke="#d5ab79" stroke-width="1" stroke-dasharray="2.5,2.5" opacity="0.75" />
-                  <line x1="43" y1="206" x2="43" y2="240" stroke="#d5ab79" stroke-width="1" stroke-dasharray="2.5,2.5" opacity="0.75" />
+                  <rect x="16" y="202" width="30" height="42" rx="5" fill="url(#leather-grad)" stroke="#382212"
+                    stroke-width="1.2" />
+                  <line x1="19" y1="206" x2="19" y2="240" stroke="#d5ab79" stroke-width="1" stroke-dasharray="2.5,2.5"
+                    opacity="0.75" />
+                  <line x1="43" y1="206" x2="43" y2="240" stroke="#d5ab79" stroke-width="1" stroke-dasharray="2.5,2.5"
+                    opacity="0.75" />
                 </svg>
               </div>
             </div>
@@ -177,7 +174,8 @@
           <!-- Next page button -->
           <button class="sb-arrow right" id="sbRight" aria-label="Halaman Selanjutnya" title="Halaman Selanjutnya">
             <svg viewBox="0 0 14 44" width="14" height="44" fill="none" aria-hidden="true">
-              <polyline points="3,3 11,22 3,41" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="3,3 11,22 3,41" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
           </button>
         </div>
@@ -189,8 +187,8 @@
         <div class="sb-tools" role="group" aria-label="Kontrol Tampilan">
           <button class="tool" id="zOut" aria-label="Perkecil Zoom" title="Perkecil">
             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
-              <circle cx="8.6" cy="8.6" r="5.6"/>
-              <path d="M12.8 12.8 17.4 17.4M6.2 8.6h4.8"/>
+              <circle cx="8.6" cy="8.6" r="5.6" />
+              <path d="M12.8 12.8 17.4 17.4M6.2 8.6h4.8" />
             </svg>
           </button>
 
@@ -198,33 +196,37 @@
 
           <button class="tool" id="zIn" aria-label="Perbesar Zoom" title="Perbesar">
             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
-              <circle cx="8.6" cy="8.6" r="5.6"/>
-              <path d="M12.8 12.8 17.4 17.4M6.2 8.6h4.8M8.6 6.2v4.8"/>
+              <circle cx="8.6" cy="8.6" r="5.6" />
+              <path d="M12.8 12.8 17.4 17.4M6.2 8.6h4.8M8.6 6.2v4.8" />
             </svg>
           </button>
 
           <span class="tool-sep" aria-hidden="true"></span>
 
-          <button class="tool" id="loupeBtn" aria-label="Kaca Pembesar" aria-pressed="true" title="Sakelar Kaca Pembesar">
+          <button class="tool" id="loupeBtn" aria-label="Kaca Pembesar" aria-pressed="true"
+            title="Sakelar Kaca Pembesar">
             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
-              <circle cx="8.8" cy="8.8" r="5.8"/>
-              <path d="M13 13l4.4 4.4"/>
-              <path d="M6.4 7.2a3.2 3.2 0 0 1 2.4-1.4" opacity=".55"/>
+              <circle cx="8.8" cy="8.8" r="5.8" />
+              <path d="M13 13l4.4 4.4" />
+              <path d="M6.4 7.2a3.2 3.2 0 0 1 2.4-1.4" opacity=".55" />
             </svg>
           </button>
 
           <span class="tool-sep" aria-hidden="true"></span>
 
-          <button class="tool" id="soundBtn" aria-label="Efek Suara Halaman" aria-pressed="true" title="Sakelar Efek Suara Halaman (Aktif)">
-            <svg class="icon-sound-on" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="8 5 4 8 2 8 2 12 4 12 8 15 8 5" fill="currentColor" fill-opacity="0.2"/>
-              <path d="M12 7.5a3.8 3.8 0 0 1 0 5"/>
-              <path d="M14.5 5a7 7 0 0 1 0 10"/>
+          <button class="tool" id="soundBtn" aria-label="Efek Suara Halaman" aria-pressed="true"
+            title="Sakelar Efek Suara Halaman (Aktif)">
+            <svg class="icon-sound-on" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="8 5 4 8 2 8 2 12 4 12 8 15 8 5" fill="currentColor" fill-opacity="0.2" />
+              <path d="M12 7.5a3.8 3.8 0 0 1 0 5" />
+              <path d="M14.5 5a7 7 0 0 1 0 10" />
             </svg>
-            <svg class="icon-sound-off" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
-              <polygon points="8 5 4 8 2 8 2 12 4 12 8 15 8 5" fill="currentColor" fill-opacity="0.2"/>
-              <line x1="12" y1="7.5" x2="16.5" y2="12.5"/>
-              <line x1="16.5" y1="7.5" x2="12" y2="12.5"/>
+            <svg class="icon-sound-off" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+              <polygon points="8 5 4 8 2 8 2 12 4 12 8 15 8 5" fill="currentColor" fill-opacity="0.2" />
+              <line x1="12" y1="7.5" x2="16.5" y2="12.5" />
+              <line x1="16.5" y1="7.5" x2="12" y2="12.5" />
             </svg>
           </button>
         </div>
@@ -234,25 +236,64 @@
       </div>
 
       <!-- Scroll to next section button -->
-      <button class="hero-down" id="heroDown" aria-label="Gulir ke Catatan Perjalanan" title="Gulir ke Catatan Perjalanan">
+      <button class="hero-down" id="heroDown" aria-label="Gulir ke Catatan Perjalanan"
+        title="Gulir ke Catatan Perjalanan">
         <svg viewBox="0 0 44 22" width="34" height="17" fill="none" aria-hidden="true">
-          <polyline points="3,3 22,11 41,3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
-          <polyline points="3,11 22,19 41,11" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="3,3 22,11 41,3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"
+            stroke-linejoin="round" />
+          <polyline points="3,11 22,19 41,11" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"
+            stroke-linejoin="round" />
         </svg>
       </button>
     </section>
 
     <div class="rule" aria-hidden="true"></div>
 
-    <!-- Editorial Notes Section -->
+    <!-- Editorial Notes Section: Dinamis Berdasarkan Halaman Buku Sketsa -->
     <section id="about" class="about" aria-labelledby="about-heading">
-      <div>
-        <p class="section-label" id="about-heading">Catatan Perjalanan</p>
-        <p class="bio">
-          Lelana Jateng adalah jurnal penjelajahan visual yang merangkum keanggunan warisan budaya dan bentang alam Jawa Tengah. Dari kemegahan stupa batu Candi Borobudur di fajar lembah Menoreh, sejuknya kabut Dataran Tinggi Dieng, deretan koridor megah Lawang Sewu, hingga helai kain canting pesisir Pekalongan. Buku sketsa ini merekam setiap sudut dengan lambat melalui goresan tinta, cat air lembut, dan catatan lapangan, mengajak Anda merasakan kembali denyut sejarah dan ketenangan tanah Jawa.
+      <div class="about-content">
+        <div class="about-header">
+          <p class="section-label" id="about-heading">Catatan Perjalanan · Pelat 01</p>
+          <h2 class="about-title" id="aboutTitle">Candi Borobudur</h2>
+          <p class="about-subtitle" id="aboutSubtitle">Magelang, Jawa Tengah · Warisan Dunia UNESCO Dinasti Syailendra
+          </p>
+        </div>
+        <p class="bio" id="aboutBio">
+          Didirikan pada abad ke-8 hingga ke-9 Masehi oleh Dinasti Syailendra, Candi Borobudur merupakan monumen Buddha
+          terbesar di dunia yang memadukan arsitektur stupa dengan konsep mandala alam semesta. Terdiri dari sembilan
+          teras berundak (enam bujur sangkar dan tiga lingkaran) yang melambangkan tingkatan spiritual Kamadhatu,
+          Rupadhatu, dan Arupadhatu. Dindingnya dihiasi 2.672 panel relief naratif yang menceritakan Lalitavistara,
+          Jataka, dan Gandavyuha, dipahat dari batu andesit vulkanik lembah Progo. Kehadirannya diapit Gunung Merapi,
+          Merbabu, Sumbing, dan perbukitan Menoreh menjadikannya pusat peradaban spiritual Jawa Kuno yang telah diakui
+          sebagai Warisan Dunia UNESCO.
         </p>
+        <div class="about-meta" id="aboutMeta">
+          <span class="about-tag">Warisan Dunia UNESCO</span>
+          <span class="about-tag">Abad ke-8 Masehi</span>
+          <span class="about-tag">Relief Andesit</span>
+          <span class="about-tag">Buddha Mahayana</span>
+        </div>
       </div>
-      <img class="bloom" src="assets/sketchbook/bloom.png" alt="" aria-hidden="true">
+
+      <!-- Kolom Kanan: Tokoh Historis Terkait (Buku Sketsa Editorial) -->
+      <div class="tokoh-card" id="tokohCard">
+        <div class="tokoh-header">
+          <p class="section-label">Figur & Sejarah Terkait</p>
+          <h3 id="tokohName" class="tokoh-name">Mpu Gunadharma</h3>
+          <p id="tokohRole" class="tokoh-role">Arsitek Agung Dinasti Syailendra (Abad ke-8 Masehi)</p>
+        </div>
+        <div class="tokoh-story">
+          <figure class="tokoh-frame">
+            <img id="tokohImg" src="assets/tokoh/gunadharma.png" alt="Mpu Gunadharma" class="tokoh-img"
+              loading="eager" />
+          </figure>
+          <p id="tokohBio" class="tokoh-bio">
+            Tokoh arsitek legendaris Dinasti Syailendra yang merancang keagungan Candi Borobudur dengan perhitungan
+            mandala kosmos Buddhis yang presisi. Menurut tradisi tutur masyarakat Magelang, siluet jajaran Pegunungan
+            Menoreh di kejauhan menyerupai sosok Gunadharma yang tengah beristirahat memandangi mahakaryanya.
+          </p>
+        </div>
+      </div>
     </section>
 
     <div class="rule short" aria-hidden="true"></div>
@@ -275,4 +316,5 @@
   <!-- MengToSketchbook Engine Script -->
   <script src="js/destinasi.js"></script>
 </body>
+
 </html>

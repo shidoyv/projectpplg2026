@@ -1,0 +1,522 @@
+/* =====================================================================
+   Lelana Jateng: Studio Canting & Photo Booth Baju Batik
+   Palette: Mori Ivory (#FAF7F2), Sogan Dark Brown (#3A2415), Indigo (#2A4365),
+            Terracotta (#B85D43), Antique Bronze (#8C6D46), Charcoal (#1A130E)
+   NO YELLOW / TACKY AMBER
+   ===================================================================== */
+
+:root {
+  --sc-mori: #FAF7F2;
+  --sc-mori-dark: #EFE8DC;
+  --sc-sogan: #4E311D;
+  --sc-sogan-dark: #2F1C10;
+  --sc-indigo: #233A59;
+  --sc-terracotta: #A64B34;
+  --sc-bronze: #8C6D46;
+  --sc-charcoal: #16110D;
+  --sc-ink: #231B15;
+}
+
+body.studio-canting-page {
+  background-color: #0E0906;
+  color: #f7f2ea;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  overflow-x: hidden;
+}
+
+/* SECTION 1: HERO WAYANG KULIT HERITAGE STAGE */
+.sc-hero-wayang {
+  position: relative;
+  background-image:
+    linear-gradient(180deg, rgba(14, 9, 6, 0.65) 0%, rgba(18, 11, 7, 0.8) 60%, #0E0906 100%),
+    url('../assets/wayang-kulit-hero.jpg');
+  background-size: cover;
+  background-position: center top;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.sc-hero-wayang::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at center, transparent 35%, rgba(10, 6, 4, 0.65) 100%);
+  z-index: 1;
+}
+
+/* SECTION 2: DISTINCT ATELIER WORKSPACE (NON-MERGING BACKGROUND) */
+.sc-workspace-stage {
+  position: relative;
+  background: linear-gradient(180deg, #170F0A 0%, #130D08 50%, #0F0906 100%);
+  border-radius: 20px;
+  border: none;
+  box-shadow: none;
+  padding: 24px 18px;
+}
+
+@media (min-width: 640px) {
+  .sc-workspace-stage {
+    padding: 32px 28px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sc-workspace-stage {
+    padding: 36px 36px;
+  }
+}
+
+/* SECTION 3: VIRTUAL EXHIBITION STAGE */
+.sc-exhibition-stage {
+  position: relative;
+  background: linear-gradient(180deg, #160E09 0%, #110B07 100%);
+  border-radius: 20px;
+  border: none;
+  box-shadow: none;
+  padding: 24px 18px;
+}
+
+@media (min-width: 640px) {
+  .sc-exhibition-stage {
+    padding: 32px 28px;
+  }
+}
+
+/* Studio Stage Frame */
+.sc-fabric-frame {
+  position: relative;
+  background: #24180f;
+  border-radius: 20px;
+  box-shadow:
+    0 25px 60px -12px rgba(0, 0, 0, 0.85),
+    0 10px 25px rgba(0, 0, 0, 0.6),
+    inset 0 1px 1px rgba(255, 255, 255, 0.12),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(140, 109, 70, 0.35);
+  overflow: hidden;
+}
+
+/* Stand Header */
+.sc-fabric-header {
+  background: linear-gradient(180deg, #322115 0%, #20140c 100%);
+  border-bottom: 1px solid rgba(140, 109, 70, 0.3);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Canvas Viewport */
+.sc-mori-canvas-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3.4;
+  max-height: 75vh;
+  background-color: var(--sc-mori);
+  box-shadow: inset 0 0 50px rgba(60, 40, 20, 0.15);
+  user-select: none;
+  touch-action: none;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Woven Cloth Background Texture */
+.sc-mori-canvas-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.14;
+  background-image:
+    linear-gradient(45deg, rgba(50, 35, 20, 0.15) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(50, 35, 20, 0.15) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(50, 35, 20, 0.15) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(50, 35, 20, 0.15) 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+  z-index: 1;
+}
+
+/* Canvas Layers */
+.sc-paint-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+}
+
+/* Photo Booth Webcam Face Overlay */
+.sc-photobooth-face-container {
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 180px;
+  border-radius: 50% 50% 46% 46%;
+  overflow: hidden;
+  z-index: 4;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border: 3px dashed rgba(140, 109, 70, 0.7);
+  background: rgba(240, 230, 215, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+}
+
+.sc-photobooth-face-container.active-camera {
+  border-style: solid;
+  border-color: #8C6D46;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.6), 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+.sc-webcam-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  /* mirror selfie view */
+}
+
+.sc-uploaded-face-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Blangkon Accessory Overlay */
+.sc-blangkon-hat {
+  position: absolute;
+  top: 1%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160px;
+  height: auto;
+  z-index: 6;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.5));
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Custom Cursors */
+.sc-cursor-canting {
+  cursor: crosshair;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cpath d='M2 26 L12 16 L14 18 L4 28 Z' fill='%234E311D' stroke='%232F1C10' stroke-width='1'/%3E%3Cellipse cx='15' cy='13' rx='5' ry='3.5' fill='%238C6D46' transform='rotate(-35 15 13)' stroke='%232F1C10' stroke-width='1'/%3E%3Cpath d='M19 10 Q24 6 26 2' fill='none' stroke='%238C6D46' stroke-width='2.2' stroke-linecap='round'/%3E%3Ccircle cx='26' cy='2' r='2' fill='%23A64B34'/%3E%3C/svg%3E") 26 2, crosshair !important;
+}
+
+.sc-cursor-cap {
+  cursor: cell;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Crect x='4' y='4' width='20' height='20' rx='4' fill='%238C6D46' opacity='0.8' stroke='%234E311D' stroke-width='1.5' stroke-dasharray='2,2'/%3E%3Ccircle cx='14' cy='14' r='4' fill='%234E311D'/%3E%3Cline x1='14' y1='2' x2='14' y2='26' stroke='%232F1C10' stroke-width='1.5'/%3E%3Cline x1='2' y1='14' x2='26' y2='14' stroke='%232F1C10' stroke-width='1.5'/%3E%3C/svg%3E") 14 14, cell !important;
+}
+
+/* Color Swatches (No yellow active glow) */
+.sc-swatch-btn {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 9999px;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sc-swatch-btn:hover {
+  transform: scale(1.15);
+  border-color: #fff;
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.6);
+}
+
+.sc-swatch-btn.active {
+  transform: scale(1.18);
+  border-color: #fff;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.8), 0 6px 16px rgba(0, 0, 0, 0.7);
+}
+
+.sc-swatch-btn.active::after {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 9999px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* Mode Switcher Tabs */
+#scTabModeDoodle,
+#scTabModePhoto {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  color: rgba(229, 216, 190, 0.75);
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+#scTabModeDoodle:hover,
+#scTabModePhoto:hover {
+  color: #fff;
+  background: rgba(47, 28, 16, 0.5);
+  border-color: rgba(140, 109, 70, 0.3);
+}
+
+#scTabModeDoodle.active,
+#scTabModePhoto.active {
+  color: #fff !important;
+  background: linear-gradient(135deg, #4E311D 0%, #342013 100%) !important;
+  border-color: rgba(140, 109, 70, 0.85) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Tool & Motif Cards (Artisan Workbench Styling) */
+.sc-tool-card {
+  background: rgba(38, 26, 17, 0.75);
+  border: 1px solid rgba(140, 109, 70, 0.3);
+  border-radius: 12px;
+  padding: 10px 12px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+}
+
+.sc-tool-card:hover {
+  background: rgba(54, 37, 24, 0.9);
+  border-color: rgba(220, 200, 170, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+
+.sc-tool-card.active {
+  background: linear-gradient(135deg, rgba(78, 49, 29, 0.95) 0%, rgba(47, 28, 16, 0.95) 100%) !important;
+  border-color: #dfcfb6 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Stamp Button */
+.sc-stamp-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(40, 26, 17, 0.85);
+  border: 1px solid rgba(140, 109, 70, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #dfcfb6;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sc-stamp-btn:hover {
+  background: rgba(70, 45, 28, 0.95);
+  border-color: #dfcfb6;
+  color: #fff;
+  transform: scale(1.08);
+}
+
+.sc-stamp-btn.active {
+  background: #4e311d !important;
+  color: #fff !important;
+  border-color: #fff !important;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Destination Background Cards */
+.sc-bg-card {
+  background: rgba(38, 26, 17, 0.75);
+  border: 1px solid rgba(140, 109, 70, 0.3);
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.sc-bg-card:hover {
+  background: rgba(54, 37, 24, 0.9);
+  border-color: rgba(220, 200, 170, 0.6);
+  transform: translateY(-2px);
+}
+
+.sc-bg-card.active {
+  background: linear-gradient(135deg, rgba(78, 49, 29, 0.95) 0%, rgba(47, 28, 16, 0.95) 100%);
+  border-color: #dfcfb6;
+  box-shadow: 0 0 12px rgba(223, 207, 182, 0.35);
+}
+
+/* Custom Thin Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(140, 109, 70, 0.5);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #8c6d46;
+}
+
+/* Camera Flash Animation */
+.sc-camera-flash {
+  position: absolute;
+  inset: 0;
+  background-color: #fff;
+  z-index: 80;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sc-camera-flash.flash-now {
+  animation: sc-flash-anim 0.45s ease-out;
+}
+
+@keyframes sc-flash-anim {
+  0% {
+    opacity: 0.95;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Photo Booth Countdown Overlay */
+.sc-countdown-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.sc-countdown-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sc-countdown-num {
+  font-size: 5rem;
+  font-weight: 900;
+  color: #fff;
+  font-family: 'Instrument Serif', Georgia, serif;
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.8);
+  animation: sc-scale-pop 1s ease-in-out infinite;
+}
+
+@keyframes sc-scale-pop {
+  0% {
+    transform: scale(1.35);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+}
+
+/* Virtual Exhibition Cards */
+.sc-gallery-card {
+  background: rgba(26, 18, 12, 0.9);
+  border: 1px solid rgba(140, 109, 70, 0.3);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+.sc-gallery-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(220, 200, 170, 0.65);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65);
+}
+
+.sc-gallery-img {
+  width: 100%;
+  aspect-ratio: 4 / 3.4;
+  object-fit: cover;
+  background-color: var(--sc-mori);
+  transition: transform 0.4s ease;
+}
+
+.sc-gallery-card:hover .sc-gallery-img {
+  transform: scale(1.03);
+}
+
+/* Modal Backdrops */
+.sc-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(8, 6, 4, 0.9);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.sc-modal-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sc-modal-window {
+  background: #1c130c;
+  border: 1px solid rgba(140, 109, 70, 0.45);
+  border-radius: 18px;
+  max-width: 680px;
+  width: 100%;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
+  overflow: hidden;
+  transform: scale(0.95);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sc-modal-backdrop.is-open .sc-modal-window {
+  transform: scale(1);
+}
+
+/* Accessible Keyboard Focus Indicators (Antislop R-32) */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #dfcfb6 !important;
+  outline-offset: 2px !important;
+}
+
+
+section[id] {
+  scroll-margin-top: 5.5rem;
+}

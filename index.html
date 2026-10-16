@@ -1,17 +1,23 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full">
+<html lang="id" class="h-full scroll-smooth">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lelana Jateng - Eksplorasi Destinasi Wisata</title>
-  <meta name="description" content="Lelana Jateng menyajikan panduan destinasi wisata unggulan di Jawa Tengah: Candi Borobudur, Dataran Tinggi Dieng, Kepulauan Karimunjawa, Candi Prambanan, dan Grojogan Sewu.">
+  <title>Lelana Jateng - Eksplorasi Destinasi & Jurnal Wisata Jawa Tengah</title>
+  <meta name="description"
+    content="Lelana Jateng menyajikan panduan destinasi wisata unggulan dan buku sketsa budaya di Jawa Tengah: Candi Borobudur, Dataran Tinggi Dieng, Karimunjawa, Prambanan, Lawang Sewu, dan lainnya.">
 
   <link rel="icon" type="image/png" href="assets/image-removebg-preview.png">
 
+  <!-- Google Fonts: Alex Brush, Instrument Serif, Newsreader, Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,200..700;1,6..72,200..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
 
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -26,141 +32,478 @@
     }
   </script>
 
+  <!-- Destination Book & Custom Theme CSS -->
+  <link rel="stylesheet" href="css/destinasi.css">
   <link rel="stylesheet" href="css/index.css">
 </head>
 
-<body class="h-full bg-[#080c10] text-white font-sans antialiased overflow-x-hidden md:overflow-hidden relative no-select flex flex-col justify-between">
+<body
+  class="min-h-screen bg-[#080c10] text-white font-sans antialiased overflow-x-hidden relative no-select flex flex-col">
 
-  <div id="bg-container" class="fixed inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
-    <div id="bg-canvas-a" class="bg-canvas opacity-100 scale-100"></div>
-    <div id="bg-canvas-b" class="bg-canvas opacity-0 scale-105"></div>
-    
-    <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-black/25"></div>
-    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/50"></div>
-  </div>
+  <!-- Unified Top Sticky Navbar -->
+  <header id="main-navbar"
+    class="sticky top-0 z-50 w-full transition-all duration-300 backdrop-blur-md bg-black/60 border-b border-white/10">
+    <div class="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-14 py-3.5 flex items-center justify-between">
 
-  <div class="relative z-20 w-full max-w-[1440px] mx-auto h-full flex flex-col justify-between px-6 sm:px-10 lg:px-14 flex-1">
-
-    <header class="w-full py-6 flex items-center justify-between">
+      <!-- Brand Logo & Name -->
       <div class="flex items-center gap-3">
-        <a href="#" class="flex items-center gap-3 group">
-          <img 
-            src="assets/image-removebg-preview.png" 
-            alt="Lelana Jateng Logo" 
-            class="h-9 md:h-11 w-auto object-contain drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)]"
-            onerror="this.src='https://placehold.co/160x50/transparent/white?text=Lelana+Jateng'"
-          />
-          <span class="text-base sm:text-lg md:text-xl font-bold tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+        <a href="#beranda" class="flex items-center gap-3 group">
+          <img src="assets/image-removebg-preview.png" alt="Lelana Jateng Logo"
+            class="h-9 md:h-10 w-auto object-contain drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)]"
+            onerror="this.src='https://placehold.co/160x50/transparent/white?text=Lelana+Jateng'" />
+          <span
+            class="text-base sm:text-lg md:text-xl font-bold tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
             Lelana Jateng
           </span>
         </a>
       </div>
 
-      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-white/80" aria-label="Navigasi Utama">
-        <a href="index.html" class="text-white font-semibold relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-white after:rounded-full">
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-white/80" aria-label="Navigasi Utama">
+        <a href="#beranda" class="text-white hover:text-white transition-colors py-1 relative font-semibold">
           Beranda
         </a>
-        <a href="destinasi.html" class="text-white/75 hover:text-white transition-colors py-1">
+        <a href="#destinasi" class="text-white/75 hover:text-white transition-colors py-1">
           Destinasi
         </a>
-        <a href="arvr.html" class="text-white/75 hover:text-white transition-colors py-1 flex items-center gap-1.5 group">
-          <span>AR/VR</span>
-          <span class="px-1.5 py-0.5 text-[9px] font-bold text-black bg-amber-400 group-hover:bg-amber-300 rounded-full transition-colors">3D</span>
+        <a href="studio-canting.html"
+          class="text-white/85 hover:text-white transition-colors py-1 font-medium">
+          Studio Canting
         </a>
-        <span class="text-white/75 hover:text-white transition-colors py-1 cursor-default">
-          Tiket
-        </span>
-        <span class="text-white/75 hover:text-white transition-colors py-1 cursor-default">
+        <a href="arvr.html"
+          class="text-white/75 hover:text-white transition-colors py-1 flex items-center gap-1.5 group">
+          <span>AR/VR</span>
+          <span
+            class="px-1.5 py-0.5 text-[9px] font-bold text-black bg-amber-400 group-hover:bg-amber-300 rounded-full transition-colors">3D</span>
+        </a>
+        <span class="text-white/40 cursor-default py-1">
           Riwayat
         </span>
       </nav>
 
+      <!-- Right Action Items -->
       <div class="flex items-center gap-3">
-        <button 
-          id="sound-toggle-btn" 
-          type="button" 
-          aria-label="Toggle Suara Gamelan" 
+        <button id="sound-toggle-btn" type="button" aria-label="Toggle Suara Gamelan"
           title="Nyalakan / Matikan Ketukan Gamelan"
-          class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-white bg-white/10 hover:bg-white/20 border border-white/25 rounded-full backdrop-blur-md transition-all shadow-sm group"
-        >
-          <svg id="sound-icon-on" class="w-3.5 h-3.5 text-amber-300 drop-shadow-[0_0_6px_rgba(252,211,77,0.8)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-white bg-white/10 hover:bg-white/20 border border-white/25 rounded-full backdrop-blur-md transition-all shadow-sm group">
+          <svg id="sound-icon-on" class="w-3.5 h-3.5 text-amber-300 drop-shadow-[0_0_6px_rgba(252,211,77,0.8)]"
+            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
           </svg>
-          <svg id="sound-icon-off" class="w-3.5 h-3.5 text-white/50 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+          <svg id="sound-icon-off" class="w-3.5 h-3.5 text-white/50 hidden" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
           </svg>
           <span id="sound-toggle-text" class="text-white/90 group-hover:text-white">Gamelan: Aktif</span>
         </button>
 
-        <div class="px-4 py-1.5 text-xs font-medium text-white bg-white/15 border border-white/30 rounded-full backdrop-blur-md cursor-default">
+        <div
+          class="px-4 py-1.5 text-xs font-medium text-white bg-white/15 border border-white/30 rounded-full backdrop-blur-md cursor-default">
           Login
         </div>
+
+        <!-- Mobile hamburger toggle button -->
+        <button id="mobile-nav-toggle" class="md:hidden p-1.5 text-white/90 hover:text-white focus:outline-none"
+          aria-label="Buka Menu Navigasi">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+          </svg>
+        </button>
       </div>
-    </header>
 
-    <main class="w-full py-4 md:py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center flex-1">
-      
-      <section class="lg:col-span-6 xl:col-span-7 flex flex-col justify-center text-left space-y-5">
-        
-        <div class="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md w-max">
-          <span class="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-black bg-white rounded-full">
-            New
-          </span>
-          <span id="hero-tagline" class="text-xs font-medium text-white/90 tracking-wide">
-            Warisan Dunia UNESCO
-          </span>
-        </div>
+    </div>
 
-        <div class="space-y-1">
-          <h1 id="hero-cursive-title" class="font-script text-5xl sm:text-6xl md:text-7xl text-white font-normal leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)] text-slide-trans">
-            Candi Borobudur
-          </h1>
-          <div id="hero-dest-name" class="text-xl sm:text-2xl font-light text-white/90 tracking-wide text-slide-trans">
-            Candi Borobudur, Magelang, Jawa Tengah
+    <!-- Mobile Navigation Dropdown -->
+    <div id="mobile-nav-dropdown"
+      class="hidden md:hidden px-6 pb-4 pt-2 border-t border-white/10 bg-black/95 backdrop-blur-lg space-y-2">
+      <a href="#beranda"
+        class="block py-2 text-sm text-white font-medium hover:text-amber-300 transition-colors">Beranda</a>
+      <a href="#destinasi" class="block py-2 text-sm text-white/80 hover:text-amber-300 transition-colors">Buku Sketsa
+        Destinasi</a>
+      <a href="studio-canting.html" class="block py-2 text-sm text-white font-semibold hover:text-[#e5d8be] transition-colors">Studio Canting</a>
+      <a href="arvr.html" class="block py-2 text-sm text-amber-300 font-medium">Eksplorasi AR/VR (3D)</a>
+    </div>
+  </header>
+
+  <!-- ==================== SECTION 1: BERANDA HERO ==================== -->
+  <section id="beranda" class="relative min-h-[calc(100vh-65px)] w-full flex flex-col justify-between overflow-hidden">
+
+    <!-- Dynamic background canvas for the hero -->
+    <div id="bg-container" class="absolute inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
+      <div id="bg-canvas-a" class="bg-canvas opacity-100 scale-100"></div>
+      <div id="bg-canvas-b" class="bg-canvas opacity-0 scale-105"></div>
+
+      <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/50 to-black/30"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-[#080c10] via-transparent to-black/50"></div>
+    </div>
+
+    <div
+      class="relative z-20 w-full max-w-[1440px] mx-auto flex-1 flex flex-col justify-between px-6 sm:px-10 lg:px-14 py-8">
+
+      <main class="w-full py-4 md:py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center flex-1">
+
+        <!-- Left Hero Text Column -->
+        <section class="lg:col-span-6 xl:col-span-7 flex flex-col justify-center text-left space-y-5">
+
+          <div
+            class="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md w-max">
+            <span class="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-black bg-white rounded-full">
+              New
+            </span>
+            <span id="hero-tagline" class="text-xs font-medium text-white/90 tracking-wide">
+              Warisan Dunia UNESCO
+            </span>
           </div>
+
+          <div class="space-y-1">
+            <h1 id="hero-cursive-title"
+              class="font-script text-5xl sm:text-6xl md:text-7xl text-white font-normal leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)] text-slide-trans">
+              Candi Borobudur
+            </h1>
+            <div id="hero-dest-name"
+              class="text-xl sm:text-2xl font-light text-white/90 tracking-wide text-slide-trans">
+              Candi Borobudur, Magelang, Jawa Tengah
+            </div>
+          </div>
+
+          <p id="hero-description"
+            class="text-sm sm:text-base text-white/85 leading-relaxed max-w-lg font-light drop-shadow text-slide-trans">
+            Jelajahi keagungan candi Buddha terbesar di dunia yang berdiri megah di hamparan lembah Menoreh. Nikmati
+            pesona matahari terbit bernuansa magis di antara ratusan stupa relief bersejarah yang memikat jiwa.
+          </p>
+
+
+        </section>
+
+        <!-- Right Hero Arc Selector Column -->
+        <section class="lg:col-span-6 xl:col-span-5 flex items-center justify-center lg:justify-end relative"
+          aria-label="Pilihan Destinasi">
+
+          <div class="flex items-center gap-5 sm:gap-7">
+
+            <div id="arc-destinations"
+              class="flex flex-row lg:flex-col items-center lg:items-end gap-3.5 sm:gap-4 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 w-full lg:w-auto px-2">
+            </div>
+
+            <div
+              class="hidden lg:flex flex-col gap-2 p-1.5 bg-black/30 border border-white/10 rounded-full backdrop-blur-sm"
+              aria-hidden="true">
+              <div id="indicator-dot-0"
+                class="w-2 h-2 rounded-full transition-all duration-300 bg-white scale-125 shadow-[0_0_8px_rgba(255,255,255,0.9)]">
+              </div>
+              <div id="indicator-dot-1" class="w-2 h-2 rounded-full transition-all duration-300 bg-white/30"></div>
+              <div id="indicator-dot-2" class="w-2 h-2 rounded-full transition-all duration-300 bg-white/30"></div>
+              <div id="indicator-dot-3" class="w-2 h-2 rounded-full transition-all duration-300 bg-white/30"></div>
+              <div id="indicator-dot-4" class="w-2 h-2 rounded-full transition-all duration-300 bg-white/30"></div>
+            </div>
+
+          </div>
+
+        </section>
+
+      </main>
+
+      <!-- Hero Bottom Bar -->
+      <footer class="w-full pt-4 pb-2 flex items-center justify-between text-xs text-white/60 border-t border-white/10">
+        <div class="flex items-center gap-2">
+          <span>Lelana Jateng</span>
+          <span class="text-white/40">•</span>
+          <span>Pesona Pariwisata Nusantara</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <a href="#destinasi"
+            class="text-amber-300 hover:text-white flex items-center gap-1.5 transition-colors font-medium">
+            <span>Gulir ke Destinasi</span>
+            <svg class="w-3.5 h-3.5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </a>
+          <span id="footer-active-name" class="text-white/80 font-medium">01 Candi Borobudur</span>
+        </div>
+      </footer>
+
+    </div>
+
+  </section>
+
+  <!-- ==================== SECTION 2: BUKU SKETSA DESTINASI ==================== -->
+  <section id="destinasi" class="destinasi-section page home">
+
+    <!-- Parchment paper background wash -->
+    <div class="wash" aria-hidden="true"></div>
+
+    <!-- 3D Sketchbook Hero Section -->
+    <section id="sketchbook" class="hero" aria-label="Buku Sketsa Interaktif Lelana Jateng">
+      <img class="botany l" src="assets/sketchbook/botany-left.png" alt="" aria-hidden="true">
+      <img class="botany r" src="assets/sketchbook/botany-right.png" alt="" aria-hidden="true">
+
+      <p class="hero-kicker">Sketsa Perjalanan / Eksplorasi Budaya / Jawa Tengah</p>
+
+      <div class="sb-wrap" id="sbWrap">
+        <!-- Motion blur SVG filters -->
+        <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+          <filter id="sb-mblur-1">
+            <feGaussianBlur stdDeviation="5 0" />
+          </filter>
+          <filter id="sb-mblur-2">
+            <feGaussianBlur stdDeviation="14 0" />
+          </filter>
+        </svg>
+
+        <div class="sb-stage" id="sbStage">
+          <!-- Previous page button -->
+          <button class="sb-arrow left" id="sbLeft" aria-label="Halaman Sebelumnya" title="Halaman Sebelumnya">
+            <svg viewBox="0 0 14 44" width="14" height="44" fill="none" aria-hidden="true">
+              <polyline points="11,3 3,22 11,41" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </button>
+
+          <!-- 3D Stage -->
+          <div class="sb-3d" id="sb3d">
+            <div class="sb-tilt" id="sbTilt">
+              <div class="sb-cast ambient" aria-hidden="true"></div>
+              <div class="sb-cast contact" aria-hidden="true"></div>
+              <div class="sb-cast hair" aria-hidden="true"></div>
+              <div class="sb-book" id="sbBook"></div>
+
+              <!-- Vintage Sketching Fountain Pen & Leather Loop -->
+              <div class="sb-pen-holder" id="sbPenHolder" aria-hidden="true">
+                <svg viewBox="0 0 60 480" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="leather-grad" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stop-color="#4a301c" />
+                      <stop offset="25%" stop-color="#734b2e" />
+                      <stop offset="60%" stop-color="#8a5a37" />
+                      <stop offset="100%" stop-color="#432b19" />
+                    </linearGradient>
+                    <linearGradient id="barrel-grad" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stop-color="#141a17" />
+                      <stop offset="28%" stop-color="#24342c" />
+                      <stop offset="50%" stop-color="#3d5447" />
+                      <stop offset="72%" stop-color="#1e2c25" />
+                      <stop offset="100%" stop-color="#0e1311" />
+                    </linearGradient>
+                    <linearGradient id="gold-grad" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stop-color="#a47728" />
+                      <stop offset="35%" stop-color="#f5d67b" />
+                      <stop offset="55%" stop-color="#fff0b8" />
+                      <stop offset="80%" stop-color="#d4a73e" />
+                      <stop offset="100%" stop-color="#8a5e19" />
+                    </linearGradient>
+                    <linearGradient id="clip-grad" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stop-color="#f0cb68" />
+                      <stop offset="40%" stop-color="#fff2c2" />
+                      <stop offset="100%" stop-color="#b6892f" />
+                    </linearGradient>
+                  </defs>
+                  <!-- Leather Base Tab -->
+                  <rect x="2" y="195" width="38" height="56" rx="6" fill="url(#leather-grad)" stroke="#382212"
+                    stroke-width="1.2" />
+                  <line x1="7" y1="200" x2="7" y2="246" stroke="#d5ab79" stroke-width="1.2" stroke-dasharray="3,3"
+                    opacity="0.75" />
+
+                  <!-- Pen Top Finial (Gold) -->
+                  <rect x="23" y="18" width="16" height="7" rx="3" fill="url(#gold-grad)" />
+
+                  <!-- Pen Cap -->
+                  <rect x="21" y="24" width="20" height="135" rx="5" fill="url(#barrel-grad)" />
+                  <line x1="28" y1="28" x2="28" y2="154" stroke="#ffffff" stroke-width="1" opacity="0.35" />
+
+                  <!-- Gold Center Ring / Band -->
+                  <rect x="20" y="157" width="22" height="10" rx="1.5" fill="url(#gold-grad)" />
+                  <line x1="20" y1="162" x2="42" y2="162" stroke="#684714" stroke-width="0.8" />
+
+                  <!-- Pen Barrel -->
+                  <path d="M 22 167 L 40 167 L 39 395 C 39 408, 37 420, 31 432 C 25 420, 23 408, 23 395 Z"
+                    fill="url(#barrel-grad)" />
+                  <line x1="28" y1="172" x2="28" y2="415" stroke="#ffffff" stroke-width="0.9" opacity="0.32" />
+
+                  <!-- Barrel End Band (Gold) -->
+                  <rect x="24.5" y="418" width="13" height="4" rx="1" fill="url(#gold-grad)" />
+                  <path d="M 25.5 422 L 36.5 422 L 34 445 C 33 448, 29 448, 28 445 Z" fill="url(#gold-grad)" />
+
+                  <!-- Pocket Clip (Gold) -->
+                  <path d="M 28 32 L 34 32 L 33 130 C 33 136, 30 138, 30 144 C 30 138, 27 136, 27 130 Z"
+                    fill="url(#clip-grad)" />
+                  <circle cx="30" cy="143" r="3.2" fill="url(#gold-grad)" />
+
+                  <!-- Leather Loop Front Strap (Wrapping over pen) -->
+                  <rect x="16" y="202" width="30" height="42" rx="5" fill="url(#leather-grad)" stroke="#382212"
+                    stroke-width="1.2" />
+                  <line x1="19" y1="206" x2="19" y2="240" stroke="#d5ab79" stroke-width="1" stroke-dasharray="2.5,2.5"
+                    opacity="0.75" />
+                  <line x1="43" y1="206" x2="43" y2="240" stroke="#d5ab79" stroke-width="1" stroke-dasharray="2.5,2.5"
+                    opacity="0.75" />
+                </svg>
+              </div>
+            </div>
+
+            <!-- Magnified Loupe Copy Layer -->
+            <div class="zoomwrap" id="zoomWrap" aria-hidden="true">
+              <div class="zoominner" id="zoomInner"></div>
+            </div>
+
+            <!-- Draggable Magnifying Glass -->
+            <div class="loupe" id="loupe">
+              <span class="grip" aria-hidden="true"></span>
+              <span class="ring" aria-hidden="true">
+                <span class="lens" id="loupeLens">
+                  <span class="mag" id="loupeMag"></span>
+                </span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Next page button -->
+          <button class="sb-arrow right" id="sbRight" aria-label="Halaman Selanjutnya" title="Halaman Selanjutnya">
+            <svg viewBox="0 0 14 44" width="14" height="44" fill="none" aria-hidden="true">
+              <polyline points="3,3 11,22 3,41" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </button>
         </div>
 
-        <p id="hero-description" class="text-sm sm:text-base text-white/85 leading-relaxed max-w-lg font-light drop-shadow text-slide-trans">
-          Jelajahi keagungan candi Buddha terbesar di dunia yang berdiri megah di hamparan lembah Menoreh. Nikmati pesona matahari terbit bernuansa magis di antara ratusan stupa relief bersejarah yang memikat jiwa.
+        <!-- Captions -->
+        <div class="sb-captions" id="sbCaptions" aria-live="polite"></div>
+
+        <!-- View Controls Toolbar -->
+        <div class="sb-tools" role="group" aria-label="Kontrol Tampilan">
+          <button class="tool" id="zOut" aria-label="Perkecil Zoom" title="Perkecil">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+              <circle cx="8.6" cy="8.6" r="5.6" />
+              <path d="M12.8 12.8 17.4 17.4M6.2 8.6h4.8" />
+            </svg>
+          </button>
+
+          <span class="zoom-read" id="zRead" aria-label="Tingkat Zoom">100%</span>
+
+          <button class="tool" id="zIn" aria-label="Perbesar Zoom" title="Perbesar">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+              <circle cx="8.6" cy="8.6" r="5.6" />
+              <path d="M12.8 12.8 17.4 17.4M6.2 8.6h4.8M8.6 6.2v4.8" />
+            </svg>
+          </button>
+
+          <span class="tool-sep" aria-hidden="true"></span>
+
+          <button class="tool" id="loupeBtn" aria-label="Kaca Pembesar" aria-pressed="true"
+            title="Sakelar Kaca Pembesar">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+              <circle cx="8.8" cy="8.8" r="5.8" />
+              <path d="M13 13l4.4 4.4" />
+              <path d="M6.4 7.2a3.2 3.2 0 0 1 2.4-1.4" opacity=".55" />
+            </svg>
+          </button>
+
+          <span class="tool-sep" aria-hidden="true"></span>
+
+          <button class="tool" id="soundBtn" aria-label="Efek Suara Halaman" aria-pressed="true"
+            title="Sakelar Efek Suara Halaman (Aktif)">
+            <svg class="icon-sound-on" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="8 5 4 8 2 8 2 12 4 12 8 15 8 5" fill="currentColor" fill-opacity="0.2" />
+              <path d="M12 7.5a3.8 3.8 0 0 1 0 5" />
+              <path d="M14.5 5a7 7 0 0 1 0 10" />
+            </svg>
+            <svg class="icon-sound-off" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+              <polygon points="8 5 4 8 2 8 2 12 4 12 8 15 8 5" fill="currentColor" fill-opacity="0.2" />
+              <line x1="12" y1="7.5" x2="16.5" y2="12.5" />
+              <line x1="16.5" y1="7.5" x2="12" y2="12.5" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Interaction Hint -->
+        <p class="sb-hint" id="sbHint">Geser sudut halaman untuk membalik · Tarik kaca pembesar untuk melihat detail</p>
+      </div>
+
+      <!-- Scroll to next section button -->
+      <button class="hero-down" id="heroDown" aria-label="Gulir ke Catatan Perjalanan"
+        title="Gulir ke Catatan Perjalanan">
+        <svg viewBox="0 0 44 22" width="34" height="17" fill="none" aria-hidden="true">
+          <polyline points="3,3 22,11 41,3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"
+            stroke-linejoin="round" />
+          <polyline points="3,11 22,19 41,11" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </button>
+    </section>
+
+    <div class="rule" aria-hidden="true"></div>
+
+    <!-- Editorial Notes Section: Dinamis Berdasarkan Halaman Buku Sketsa -->
+    <section id="about" class="about" aria-labelledby="about-heading">
+      <div class="about-content">
+        <div class="about-header">
+          <p class="section-label" id="about-heading">Catatan Perjalanan · Pelat 01</p>
+          <h2 class="about-title" id="aboutTitle">Candi Borobudur</h2>
+          <p class="about-subtitle" id="aboutSubtitle">Magelang, Jawa Tengah · Warisan Dunia UNESCO Dinasti Syailendra
+          </p>
+        </div>
+        <p class="bio" id="aboutBio">
+          Didirikan pada abad ke-8 hingga ke-9 Masehi oleh Dinasti Syailendra, Candi Borobudur merupakan monumen Buddha
+          terbesar di dunia yang memadukan arsitektur stupa dengan konsep mandala alam semesta. Terdiri dari sembilan
+          teras berundak (enam bujur sangkar dan tiga lingkaran) yang melambangkan tingkatan spiritual Kamadhatu,
+          Rupadhatu, dan Arupadhatu. Dindingnya dihiasi 2.672 panel relief naratif yang menceritakan Lalitavistara,
+          Jataka, dan Gandavyuha, dipahat dari batu andesit vulkanik lembah Progo. Kehadirannya diapit Gunung Merapi,
+          Merbabu, Sumbing, dan perbukitan Menoreh menjadikannya pusat peradaban spiritual Jawa Kuno yang telah diakui
+          sebagai Warisan Dunia UNESCO.
         </p>
-
-      </section>
-
-      <section class="lg:col-span-6 xl:col-span-5 flex items-center justify-center lg:justify-end relative" aria-label="Pilihan Destinasi">
-        
-        <div class="flex items-center gap-5 sm:gap-7">
-          
-          <div id="arc-destinations" class="flex flex-row lg:flex-col items-center lg:items-end gap-3.5 sm:gap-4 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 w-full lg:w-auto px-2">
-          </div>
-
-          <div class="hidden lg:flex flex-col gap-2 p-1.5 bg-black/30 border border-white/10 rounded-full backdrop-blur-sm" aria-hidden="true">
-            <div id="indicator-dot-0" class="w-2 h-2 rounded-full transition-all duration-300 bg-white scale-125 shadow-[0_0_8px_rgba(255,255,255,0.9)]"></div>
-            <div id="indicator-dot-1" class="w-2 h-2 rounded-full transition-all duration-300 bg-white/30"></div>
-            <div id="indicator-dot-2" class="w-2 h-2 rounded-full transition-all duration-300 bg-white/30"></div>
-            <div id="indicator-dot-3" class="w-2 h-2 rounded-full transition-all duration-300 bg-white/30"></div>
-            <div id="indicator-dot-4" class="w-2 h-2 rounded-full transition-all duration-300 bg-white/30"></div>
-          </div>
-
+        <div class="about-meta" id="aboutMeta">
+          <span class="about-tag">Warisan Dunia UNESCO</span>
+          <span class="about-tag">Abad ke-8 Masehi</span>
+          <span class="about-tag">Relief Andesit</span>
+          <span class="about-tag">Buddha Mahayana</span>
         </div>
-
-      </section>
-
-    </main>
-
-    <footer class="w-full py-4 flex items-center justify-between text-xs text-white/60">
-      <div>
-        <span>Lelana Jateng</span>
-        <span class="mx-2">•</span>
-        <span>Pesona Pariwisata Nusantara</span>
       </div>
-      <div class="flex items-center gap-3">
-        <span id="footer-active-name" class="text-white/80 font-medium">01 Candi Borobudur</span>
+
+      <!-- Kolom Kanan: Tokoh Historis Terkait (Buku Sketsa Editorial) -->
+      <div class="tokoh-card" id="tokohCard">
+        <div class="tokoh-header">
+          <p class="section-label">Figur & Sejarah Terkait</p>
+          <h3 id="tokohName" class="tokoh-name">Mpu Gunadharma</h3>
+          <p id="tokohRole" class="tokoh-role">Arsitek Agung Dinasti Syailendra (Abad ke-8 Masehi)</p>
+        </div>
+        <div class="tokoh-story">
+          <figure class="tokoh-frame">
+            <img id="tokohImg" src="assets/tokoh/gunadharma.png" alt="Mpu Gunadharma" class="tokoh-img"
+              loading="eager" />
+          </figure>
+          <p id="tokohBio" class="tokoh-bio">
+            Tokoh arsitek legendaris Dinasti Syailendra yang merancang keagungan Candi Borobudur dengan perhitungan
+            mandala kosmos Buddhis yang presisi. Menurut tradisi tutur masyarakat Magelang, siluet jajaran Pegunungan
+            Menoreh di kejauhan menyerupai sosok Gunadharma yang tengah beristirahat memandangi mahakaryanya.
+          </p>
+        </div>
       </div>
+    </section>
+
+    <div class="rule short" aria-hidden="true"></div>
+
+    <!-- Plates Index Section -->
+    <section id="plates" class="plates" aria-labelledby="plates-heading">
+      <p class="section-label" id="plates-heading">Daftar Destinasi Jawa Tengah</p>
+      <ol class="plate-list" id="plateList" aria-label="Daftar 9 Pelat Destinasi"></ol>
+    </section>
+
+    <div class="rule short" aria-hidden="true"></div>
+
+    <!-- Footer -->
+    <footer class="foot" id="contact">
+      Lelana Jateng · Jurnal Wisata Jawa Tengah · Pesona Pariwisata Nusantara
     </footer>
 
-  </div>
+  </section>
 
+  <!-- Script Engines -->
   <script src="js/index.js"></script>
+  <script src="js/destinasi.js"></script>
 </body>
+
 </html>

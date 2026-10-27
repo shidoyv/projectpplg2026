@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full scroll-smooth">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>History & Historiografi Wisata Jawa Tengah | Lelana Jateng</title>
+  <meta name="description"
+    content="Telusuri kronik sejarah dan historiografi terbentuknya destinasi pusaka Jawa Tengah dari era Mataram Kuno, Majapahit, Kesultanan Demak, Keraton Surakarta, era Kolonial hingga penetapan Situs Warisan Dunia UNESCO.">
+
+  <link rel="icon" type="image/png" href="assets/image-removebg-preview.png">
+
+  <!-- Google Fonts: Instrument Serif, Newsreader, Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,200..700;1,6..72,200..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Newsreader"', 'Georgia', 'serif'],
+            display: ['"Instrument Serif"', 'Georgia', 'serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Exhibition Theme CSS -->
+  <link rel="stylesheet" href="css/history.css">
+</head>
+
+<body
+  class="history-page min-h-screen bg-[#07080a] text-white font-sans antialiased overflow-x-hidden flex flex-col justify-between selection:bg-[#c92a2a] selection:text-white">
+
+  <!-- Top Sticky Navbar -->
+  <header id="main-navbar"
+    class="sticky top-0 z-50 w-full transition-all duration-300 backdrop-blur-md bg-black/75 border-b border-white/10">
+    <div class="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-14 py-3.5 flex items-center justify-between">
+
+      <!-- Brand Logo & Name -->
+      <div class="flex items-center gap-3">
+        <a href="index.html#beranda" class="flex items-center gap-3 group">
+          <img src="assets/image-removebg-preview.png" alt="Lelana Jateng Logo"
+            class="h-9 md:h-10 w-auto object-contain drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)]"
+            onerror="this.src='https://placehold.co/160x50/transparent/white?text=Lelana+Jateng'" />
+          <span
+            class="text-base sm:text-lg md:text-xl font-bold tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+            Lelana Jateng
+          </span>
+        </a>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-white/80" aria-label="Navigasi Utama">
+        <a href="index.html#beranda" class="text-white/75 hover:text-white transition-colors py-1">
+          Beranda
+        </a>
+        <a href="index.html#destinasi" class="text-white/75 hover:text-white transition-colors py-1">
+          Destinasi
+        </a>
+        <a href="studio-canting.html" class="text-white/75 hover:text-white transition-colors py-1">
+          Studio Canting
+        </a>
+        <a href="arvr.html" class="text-white/75 hover:text-white transition-colors py-1">
+          AR/VR
+        </a>
+        <!-- Active Page: History -->
+        <a href="history.html"
+          class="text-white font-semibold py-1 relative flex items-center gap-1.5 after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#c92a2a] after:rounded-full">
+          <span>History</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-[#c92a2a]"></span>
+        </a>
+      </nav>
+
+      <!-- Right Action Items -->
+      <div class="flex items-center gap-3">
+        <button id="sound-toggle-btn" type="button" aria-label="Toggle Suara Suasana"
+          title="Nyalakan / Matikan Ketukan Suara"
+          class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-white bg-white/10 hover:bg-white/20 border border-white/25 rounded-full backdrop-blur-md transition-all shadow-sm group">
+          <svg class="w-3.5 h-3.5 text-[#fca5a5] drop-shadow-[0_0_6px_rgba(201,42,42,0.8)]" fill="none"
+            stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          </svg>
+          <span class="text-white/90">Eksibisi: Aktif</span>
+        </button>
+
+        <!-- Mobile hamburger toggle button -->
+        <button id="mobile-nav-toggle" class="md:hidden p-1.5 text-white/90 hover:text-white focus:outline-none"
+          aria-label="Buka Menu Navigasi">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+          </svg>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Mobile Navigation Dropdown -->
+    <div id="mobile-nav-dropdown"
+      class="hidden md:hidden px-6 pb-4 pt-2 border-t border-white/10 bg-black/95 backdrop-blur-lg space-y-2">
+      <a href="index.html#beranda"
+        class="block py-2 text-sm text-white font-medium hover:text-[#fca5a5] transition-colors">Beranda</a>
+      <a href="index.html#destinasi"
+        class="block py-2 text-sm text-white/80 hover:text-[#fca5a5] transition-colors">Buku Sketsa Destinasi</a>
+      <a href="studio-canting.html" class="block py-2 text-sm text-white hover:text-[#fca5a5] transition-colors">Studio
+        Canting</a>
+      <a href="arvr.html" class="block py-2 text-sm text-white/80 hover:text-[#fca5a5] transition-colors">AR/VR</a>
+      <a href="history.html" class="block py-2 text-sm text-[#fca5a5] font-semibold">History &amp; Sejarah</a>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN EXHIBITION HISTORY EXPERIENCE ==================== -->
+  <main class="flex-1 w-full flex flex-col justify-center">
+    <section id="history" class="history-section history-standalone" aria-labelledby="historyTitleMain">
+      <div class="history-inner">
+
+        <!-- Top Editorial Stage (3 Columns: Narrative, 3D Sculpture Centerpiece, Era Selector) -->
+        <div class="history-stage">
+
+          <!-- Left Column: Editorial Narrative -->
+          <div class="history-narrative">
+            <div class="history-kicker-wrap">
+              <p class="history-kicker">Lelana Museum · Historiografi Jawa Tengah</p>
+            </div>
+
+            <h1 class="history-title">
+              <span class="history-title-small" id="historyTitleSmall">Historiografi &amp; Asal-Usul</span>
+              <span class="history-title-main" id="historyTitleMain">Tempat Wisata</span>
+            </h1>
+
+            <div class="history-era-badge" id="historyEraBadge">
+              Tempat Wisata · Pembangunan Purba Abad VII Masehi hingga Wisata Global
+            </div>
+
+            <p class="history-desc" id="historyDesc">
+              Sejarah tempat wisata pusaka Jawa Tengah berawal dari abad ke-7 hingga ke-9 Masehi saat dataran tinggi
+              Dieng dan lembah Kedu-Prambanan dipilih sebagai poros spiritual tanah Jawa. Dieng menjadi percandian
+              dewata tertua (abad VII M), disusul pembangunan kolosal Candi Borobudur oleh Dinasti Syailendra (770–825
+              M) dengan 2.672 relief andesit, serta Candi Prambanan setinggi 47 meter oleh Dinasti Sanjaya (856 M)...
+            </p>
+
+            <div class="history-cta-wrap">
+              <span class="history-card-hint-text">
+                <span>Pilih kartu destinasi 01–04 di bawah untuk membaca artikel sejarah lengkap</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Center Column: Museum Sculpture Centerpiece with Liquid Crimson Ribbon -->
+          <div class="history-centerpiece">
+            <div class="history-sculpture-frame">
+              <img id="historySculptureImg" src="assets/history/mataram.jpg" alt="Arca Klasik Jawa Tengah"
+                class="history-sculpture-img" loading="eager" />
+            </div>
+            <p class="history-sculpture-plaque" id="historySculpturePlaque">
+              Mahakarya Pahat Andesit &amp; Stupa Mandala · Abad VII M – Sekarang (UNESCO World Heritage)
+            </p>
+          </div>
+
+          <!-- Right Column: Vertical Category & Destination Selector (Tabs) -->
+          <div class="history-era-list" role="tablist" aria-label="Pilihan Sejarah 3 Kategori Destinasi Jawa Tengah">
+            <!-- 3 Main Pillars -->
+            <button type="button" class="history-era-item is-active" role="tab" aria-selected="true" tabindex="0">
+              <span class="history-era-name">Tempat Wisata</span>
+              <span class="history-era-years">Candi, Kaldera &amp; Cagar Alam · Abad VII M – Kini</span>
+              <span class="history-era-line" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="history-era-item" role="tab" aria-selected="false" tabindex="-1">
+              <span class="history-era-name">Museum</span>
+              <span class="history-era-years">Khazanah Benda Cagar Budaya · 1904 – Kini</span>
+              <span class="history-era-line" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="history-era-item" role="tab" aria-selected="false" tabindex="-1">
+              <span class="history-era-name">Galeri Budaya</span>
+              <span class="history-era-years">Batik &amp; Living Heritage · Abad XV M – Kini</span>
+              <span class="history-era-line" aria-hidden="true"></span>
+            </button>
+
+            <div class="history-browse-all">
+              <button type="button" class="history-browse-btn" id="historyBrowseBtn"
+                aria-label="Lihat seluruh garis waktu sejarah 3 pilar">
+                <span>Browse All</span>
+                <span aria-hidden="true">──&gt;</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Bottom Deck: Numbered Feature Cards (01, 02, 03, 04) -->
+        <div class="history-cards-wrap">
+          <div class="history-cards-grid" id="historyCardsGrid" role="region"
+            aria-label="Sorotan Aspek Sejarah Era Ini">
+            <!-- Dynamically populated by js/history.js -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- History Detailed Modal & Chronicle Drawer -->
+  <div id="historyModalBackdrop" class="history-modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div id="historyModalContent" class="history-modal-content">
+      <!-- Injected via js/history.js -->
+    </div>
+  </div>
+
+  <!-- Museum Footer -->
+  <footer class="border-t border-white/10 py-6 text-center text-xs text-white/40 tracking-wider">
+    Lelana Jateng · Curatorial Exhibition of Javanese Historiography &amp; UNESCO Heritage
+  </footer>
+
+  <!-- Script Engine -->
+  <script src="js/history.js"></script>
+  <script>
+    // Simple mobile nav toggle
+    const mobileBtn = document.getElementById('mobile-nav-toggle');
+    const mobileDropdown = document.getElementById('mobile-nav-dropdown');
+    if (mobileBtn && mobileDropdown) {
+      mobileBtn.addEventListener('click', () => {
+        mobileDropdown.classList.toggle('hidden');
+      });
+    }
+  </script>
+</body>
+
+</html>

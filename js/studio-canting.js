@@ -1,6 +1,6 @@
 /**
  * Lelana Jateng: Studio Canting & Photo Booth Baju Batik
- * Pure Vanilla JavaScript (HTML5 Canvas, Camera Stream & Laravel API Sync)
+ * Pure Vanilla JavaScript (HTML5 Canvas, Camera Stream & Supabase BaaS Cloud Sync)
  * Colors: Mori Ivory, Sogan Dark, Indigo, Terracotta, Bronze, Jelaga (NO YELLOW)
  */
 
@@ -10,7 +10,6 @@
   /* =====================================================================
      1. CONSTANTS & CULTURAL DATASETS
      ===================================================================== */
-  const API_ENDPOINT = 'http://127.0.0.1:8000/api/batik';
   const LOCAL_STORAGE_KEY = 'lelana_karya_batik_cache';
 
   const MOTIFS = {
@@ -75,14 +74,21 @@
     jelaga: { id: 'jelaga', name: 'Hitam Tinta Jelaga', hex: '#231B15' }
   };
 
-  // Tourist Destination Scenic Backgrounds
+  // Tourist Destination & Atelier Scenic Backgrounds
   const BACKGROUNDS = {
+    joglo: {
+      id: 'joglo',
+      name: 'Pendopo Atelier Joglo',
+      desc: 'Atelier Klasik Kayu Jati & Gebyok Keraton',
+      location: 'Yogyakarta, Jawa Tengah',
+      src: 'assets/bg-joglo.jpg'
+    },
     mori: {
       id: 'mori',
       name: 'Studio Mori Alami',
       desc: 'Kain Tenun Mori Polos Atelier',
       location: 'Atelier Lelana Jateng',
-      src: null
+      src: 'assets/bg-mori.jpg'
     },
     borobudur: {
       id: 'borobudur',
@@ -142,9 +148,9 @@
     mode: 'doodle', // 'doodle' (coret baju) or 'photobooth' (coba baju)
     activeMotif: 'parang',
     activeGarment: 'kemeja',
-    activeBg: 'mori', // 'mori', 'borobudur', 'prambanan', 'dieng', 'karimunjawa', 'grojogan', 'keraton', 'lawangsewu'
+    activeBg: 'joglo', // 'joglo', 'mori', 'borobudur', 'prambanan', 'dieng', 'karimunjawa', 'grojogan', 'keraton', 'lawangsewu'
     showBodyLimbs: true, // Hands & feet / complete body figure
-    activeLimbPose: 'santai', // 'santai' (natural hands at sides)
+    activeLimbPose: 'ngapurancang', // 'ngapurancang' (clasped royal hands in dignified court posture)
     showMannequinStand: false, // Turned off by default when body limbs are shown
     showHeadpiece: true,
     showBlangkon: true,
@@ -202,6 +208,7 @@
     renderBaseBajuLayer();
     saveHistoryState();
     loadExhibitionGallery();
+    updateSupabaseBadge();
   }
 
   function cacheDom() {
@@ -277,6 +284,29 @@
     els.btnRefreshGallery = document.getElementById('scBtnRefreshGallery');
     els.btnClearAllGallery = document.getElementById('scBtnClearAllGallery');
 
+    // Supabase Configuration & Status DOM
+    els.btnSupabaseConfig = document.getElementById('scBtnSupabaseConfig');
+    els.supabaseStatusDot = document.getElementById('scSupabaseStatusDot');
+    els.supabaseStatusText = document.getElementById('scSupabaseStatusText');
+    els.supabaseModal = document.getElementById('scSupabaseModal');
+    els.btnCloseSupabaseModal = document.getElementById('scBtnCloseSupabaseModal');
+    els.supabaseConfigForm = document.getElementById('scSupabaseConfigForm');
+    els.inputSupabaseUrl = document.getElementById('scInputSupabaseUrl');
+    els.inputSupabaseKey = document.getElementById('scInputSupabaseKey');
+    els.btnToggleKeyVisibility = document.getElementById('scBtnToggleKeyVisibility');
+    els.btnResetSupabase = document.getElementById('scBtnResetSupabase');
+    els.supabaseTestResult = document.getElementById('scSupabaseTestResult');
+    els.supabaseSaveSpinner = document.getElementById('scSupabaseSaveSpinner');
+    els.supabaseBannerDot = document.getElementById('scSupabaseBannerDot');
+    els.supabaseBannerTitle = document.getElementById('scSupabaseBannerTitle');
+    els.supabaseBannerDesc = document.getElementById('scSupabaseBannerDesc');
+    els.btnOpenSqlSchema = document.getElementById('scBtnOpenSqlSchema');
+    els.supabaseSqlModal = document.getElementById('scSupabaseSqlModal');
+    els.btnCloseSqlModal = document.getElementById('scBtnCloseSqlModal');
+    els.sqlSchemaCode = document.getElementById('scSqlSchemaCode');
+    els.btnCopySql = document.getElementById('scBtnCopySql');
+    els.copySqlSuccess = document.getElementById('scCopySqlSuccess');
+
     // Detail Modal
     els.previewModal = document.getElementById('scDetailModal');
     els.detailImg = document.getElementById('scDetailImg');
@@ -341,10 +371,13 @@
       drawMannequinStand(baseCtx, state.activeGarment);
     }
 
+    // 2b. Draw Anatomical Neck & Upper Clavicle (so garment collar wraps around it cleanly)
+    drawAnatomicalNeck(baseCtx, state.activeGarment);
+
     // 3. Draw Baju Silhouette with Pre-existing Motif
     drawGarmentWithMotif(baseCtx, state.activeGarment, state.activeMotif);
 
-    // 4. Draw Arms & Hands (when Tangan & Kaki active)
+    // 4. Draw Arms & Hands with natural anatomical posture (when Tangan & Kaki active)
     if (state.showBodyLimbs) {
       drawArtisanHands(baseCtx, state.activeGarment, state.activeLimbPose);
     }
@@ -360,11 +393,11 @@
     // Update UI text descriptions, headpiece label & active background readout
     const m = MOTIFS[state.activeMotif] || MOTIFS.polos;
     const g = GARMENTS[state.activeGarment] || GARMENTS.kemeja;
-    const bg = BACKGROUNDS[state.activeBg] || BACKGROUNDS.mori;
+    const bg = BACKGROUNDS[state.activeBg] || BACKGROUNDS.joglo;
 
-    if (els.motifName) els.motifName.textContent = `${g.name} &bull; ${m.name}`;
+    if (els.motifName) els.motifName.textContent = `${g.name} • ${m.name}`;
     if (els.motifDesc) els.motifDesc.textContent = `${g.desc} Dipadukan filosofi ${m.name}: ${m.philosophy}. Berlatar di ${bg.name} (${bg.location}).`;
-    if (els.motifBadge) els.motifBadge.textContent = `${g.tag} &bull; ${m.tag} &bull; ${bg.name}`;
+    if (els.motifBadge) els.motifBadge.textContent = `${g.tag} • ${m.tag} • ${bg.name}`;
     if (els.inputMotif) els.inputMotif.value = `${g.name} (${m.name}) di ${bg.name}`;
     if (els.activeBgLabel) els.activeBgLabel.textContent = bg.name;
 
@@ -394,11 +427,11 @@
    * Dispatcher for canvas background (Destination photo or woven Mori cloth)
    */
   function drawCanvasBackground(c, w, h) {
-    const bgKey = state.activeBg || 'mori';
-    const bgData = BACKGROUNDS[bgKey] || BACKGROUNDS.mori;
+    const bgKey = state.activeBg || 'joglo';
+    const bgData = BACKGROUNDS[bgKey] || BACKGROUNDS.joglo;
     const cachedImg = bgImagesCache[bgKey];
 
-    if (bgKey === 'mori' || !cachedImg || !cachedImg.complete || cachedImg.naturalWidth === 0) {
+    if (!cachedImg || !cachedImg.complete || cachedImg.naturalWidth === 0) {
       drawMoriBackground(c, w, h);
       return;
     }
@@ -435,16 +468,41 @@
     c.fillStyle = vig;
     c.fillRect(0, 0, w, h);
 
-    // Elegant location stamp in bottom corner
+    // Bespoke Museum Atelier Seal Stamp in bottom corner
     c.save();
-    c.font = '600 13px Cinzel, "Playfair Display", Georgia, serif';
-    c.fillStyle = 'rgba(250, 247, 242, 0.95)';
-    c.shadowColor = 'rgba(0, 0, 0, 0.85)';
-    c.shadowBlur = 8;
-    c.fillText(bgData.name.toUpperCase(), 35, h - 38);
-    c.font = 'italic 400 11px "Plus Jakarta Sans", sans-serif';
-    c.fillStyle = 'rgba(229, 216, 190, 0.90)';
-    c.fillText(bgData.location, 35, h - 20);
+    const stampX = 40;
+    const stampY = h - 68;
+    const stampW = 280;
+    const stampH = 46;
+
+    // Plaque backdrop with subtle blur
+    c.fillStyle = 'rgba(18, 12, 8, 0.65)';
+    c.beginPath();
+    c.roundRect(stampX, stampY, stampW, stampH, 8);
+    c.fill();
+    c.strokeStyle = 'rgba(197, 165, 114, 0.45)';
+    c.lineWidth = 1;
+    c.stroke();
+
+    // Small Gold Cultural Diamond Mark
+    c.fillStyle = '#C5A572';
+    c.beginPath();
+    c.moveTo(stampX + 16, stampY + 16);
+    c.lineTo(stampX + 22, stampY + 23);
+    c.lineTo(stampX + 16, stampY + 30);
+    c.lineTo(stampX + 10, stampY + 23);
+    c.closePath();
+    c.fill();
+
+    // Typography
+    c.font = '600 12px "Newsreader", Georgia, serif';
+    c.fillStyle = '#FAF7F2';
+    c.fillText(bgData.name.toUpperCase(), stampX + 32, stampY + 20);
+
+    c.font = 'italic 400 10.5px "Plus Jakarta Sans", sans-serif';
+    c.fillStyle = '#E5D8BE';
+    c.fillText(bgData.location, stampX + 32, stampY + 36);
+
     c.restore();
   }
 
@@ -570,41 +628,126 @@
   }
 
   /**
+   * ANATOMICAL ATELIER NECK & THROAT
+   * Seamlessly connects the chin (Y=240-248) to the garment collar base (Y=275).
+   * Features realistic skin gradient, throat shadow, subtle clavicles, and suprasternal notch.
+   */
+  function drawAnatomicalNeck(c, garment) {
+    c.save();
+
+    const skinTone = '#E4BD9A';
+    const neckTopY = 220;
+    const neckBottomY = 278;
+
+    // 1. Neck Base Shape
+    c.beginPath();
+    c.moveTo(566, neckTopY);
+    c.bezierCurveTo(564, 242, 558, 260, 554, neckBottomY);
+    c.lineTo(646, neckBottomY);
+    c.bezierCurveTo(642, 260, 636, 242, 634, neckTopY);
+    c.closePath();
+
+    // Natural skin gradient (cylindrical volume lighting)
+    const neckGrad = c.createLinearGradient(554, 0, 646, 0);
+    neckGrad.addColorStop(0, '#D4A680');
+    neckGrad.addColorStop(0.25, skinTone);
+    neckGrad.addColorStop(0.5, '#EAD1B6');
+    neckGrad.addColorStop(0.75, skinTone);
+    neckGrad.addColorStop(1, '#D4A680');
+    c.fillStyle = neckGrad;
+    c.fill();
+
+    // 2. Throat Shadow under the Chin
+    const throatShadow = c.createLinearGradient(600, neckTopY, 600, neckTopY + 36);
+    throatShadow.addColorStop(0, 'rgba(68, 42, 23, 0.28)');
+    throatShadow.addColorStop(0.55, 'rgba(68, 42, 23, 0.12)');
+    throatShadow.addColorStop(1, 'transparent');
+    c.fillStyle = throatShadow;
+    c.beginPath();
+    c.ellipse(600, neckTopY + 14, 38, 18, 0, 0, Math.PI * 2);
+    c.fill();
+
+    // 3. Delicate Sternocleidomastoid & Suprasternal Notch Contours
+    c.strokeStyle = 'rgba(105, 68, 40, 0.16)';
+    c.lineWidth = 1.6;
+    c.lineCap = 'round';
+
+    // Left neck tendon
+    c.beginPath();
+    c.moveTo(574, 235);
+    c.quadraticCurveTo(584, 255, 595, 272);
+    c.stroke();
+
+    // Right neck tendon
+    c.beginPath();
+    c.moveTo(626, 235);
+    c.quadraticCurveTo(616, 255, 605, 272);
+    c.stroke();
+
+    // Suprasternal notch (pit of the neck)
+    c.strokeStyle = 'rgba(105, 68, 40, 0.22)';
+    c.lineWidth = 1.4;
+    c.beginPath();
+    c.arc(600, 268, 5, 0.2 * Math.PI, 0.8 * Math.PI);
+    c.stroke();
+
+    // Clavicle bone hints (collar bones)
+    c.strokeStyle = 'rgba(105, 68, 40, 0.14)';
+    c.lineWidth = 1.5;
+    c.beginPath();
+    c.moveTo(593, 272);
+    c.quadraticCurveTo(565, 275, 530, 278);
+    c.moveTo(607, 272);
+    c.quadraticCurveTo(635, 275, 670, 278);
+    c.stroke();
+
+    // Subtle outer neck boundary contour
+    c.strokeStyle = 'rgba(68, 42, 23, 0.35)';
+    c.lineWidth = 1.8;
+    c.beginPath();
+    c.moveTo(566, neckTopY);
+    c.bezierCurveTo(564, 242, 558, 260, 554, neckBottomY);
+    c.moveTo(634, neckTopY);
+    c.bezierCurveTo(642, 260, 636, 242, 646, neckBottomY);
+    c.stroke();
+
+    c.restore();
+  }
+
+  /**
    * ARTISANAL LOWER BODY & TRADITIONAL FOOTWEAR (KAKI & BUSANA BAWAH)
    * Kebaya: Kain Jarik Batik Sogan with central Wiron pleats, slender ankles & Selop Beludru Emas
    * Beskap: Bebet Jarik Keraton with Celana Panji & Selop Pria
-   * Kemeja: Tailored formal trousers with pressed crease & polished dress shoes
+   * Kemeja: Bespoke tailored formal trousers with pressed crease & polished Oxford dress shoes
    */
   function drawArtisanLowerBody(c, garment) {
     c.save();
 
     // 1. Floor cast shadows under shoes / selop (ambient spread + crisp contact occlusion)
-    c.fillStyle = 'rgba(20, 14, 10, 0.22)';
+    c.fillStyle = 'rgba(20, 14, 10, 0.20)';
     c.beginPath();
-    c.ellipse(550, 838, 52, 13, -0.05, 0, Math.PI * 2);
-    c.ellipse(650, 838, 52, 13, 0.05, 0, Math.PI * 2);
+    c.ellipse(545, 836, 48, 12, -0.05, 0, Math.PI * 2);
+    c.ellipse(655, 836, 48, 12, 0.05, 0, Math.PI * 2);
     c.fill();
 
     // Direct contact shadow beneath soles
-    c.fillStyle = 'rgba(15, 10, 7, 0.42)';
+    c.fillStyle = 'rgba(15, 10, 7, 0.45)';
     c.beginPath();
-    c.ellipse(550, 834, 38, 7, -0.05, 0, Math.PI * 2);
-    c.ellipse(650, 834, 38, 7, 0.05, 0, Math.PI * 2);
+    c.ellipse(545, 832, 34, 6, -0.05, 0, Math.PI * 2);
+    c.ellipse(655, 832, 34, 6, 0.05, 0, Math.PI * 2);
     c.fill();
 
     if (garment === 'kebaya') {
       // KAIN JARIK BATIK SOGAN (Batik wrap skirt down to ankles)
       const topY = 560; // Well above kebaya hem (610-630) so no seam gap
-      const ankleY = 790;
+      const ankleY = 792;
 
       c.save();
       c.beginPath();
-      c.moveTo(505, topY);
-      c.lineTo(475, 625); // Slight hip curve
-      c.bezierCurveTo(490, 690, 525, 750, 535, ankleY);
-      c.quadraticCurveTo(600, 796, 665, ankleY);
-      c.bezierCurveTo(675, 750, 710, 690, 725, 625);
-      c.lineTo(695, topY);
+      c.moveTo(502, topY);
+      c.bezierCurveTo(480, 620, 492, 690, 532, ankleY);
+      c.quadraticCurveTo(600, 798, 668, ankleY);
+      c.bezierCurveTo(708, 690, 720, 620, 698, topY);
       c.closePath();
 
       // Fabric Base (Mori ivory-sogan)
@@ -643,60 +786,68 @@
 
       // Front Center Wiron (Traditional vertical folded pleats)
       c.fillStyle = 'rgba(58, 36, 21, 0.12)';
-      c.fillRect(592, topY, 26, ankleY - topY);
+      c.fillRect(590, topY, 28, ankleY - topY);
 
       c.strokeStyle = '#8C6D46';
       c.lineWidth = 2.2;
-      [594, 604, 614].forEach(wx => {
+      [592, 602, 612].forEach(wx => {
         c.beginPath();
         c.moveTo(wx, topY);
         c.lineTo(wx, ankleY);
         c.stroke();
       });
 
+      // Gold Seret edge border
+      c.strokeStyle = '#D4AF37';
+      c.lineWidth = 1.5;
+      c.beginPath();
+      c.moveTo(618, topY);
+      c.lineTo(618, ankleY);
+      c.stroke();
+
       c.restore(); // Exit clip
 
       // Jarik Outline
       c.strokeStyle = '#2F1C10';
-      c.lineWidth = 3.5;
+      c.lineWidth = 3.2;
       c.stroke();
 
       // Ankles (Slender golden honey skin)
       c.fillStyle = '#E2BA96';
       c.strokeStyle = '#2F1C10';
-      c.lineWidth = 2.2;
+      c.lineWidth = 2.0;
 
       // Left ankle
       c.beginPath();
-      c.roundRect(545, ankleY - 5, 20, 24, [0, 0, 4, 4]);
+      c.roundRect(545, ankleY - 4, 18, 26, [0, 0, 4, 4]);
       c.fill();
       c.stroke();
 
       // Right ankle
       c.beginPath();
-      c.roundRect(635, ankleY - 5, 20, 24, [0, 0, 4, 4]);
+      c.roundRect(637, ankleY - 4, 18, 26, [0, 0, 4, 4]);
       c.fill();
       c.stroke();
 
       // Selop Tradisional Kebaya (Black velvet with gold flower)
-      drawTradSelop(c, 545, 822, -1); // Left selop
-      drawTradSelop(c, 655, 822, 1);  // Right selop
+      drawTradSelop(c, 545, 822, -1);
+      drawTradSelop(c, 655, 822, 1);
 
       c.restore();
 
     } else if (garment === 'beskap') {
       // BESKAP: BEBET JARIK & CELANA PANJI
       const topY = 560;
-      const jarikHemY = 725;
+      const jarikHemY = 720;
       const ankleY = 808;
 
       // 1. Bebet Jarik (Half-length formal wrap)
       c.save();
       c.beginPath();
-      c.moveTo(480, topY);
+      c.moveTo(482, topY);
       c.lineTo(495, jarikHemY);
       c.lineTo(705, jarikHemY);
-      c.lineTo(720, topY);
+      c.lineTo(718, topY);
       c.closePath();
 
       c.fillStyle = '#E8DEC9';
@@ -726,31 +877,31 @@
       c.stroke();
 
       c.strokeStyle = '#2F1C10';
-      c.lineWidth = 3.5;
+      c.lineWidth = 3.2;
       c.stroke();
       c.restore();
 
       // 2. Celana Panji Hitam (Formal dark pants emerging below jarik)
       c.fillStyle = '#1C1510';
       c.strokeStyle = '#2F1C10';
-      c.lineWidth = 3;
+      c.lineWidth = 2.8;
 
       // Left pant leg
       c.beginPath();
-      c.moveTo(520, jarikHemY - 2);
+      c.moveTo(522, jarikHemY - 2);
       c.lineTo(530, ankleY);
       c.lineTo(570, ankleY);
-      c.lineTo(560, jarikHemY - 2);
+      c.lineTo(562, jarikHemY - 2);
       c.closePath();
       c.fill();
       c.stroke();
 
       // Right pant leg
       c.beginPath();
-      c.moveTo(640, jarikHemY - 2);
+      c.moveTo(638, jarikHemY - 2);
       c.lineTo(630, ankleY);
       c.lineTo(670, ankleY);
-      c.lineTo(680, jarikHemY - 2);
+      c.lineTo(678, jarikHemY - 2);
       c.closePath();
       c.fill();
       c.stroke();
@@ -760,41 +911,94 @@
       drawTradSelopPria(c, 655, 822, 1);
 
     } else {
-      // KEMEJA: CELANA PANJANG FORMAL ARANG & SEPATU PANTOFEL
+      // KEMEJA: BESPOKE TAILORED TROUSERS & POLISHED OXFORD DRESS SHOES
       const topY = 560;
-      const ankleY = 808;
+      const crotchY = 626; // Anatomically proportional rise
+      const kneeY = 716;
+      const ankleY = 810;
 
       c.save();
-      c.fillStyle = '#1E1712'; // Deep espresso charcoal
-      c.strokeStyle = '#2E2018';
-      c.lineWidth = 3.2;
+      c.strokeStyle = '#241710';
+      c.lineWidth = 2.4;
 
-      // Full tailored trousers
+      // Left Pant Leg with 3D cylindrical wool drape
+      const leftPantGrad = c.createLinearGradient(484, 0, 600, 0);
+      leftPantGrad.addColorStop(0, '#130D09');
+      leftPantGrad.addColorStop(0.48, '#261C16'); // Center leg thigh highlight
+      leftPantGrad.addColorStop(0.55, '#201611');
+      leftPantGrad.addColorStop(1, '#110C08');
+
+      c.fillStyle = leftPantGrad;
       c.beginPath();
-      c.moveTo(475, topY);
-      c.lineTo(515, ankleY);
-      c.lineTo(572, ankleY);
-      c.lineTo(600, 650); // Crotch inseam
-      c.lineTo(628, ankleY);
-      c.lineTo(685, ankleY);
-      c.lineTo(725, topY);
+      c.moveTo(484, topY);
+      c.bezierCurveTo(488, 615, 510, kneeY, 520, ankleY); // Outer hip-to-ankle
+      c.lineTo(570, ankleY); // Trouser hem cuff
+      c.bezierCurveTo(564, kneeY, 574, 660, 600, crotchY); // Inseam to crotch
+      c.lineTo(600, topY);
       c.closePath();
       c.fill();
       c.stroke();
 
-      // Center pressed crease lines
-      c.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-      c.lineWidth = 1.5;
+      // Right Pant Leg with 3D cylindrical wool drape
+      const rightPantGrad = c.createLinearGradient(600, 0, 716, 0);
+      rightPantGrad.addColorStop(0, '#110C08');
+      rightPantGrad.addColorStop(0.45, '#201611');
+      rightPantGrad.addColorStop(0.52, '#261C16'); // Center leg thigh highlight
+      rightPantGrad.addColorStop(1, '#130D09');
+
+      c.fillStyle = rightPantGrad;
       c.beginPath();
-      c.moveTo(543, topY + 40);
-      c.lineTo(543, ankleY);
-      c.moveTo(657, topY + 40);
-      c.lineTo(657, ankleY);
+      c.moveTo(716, topY);
+      c.bezierCurveTo(712, 615, 690, kneeY, 680, ankleY); // Outer hip-to-ankle
+      c.lineTo(630, ankleY); // Trouser hem cuff
+      c.bezierCurveTo(636, kneeY, 626, 660, 600, crotchY); // Inseam to crotch
+      c.lineTo(600, topY);
+      c.closePath();
+      c.fill();
       c.stroke();
 
-      // Polished dress shoes
-      drawDressShoes(c, 545, 822, -1);
-      drawDressShoes(c, 655, 822, 1);
+      // Soft ambient drop shadow cast by shirt hem onto upper trousers
+      const hemShadow = c.createLinearGradient(0, topY, 0, topY + 45);
+      hemShadow.addColorStop(0, 'rgba(10, 7, 5, 0.60)');
+      hemShadow.addColorStop(0.65, 'rgba(10, 7, 5, 0.20)');
+      hemShadow.addColorStop(1, 'transparent');
+      c.fillStyle = hemShadow;
+      c.fillRect(484, topY, 232, 45);
+
+      // Fly placket stitching
+      c.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      c.lineWidth = 1.4;
+      c.beginPath();
+      c.moveTo(600, topY + 12);
+      c.lineTo(600, crotchY - 8);
+      c.quadraticCurveTo(606, crotchY - 2, 600, crotchY);
+      c.stroke();
+
+      // Sharp Pressed Center Crease Lines
+      c.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+      c.lineWidth = 1.5;
+      c.beginPath();
+      // Left crease
+      c.moveTo(545, topY + 45);
+      c.lineTo(545, ankleY - 2);
+      // Right crease
+      c.moveTo(655, topY + 45);
+      c.lineTo(655, ankleY - 2);
+      c.stroke();
+
+      // Trouser hem break fold lines
+      c.strokeStyle = '#120D0A';
+      c.lineWidth = 1.6;
+      c.beginPath();
+      c.moveTo(520, ankleY);
+      c.quadraticCurveTo(545, ankleY - 3, 570, ankleY);
+      c.moveTo(630, ankleY);
+      c.quadraticCurveTo(655, ankleY - 3, 680, ankleY);
+      c.stroke();
+
+      // Polished Oxford dress shoes
+      drawDressShoes(c, 545, 820, -1);
+      drawDressShoes(c, 655, 820, 1);
 
       c.restore();
     }
@@ -879,34 +1083,70 @@
   }
 
   /**
-   * Helper: Polished Dress Leather Shoes
+   * Helper: Polished Bespoke Oxford Leather Dress Shoes
    */
   function drawDressShoes(c, x, y, dir) {
     c.save();
     c.translate(x, y);
     c.scale(dir, 1);
 
-    // Stacked Heel
+    // Stacked Wooden Heel
     c.fillStyle = '#1A120D';
-    c.fillRect(-18, 5, 15, 6);
-
-    // Shoe Body
-    c.fillStyle = '#140E0A';
-    c.strokeStyle = '#261810';
-    c.lineWidth = 2;
     c.beginPath();
-    c.moveTo(-18, 5);
-    c.lineTo(-18, -4);
-    c.quadraticCurveTo(10, -10, 38, 2);
-    c.quadraticCurveTo(20, 8, -18, 6);
+    c.roundRect(-20, 5, 16, 7, [0, 0, 3, 3]);
+    c.fill();
+
+    // Goodyear Welt Leather Outsole Edge
+    c.fillStyle = '#2C1E16';
+    c.beginPath();
+    c.moveTo(-20, 5);
+    c.lineTo(38, 4);
+    c.lineTo(36, 8);
+    c.lineTo(-20, 8);
+    c.closePath();
+    c.fill();
+
+    // Calfskin Leather Shoe Body
+    const shoeGrad = c.createLinearGradient(-20, -10, 38, 4);
+    shoeGrad.addColorStop(0, '#100B08');
+    shoeGrad.addColorStop(0.5, '#1C130E');
+    shoeGrad.addColorStop(1, '#0C0806');
+    c.fillStyle = shoeGrad;
+    c.strokeStyle = '#261810';
+    c.lineWidth = 1.8;
+
+    c.beginPath();
+    c.moveTo(-20, 5);
+    c.lineTo(-20, -5);
+    c.quadraticCurveTo(-10, -10, 6, -11); // Instep arch
+    c.quadraticCurveTo(24, -9, 39, 2); // Almond toe curve
+    c.quadraticCurveTo(28, 6, -20, 5);
     c.closePath();
     c.fill();
     c.stroke();
 
-    // Subtle leather gloss highlight
-    c.fillStyle = 'rgba(255, 255, 255, 0.14)';
+    // Burnished Oxford Cap-Toe Seam
+    c.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+    c.lineWidth = 1.2;
     c.beginPath();
-    c.ellipse(12, -3, 10, 2.5, 0.2, 0, Math.PI * 2);
+    c.moveTo(18, -10);
+    c.quadraticCurveTo(22, -2, 23, 4);
+    c.stroke();
+
+    // Laces & Eyelets Facings
+    c.strokeStyle = '#3E2A1E';
+    c.lineWidth = 1.5;
+    [-4, 0, 4, 8].forEach(lx => {
+      c.beginPath();
+      c.moveTo(lx, -9);
+      c.lineTo(lx + 2, -6);
+      c.stroke();
+    });
+
+    // Sleek Leather Gloss Reflection
+    c.fillStyle = 'rgba(255, 255, 255, 0.16)';
+    c.beginPath();
+    c.ellipse(10, -6, 12, 2.8, 0.15, 0, Math.PI * 2);
     c.fill();
 
     c.restore();
@@ -914,104 +1154,371 @@
 
   /**
    * ARTISANAL ARMS & HANDS (TANGAN BUSANA LENGKAP)
-   * Rendered with natural skin tones and arms naturally at sides
+   * Rendered with natural skin tones and anatomically graceful postures:
+   * - 'ngapurancang': Classical Javanese court posture (hands clasped politely in front of waist)
+   * - 'santai': Natural relaxed arms hanging alongside the body with slender fingers
+   * - 'salam': Warm traditional greeting posture
    */
-  function drawArtisanHands(c, garment) {
+  function drawArtisanHands(c, garment, pose) {
     c.save();
 
-    const skinBase = '#E2BA96';
+    const currentPose = pose || state.activeLimbPose || 'ngapurancang';
+    const skinBase = '#E4BD9A';
+    const skinShadow = '#CE9C72';
     const outline = '#2D1B11';
 
     c.lineJoin = 'round';
     c.lineCap = 'round';
 
-    // Cuff anchor coordinates for each garment
-    let leftCuff = { x: 370, y: 422 };
-    let rightCuff = { x: 830, y: 422 };
+    // Cuff anchor coordinates corresponding precisely with defineGarmentPath
+    let leftCuff = { outer: { x: 398, y: 418 }, inner: { x: 454, y: 430 }, mid: { x: 426, y: 424 } };
+    let rightCuff = { outer: { x: 802, y: 418 }, inner: { x: 746, y: 430 }, mid: { x: 774, y: 424 } };
 
     if (garment === 'kebaya') {
-      leftCuff = { x: 352, y: 470 };
-      rightCuff = { x: 848, y: 470 };
+      leftCuff = { outer: { x: 390, y: 485 }, inner: { x: 430, y: 495 }, mid: { x: 410, y: 490 } };
+      rightCuff = { outer: { x: 810, y: 485 }, inner: { x: 770, y: 495 }, mid: { x: 790, y: 490 } };
     } else if (garment === 'beskap') {
-      leftCuff = { x: 372, y: 427 };
-      rightCuff = { x: 828, y: 427 };
+      leftCuff = { outer: { x: 400, y: 420 }, inner: { x: 456, y: 432 }, mid: { x: 428, y: 426 } };
+      rightCuff = { outer: { x: 800, y: 420 }, inner: { x: 744, y: 432 }, mid: { x: 772, y: 426 } };
     }
 
-    c.save();
-    c.fillStyle = skinBase;
-    c.strokeStyle = outline;
-    c.lineWidth = 2.4;
+    if (currentPose === 'ngapurancang') {
+      // SIKAP NGAPURANCANG (Sikap Santun & Berwibawa Adat Keraton)
+      // Both forearms angle inward gracefully from cuffs toward navel/waist center (600, 524)
+      const wristLeft = { x: 566, y: 520 };
+      const wristRight = { x: 634, y: 520 };
 
-    // Left arm downwards
-    c.beginPath();
-    c.moveTo(leftCuff.x - 12, leftCuff.y);
-    c.quadraticCurveTo(leftCuff.x - 18, 480, 335, 520); // Wrist outer
-    c.lineTo(348, 522); // Wrist inner
-    c.quadraticCurveTo(leftCuff.x + 10, 480, leftCuff.x + 12, leftCuff.y);
-    c.closePath();
-    c.fill();
-    c.stroke();
+      // 1. Left Forearm
+      c.save();
+      c.fillStyle = skinBase;
+      c.strokeStyle = outline;
+      c.lineWidth = 2.0;
 
-    // Left hand at side
-    drawNaturalHandSide(c, 340, 522, -1);
+      c.beginPath();
+      c.moveTo(leftCuff.outer.x, leftCuff.outer.y);
+      c.bezierCurveTo(leftCuff.outer.x + 30, 475, wristLeft.x - 30, 508, wristLeft.x - 10, wristLeft.y);
+      c.lineTo(wristLeft.x + 8, wristLeft.y + 12);
+      c.bezierCurveTo(wristLeft.x - 15, 498, leftCuff.inner.x + 15, 460, leftCuff.inner.x, leftCuff.inner.y);
+      c.closePath();
+      c.fill();
+      c.stroke();
 
-    // If Kebaya, draw Selendang Sampur draped over left arm!
-    if (garment === 'kebaya') {
-      drawKebayaSelendang(c, 338, 485);
+      // Left forearm muscle gradient shading
+      const leftArmGrad = c.createLinearGradient(leftCuff.outer.x, 420, wristLeft.x, 520);
+      leftArmGrad.addColorStop(0, 'rgba(196, 142, 98, 0.25)');
+      leftArmGrad.addColorStop(1, 'transparent');
+      c.fillStyle = leftArmGrad;
+      c.fill();
+
+      // 2. Right Forearm
+      c.beginPath();
+      c.moveTo(rightCuff.outer.x, rightCuff.outer.y);
+      c.bezierCurveTo(rightCuff.outer.x - 30, 475, wristRight.x + 30, 508, wristRight.x + 10, wristRight.y);
+      c.lineTo(wristRight.x - 8, wristRight.y + 12);
+      c.bezierCurveTo(wristRight.x + 15, 498, rightCuff.inner.x - 15, 460, rightCuff.inner.x, rightCuff.inner.y);
+      c.closePath();
+      c.fillStyle = skinBase;
+      c.fill();
+      c.stroke();
+
+      const rightArmGrad = c.createLinearGradient(rightCuff.outer.x, 420, wristRight.x, 520);
+      rightArmGrad.addColorStop(0, 'rgba(196, 142, 98, 0.25)');
+      rightArmGrad.addColorStop(1, 'transparent');
+      c.fillStyle = rightArmGrad;
+      c.fill();
+
+      // 3. Hands Clasped Politely in Center (Ngapurancang)
+      drawNgapurancangHands(c, 600, 525);
+
+      // If Kebaya, draw graceful Selendang Sampur draped over left arm
+      if (garment === 'kebaya') {
+        drawKebayaSelendang(c, leftCuff.mid.x, leftCuff.mid.y + 10);
+      }
+
+      c.restore();
+
+    } else if (currentPose === 'salam') {
+      // SIKAP SALAM HANGAT / SEMBAH PANGABEKTEN
+      c.save();
+      c.fillStyle = skinBase;
+      c.strokeStyle = outline;
+      c.lineWidth = 2.0;
+
+      // Forearms angled upward in polite greeting at chest
+      const handCenter = { x: 600, y: 460 };
+
+      // Left arm to greeting center
+      c.beginPath();
+      c.moveTo(leftCuff.outer.x, leftCuff.outer.y);
+      c.bezierCurveTo(leftCuff.outer.x + 20, 450, handCenter.x - 45, 480, handCenter.x - 14, handCenter.y + 20);
+      c.lineTo(handCenter.x - 4, handCenter.y + 30);
+      c.bezierCurveTo(handCenter.x - 30, 495, leftCuff.inner.x + 10, 455, leftCuff.inner.x, leftCuff.inner.y);
+      c.closePath();
+      c.fill();
+      c.stroke();
+
+      // Right arm to greeting center
+      c.beginPath();
+      c.moveTo(rightCuff.outer.x, rightCuff.outer.y);
+      c.bezierCurveTo(rightCuff.outer.x - 20, 450, handCenter.x + 45, 480, handCenter.x + 14, handCenter.y + 20);
+      c.lineTo(handCenter.x + 4, handCenter.y + 30);
+      c.bezierCurveTo(handCenter.x + 30, 495, rightCuff.inner.x - 10, 455, rightCuff.inner.x, rightCuff.inner.y);
+      c.closePath();
+      c.fill();
+      c.stroke();
+
+      // Clasped palms in greeting (Anjali Mudra / Sembah)
+      c.beginPath();
+      c.moveTo(600, handCenter.y - 25);
+      c.quadraticCurveTo(608, handCenter.y, 606, handCenter.y + 22);
+      c.lineTo(594, handCenter.y + 22);
+      c.quadraticCurveTo(592, handCenter.y, 600, handCenter.y - 25);
+      c.closePath();
+      c.fill();
+      c.stroke();
+
+      // Finger separation hints
+      c.strokeStyle = skinShadow;
+      c.lineWidth = 1.2;
+      c.beginPath();
+      c.moveTo(600, handCenter.y - 22);
+      c.lineTo(600, handCenter.y + 18);
+      c.stroke();
+
+      if (garment === 'kebaya') {
+        drawKebayaSelendang(c, leftCuff.mid.x, leftCuff.mid.y + 10);
+      }
+      c.restore();
+
+    } else {
+      // SIKAP SANTAI BERWIBAWA (Arms naturally at sides with slender, relaxed fingers)
+      c.save();
+      c.fillStyle = skinBase;
+      c.strokeStyle = outline;
+      c.lineWidth = 2.0;
+
+      // Left Arm naturally at side
+      const leftWrist = { x: 412, y: 518 };
+      c.beginPath();
+      c.moveTo(leftCuff.outer.x, leftCuff.outer.y);
+      c.bezierCurveTo(leftCuff.outer.x - 4, 460, leftWrist.x - 8, 490, leftWrist.x - 8, leftWrist.y);
+      c.lineTo(leftWrist.x + 12, leftWrist.y + 2);
+      c.bezierCurveTo(leftWrist.x + 12, 490, leftCuff.inner.x + 2, 460, leftCuff.inner.x, leftCuff.inner.y);
+      c.closePath();
+      c.fill();
+      c.stroke();
+
+      // Left Hand at side
+      drawNaturalHandSide(c, leftWrist.x, leftWrist.y, -1);
+
+      if (garment === 'kebaya') {
+        drawKebayaSelendang(c, leftCuff.mid.x, leftCuff.mid.y + 10);
+      }
+
+      // Right Arm naturally at side
+      const rightWrist = { x: 788, y: 518 };
+      c.beginPath();
+      c.moveTo(rightCuff.outer.x, rightCuff.outer.y);
+      c.bezierCurveTo(rightCuff.outer.x + 4, 460, rightWrist.x + 8, 490, rightWrist.x + 8, rightWrist.y);
+      c.lineTo(rightWrist.x - 12, rightWrist.y + 2);
+      c.bezierCurveTo(rightWrist.x - 12, 490, rightCuff.inner.x - 2, 460, rightCuff.inner.x, rightCuff.inner.y);
+      c.closePath();
+      c.fill();
+      c.stroke();
+
+      // Right Hand at side
+      drawNaturalHandSide(c, rightWrist.x, rightWrist.y, 1);
+
+      c.restore();
     }
-
-    // Right forearm extending downward
-    c.beginPath();
-    c.moveTo(rightCuff.x + 12, rightCuff.y);
-    c.quadraticCurveTo(rightCuff.x + 18, 480, 865, 520); // Wrist outer
-    c.lineTo(852, 522); // Wrist inner
-    c.quadraticCurveTo(rightCuff.x - 10, 480, rightCuff.x - 12, rightCuff.y);
-    c.closePath();
-    c.fill();
-    c.stroke();
-
-    // Right hand at side
-    drawNaturalHandSide(c, 860, 522, 1);
-    c.restore();
 
     c.restore();
   }
 
   /**
-   * Helper: Natural Hand at Side
+   * Helper: Clasped aristocratic hands in Ngapurancang court posture
+   */
+  function drawNgapurancangHands(c, cx, cy) {
+    c.save();
+    c.translate(cx, cy);
+
+    const skinDark = '#B5815A';
+    const strokeCol = 'rgba(45, 27, 17, 0.85)';
+
+    c.strokeStyle = strokeCol;
+    c.lineWidth = 1.6;
+    c.lineCap = 'round';
+    c.lineJoin = 'round';
+
+    // 1. Left hand back & palm resting beneath with volumetric skin shading
+    const leftHandGrad = c.createLinearGradient(-35, -12, 35, 18);
+    leftHandGrad.addColorStop(0, '#E6C19E');
+    leftHandGrad.addColorStop(0.5, '#D5A47A');
+    leftHandGrad.addColorStop(1, '#BE8358');
+    c.fillStyle = leftHandGrad;
+
+    c.beginPath();
+    c.moveTo(-36, -8);
+    c.bezierCurveTo(-20, -14, 15, -14, 32, -8);
+    c.bezierCurveTo(38, 4, 32, 16, 24, 18);
+    c.bezierCurveTo(0, 22, -24, 20, -32, 12);
+    c.closePath();
+    c.fill();
+    c.stroke();
+
+    // Crease shadow cast by overlapping right hand
+    c.fillStyle = 'rgba(55, 32, 18, 0.25)';
+    c.beginPath();
+    c.ellipse(5, 5, 24, 7, -0.15, 0, Math.PI * 2);
+    c.fill();
+
+    // 2. Right hand folded gracefully over the left hand
+    const rightHandGrad = c.createLinearGradient(-20, -15, 35, 18);
+    rightHandGrad.addColorStop(0, '#EAD1B6');
+    rightHandGrad.addColorStop(0.4, '#DCAC84');
+    rightHandGrad.addColorStop(1, '#C2885D');
+    c.fillStyle = rightHandGrad;
+
+    c.beginPath();
+    c.moveTo(-18, -12);
+    c.bezierCurveTo(-4, -15, 20, -12, 34, -4);
+    c.bezierCurveTo(36, 6, 26, 16, 14, 18);
+    c.bezierCurveTo(0, 19, -15, 14, -20, 2);
+    c.closePath();
+    c.fill();
+    c.stroke();
+
+    // 3. Right thumb resting gracefully on top
+    c.beginPath();
+    c.moveTo(-14, -8);
+    c.quadraticCurveTo(0, -16, 16, -10);
+    c.quadraticCurveTo(20, -6, 14, -3);
+    c.stroke();
+
+    // 4. Subtle individual finger knuckles & separation lines
+    c.strokeStyle = skinDark;
+    c.lineWidth = 1.1;
+    [-2, 7, 16].forEach(fx => {
+      c.beginPath();
+      c.moveTo(fx, -6);
+      c.quadraticCurveTo(fx + 2, 4, fx + 1, 14);
+      c.stroke();
+    });
+
+    // 5. Royal Gold Signet Ring (Cincin Pamor Keraton) on finger
+    c.fillStyle = '#D4AF37';
+    c.strokeStyle = '#5A3D18';
+    c.lineWidth = 1.0;
+    c.beginPath();
+    c.ellipse(14, 2, 4.2, 2.6, 0.25, 0, Math.PI * 2);
+    c.fill();
+    c.stroke();
+
+    c.fillStyle = '#FFF8EB';
+    c.beginPath();
+    c.arc(13.6, 1.2, 0.9, 0, Math.PI * 2);
+    c.fill();
+
+    // Soft fingernail highlights
+    c.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+    c.lineWidth = 0.9;
+    c.beginPath();
+    c.arc(22, 11, 2.4, 0, Math.PI);
+    c.arc(14, 13, 2.4, 0, Math.PI);
+    c.stroke();
+
+    // Ambient drop shadow beneath clasped hands onto the garment
+    c.fillStyle = 'rgba(40, 24, 14, 0.25)';
+    c.beginPath();
+    c.ellipse(0, 24, 34, 7, 0, 0, Math.PI * 2);
+    c.fill();
+
+    c.restore();
+  }
+
+  /**
+   * Helper: Natural Hand at Side (slender, relaxed fingers and thumb)
    */
   function drawNaturalHandSide(c, x, y, dir) {
     c.save();
     c.translate(x, y);
     c.scale(dir, 1);
 
-    c.fillStyle = '#E2BA96';
-    c.strokeStyle = '#2D1B11';
-    c.lineWidth = 2.2;
+    const strokeCol = 'rgba(45, 27, 17, 0.75)';
 
-    // Palm base
+    // Volumetric skin tone
+    const handGrad = c.createLinearGradient(-10, 0, 15, 45);
+    handGrad.addColorStop(0, '#E8C7A8');
+    handGrad.addColorStop(0.5, '#D7A77E');
+    handGrad.addColorStop(1, '#BE8458');
+    c.fillStyle = handGrad;
+    c.strokeStyle = strokeCol;
+    c.lineWidth = 1.5;
+    c.lineCap = 'round';
+    c.lineJoin = 'round';
+
+    // 1. Palm Base
     c.beginPath();
-    c.moveTo(0, 0);
-    c.lineTo(12, 4);
-    c.lineTo(10, 24);
-    c.lineTo(-4, 20);
+    c.moveTo(-8, 0);
+    c.bezierCurveTo(-10, 8, -8, 18, -4, 24);
+    c.lineTo(10, 22);
+    c.bezierCurveTo(12, 14, 12, 6, 8, 0);
     c.closePath();
     c.fill();
     c.stroke();
 
-    // Fingers curving down
+    // 2. Relaxed Slender Fingers Curving Inward
+    // Index finger
     c.beginPath();
-    c.moveTo(-2, 20);
-    c.quadraticCurveTo(-4, 34, -1, 38);
-    c.quadraticCurveTo(3, 40, 5, 36);
-    c.lineTo(9, 23);
+    c.moveTo(8, 20);
+    c.bezierCurveTo(11, 28, 9, 38, 7, 44);
+    c.quadraticCurveTo(4, 46, 3, 42);
+    c.bezierCurveTo(4, 35, 4, 26, 4, 21);
     c.fill();
     c.stroke();
 
-    // Thumb softly in front
+    // Middle finger (longest)
     c.beginPath();
-    c.moveTo(4, 4);
-    c.quadraticCurveTo(14, 10, 12, 18);
+    c.moveTo(4, 22);
+    c.bezierCurveTo(4, 32, 3, 42, 1, 48);
+    c.quadraticCurveTo(-2, 49, -3, 45);
+    c.bezierCurveTo(-2, 38, -1, 28, 0, 22);
+    c.fill();
+    c.stroke();
+
+    // Ring finger
+    c.beginPath();
+    c.moveTo(0, 22);
+    c.bezierCurveTo(-1, 30, -2, 40, -4, 45);
+    c.quadraticCurveTo(-7, 46, -7, 42);
+    c.bezierCurveTo(-6, 35, -5, 27, -4, 22);
+    c.fill();
+    c.stroke();
+
+    // Pinky finger
+    c.beginPath();
+    c.moveTo(-4, 22);
+    c.bezierCurveTo(-5, 28, -7, 34, -8, 38);
+    c.quadraticCurveTo(-11, 39, -11, 35);
+    c.bezierCurveTo(-10, 28, -8, 22, -6, 20);
+    c.fill();
+    c.stroke();
+
+    // 3. Thumb resting gracefully in front
+    c.beginPath();
+    c.moveTo(6, 4);
+    c.bezierCurveTo(14, 10, 16, 18, 13, 26);
+    c.quadraticCurveTo(10, 28, 8, 24);
+    c.bezierCurveTo(9, 18, 7, 12, 4, 8);
+    c.fill();
+    c.stroke();
+
+    // Delicate fingernail hints
+    c.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+    c.lineWidth = 0.9;
+    c.beginPath();
+    c.arc(5, 42, 2, 0, Math.PI);
+    c.arc(0, 45, 2, 0, Math.PI);
     c.stroke();
 
     c.restore();
@@ -1038,7 +1545,7 @@
     // Hanging sash tails
     c.beginPath();
     c.moveTo(-10, 3);
-    c.bezierCurveTo(-18, 60, -8, 120, -12, 180); // Front tail
+    c.bezierCurveTo(-18, 60, -8, 120, -12, 180);
     c.lineTo(2, 182);
     c.bezierCurveTo(6, 120, -2, 60, 4, 3);
     c.closePath();
@@ -1059,61 +1566,72 @@
   }
 
   /**
-   * Path geometry for each garment style (Kemeja, Kebaya, Beskap)
+   * PATH GEOMETRY FOR EACH GARMENT STYLE (KEMEJA, KEBAYA, BESKAP)
+   * Designed with natural anatomical shoulder slope, natural resting sleeve drape,
+   * gentle waist suppression, and realistic curved hemline.
    */
   function defineGarmentPath(c, garment) {
     c.beginPath();
 
     if (garment === 'kebaya') {
-      // Kebaya Kartini: Elegant V-neck, tapered waist, flared hip (Proportional size)
+      // KEBAYA KARTINI: Feminine shoulder slope, tailored waist, flared peplum hem
       c.moveTo(550, 242); // Left collar top
-      c.lineTo(440, 268); // Left shoulder
-      c.lineTo(330, 460); // Left long sleeve cuff outer
-      c.lineTo(375, 480); // Left long sleeve cuff inner
-      c.lineTo(460, 410); // Left armpit
-      c.lineTo(485, 485); // Tapered left waist
-      c.lineTo(450, 610); // Flared left hem
-      c.quadraticCurveTo(600, 630, 750, 610); // Curved bottom hem
-      c.lineTo(715, 485); // Tapered right waist
-      c.lineTo(740, 410); // Right armpit
-      c.lineTo(825, 480); // Right long sleeve cuff inner
-      c.lineTo(870, 460); // Right long sleeve cuff outer
-      c.lineTo(760, 268); // Right shoulder
-      c.lineTo(650, 242); // Right collar top
-      c.lineTo(600, 330); // Deep V-neck point
+      c.bezierCurveTo(510, 248, 470, 258, 445, 270); // Natural left shoulder slope
+      c.bezierCurveTo(425, 335, 405, 415, 390, 485); // Left slim sleeve outer
+      c.lineTo(430, 495); // Left wrist cuff
+      c.bezierCurveTo(442, 440, 462, 415, 480, 400); // Left inner sleeve into armpit
+      c.bezierCurveTo(488, 435, 494, 460, 498, 475); // Tailored left waist curve
+      c.bezierCurveTo(486, 520, 465, 570, 455, 615); // Flared hip peplum
+      c.quadraticCurveTo(600, 632, 745, 615); // Curved lower hem
+      c.bezierCurveTo(735, 570, 714, 520, 702, 475); // Right tailored waist
+      c.bezierCurveTo(706, 460, 712, 435, 720, 400); // Right inner sleeve from armpit
+      c.bezierCurveTo(738, 415, 758, 440, 770, 495); // Right wrist cuff inner
+      c.lineTo(810, 485); // Right wrist cuff outer
+      c.bezierCurveTo(795, 415, 775, 335, 755, 270); // Right slim sleeve outer
+      c.bezierCurveTo(730, 258, 690, 248, 650, 242); // Right shoulder slope
+      c.bezierCurveTo(630, 275, 612, 310, 600, 335); // V-neck center point
+      c.bezierCurveTo(588, 310, 570, 275, 550, 242);
       c.closePath();
 
     } else if (garment === 'beskap') {
-      // Beskap Keraton: High mandarin collar, straight formal cut (Proportional size)
-      c.moveTo(545, 230); // Left high collar
-      c.lineTo(435, 260); // Left shoulder
-      c.lineTo(345, 415); // Left sleeve cuff outer
-      c.lineTo(400, 440); // Left sleeve cuff inner
-      c.lineTo(470, 395); // Left underarm
-      c.lineTo(465, 580); // Left straight hem
-      c.lineTo(735, 580); // Right straight hem
-      c.lineTo(730, 395); // Right underarm
-      c.lineTo(800, 440); // Right sleeve cuff inner
-      c.lineTo(855, 415); // Right sleeve cuff outer
-      c.lineTo(765, 260); // Right shoulder
-      c.lineTo(655, 230); // Right high collar
+      // BESKAP KERATON: High mandarin collar stand, regal formal shoulders, tailored fit
+      c.moveTo(552, 226); // Left mandarin collar
+      c.lineTo(552, 242);
+      c.bezierCurveTo(510, 248, 468, 256, 430, 262); // Left formal shoulder
+      c.bezierCurveTo(418, 310, 408, 365, 400, 420); // Left sleeve outer
+      c.lineTo(456, 432); // Left sleeve cuff
+      c.bezierCurveTo(464, 410, 472, 395, 482, 385); // Left underarm into armpit
+      c.bezierCurveTo(482, 440, 478, 510, 475, 578); // Left straight formal torso
+      c.lineTo(725, 578); // Right straight formal torso
+      c.bezierCurveTo(722, 510, 718, 440, 718, 385); // Right torso to armpit
+      c.bezierCurveTo(728, 395, 736, 410, 744, 432); // Right inner sleeve cuff
+      c.lineTo(800, 420); // Right outer sleeve cuff
+      c.bezierCurveTo(792, 365, 782, 310, 770, 262); // Right formal sleeve outer
+      c.bezierCurveTo(732, 256, 690, 248, 648, 242); // Right shoulder slope
+      c.lineTo(648, 226); // Right mandarin collar
+      c.quadraticCurveTo(600, 230, 552, 226); // Collar top curve
       c.closePath();
 
     } else {
-      // Default: Kemeja Batik Pria (Proportional compact shirt)
-      c.moveTo(545, 235); // Left collar point
-      c.lineTo(440, 260); // Left shoulder
-      c.lineTo(345, 410); // Left sleeve outer
-      c.lineTo(395, 435); // Left sleeve cuff
-      c.lineTo(470, 395); // Left armpit
-      c.lineTo(460, 580); // Left bottom hem
-      c.quadraticCurveTo(600, 600, 740, 580); // Curved bottom hem
-      c.lineTo(730, 395); // Right armpit
-      c.lineTo(805, 435); // Right sleeve cuff
-      c.lineTo(855, 410); // Right sleeve outer
-      c.lineTo(760, 260); // Right shoulder
-      c.lineTo(655, 235); // Right collar point
-      c.quadraticCurveTo(600, 262, 545, 235); // Neck scooped collar line
+      // DEFAULT: KEMEJA BATIK PRIA (Haute Couture Tailored Shirt)
+      // Natural anatomical shoulder slope, natural resting sleeve drape, tailored waist suppression, curved shirttail
+      c.moveTo(545, 238); // Left collar point
+      c.bezierCurveTo(505, 246, 465, 256, 430, 268); // Natural left shoulder slope
+      c.bezierCurveTo(418, 315, 408, 368, 398, 418); // Left outer sleeve (natural resting hang)
+      c.lineTo(454, 430); // Left sleeve cuff
+      c.bezierCurveTo(464, 410, 472, 395, 482, 385); // Left underarm into armpit scye
+      c.bezierCurveTo(488, 425, 492, 455, 492, 475); // Tailored left waist suppression
+      c.bezierCurveTo(490, 515, 484, 550, 480, 578); // Left hip hem
+      c.bezierCurveTo(525, 588, 570, 596, 600, 596); // Curved center shirttail dip
+      c.bezierCurveTo(630, 596, 675, 588, 720, 578); // Right hip hem
+      c.bezierCurveTo(716, 550, 710, 515, 708, 475); // Tailored right waist suppression
+      c.bezierCurveTo(708, 455, 712, 425, 718, 385); // Right torso into armpit scye
+      c.bezierCurveTo(728, 395, 736, 410, 746, 430); // Right inner sleeve cuff
+      c.lineTo(802, 418); // Right outer sleeve cuff
+      c.bezierCurveTo(792, 368, 782, 315, 770, 268); // Right outer sleeve
+      c.bezierCurveTo(735, 256, 695, 246, 655, 238); // Right shoulder slope
+      c.bezierCurveTo(640, 252, 620, 264, 600, 264); // Neckline scooped notch
+      c.bezierCurveTo(580, 264, 560, 252, 545, 238);
       c.closePath();
     }
   }
@@ -1126,14 +1644,14 @@
 
     // 1. Fill base garment fabric color (Warm Mori Silk)
     defineGarmentPath(c, garment);
-    c.fillStyle = '#F3ECE0';
-    c.shadowColor = 'rgba(47, 28, 16, 0.25)';
-    c.shadowBlur = 25;
-    c.shadowOffsetY = 12;
+    c.fillStyle = '#F4ECE0';
+    c.shadowColor = 'rgba(35, 20, 10, 0.35)';
+    c.shadowBlur = 30;
+    c.shadowOffsetY = 15;
     c.fill();
     c.shadowColor = 'transparent';
 
-    // 2. Clip all motif drawing inside the Baju boundary!
+    // 2. Clip all motif drawing and 3D volume lighting inside the Baju boundary!
     c.save();
     defineGarmentPath(c, garment);
     c.clip();
@@ -1146,6 +1664,37 @@
     } else if (motifId === 'buketan') {
       drawBuketanOnGarment(c);
     }
+
+    // 2b. Haute Couture Volumetric 3D cylindrical lighting across torso & sleeves
+    // Gives the garment luxurious natural cloth depth instead of flat cardboard
+    const torsoShading = c.createLinearGradient(380, 0, 820, 0);
+    torsoShading.addColorStop(0, 'rgba(40, 24, 14, 0.22)'); // Left arm outer flank shadow
+    torsoShading.addColorStop(0.18, 'rgba(40, 24, 14, 0.05)');
+    torsoShading.addColorStop(0.32, 'rgba(50, 30, 18, 0.16)'); // Left underarm crease shadow
+    torsoShading.addColorStop(0.40, 'rgba(255, 255, 255, 0.08)');
+    torsoShading.addColorStop(0.50, 'rgba(255, 255, 255, 0.20)'); // Central chest highlight
+    torsoShading.addColorStop(0.60, 'rgba(255, 255, 255, 0.08)');
+    torsoShading.addColorStop(0.68, 'rgba(50, 30, 18, 0.16)'); // Right underarm crease shadow
+    torsoShading.addColorStop(0.82, 'rgba(40, 24, 14, 0.05)');
+    torsoShading.addColorStop(1, 'rgba(40, 24, 14, 0.22)'); // Right arm outer flank shadow
+    c.fillStyle = torsoShading;
+    c.fill();
+
+    // Top-to-bottom natural lighting drape (soft shadow towards lower waist hem)
+    const verticalDrape = c.createLinearGradient(0, 230, 0, 610);
+    verticalDrape.addColorStop(0, 'rgba(255, 255, 255, 0.12)');
+    verticalDrape.addColorStop(0.35, 'transparent');
+    verticalDrape.addColorStop(0.85, 'rgba(45, 27, 16, 0.08)');
+    verticalDrape.addColorStop(1, 'rgba(35, 20, 12, 0.24)');
+    c.fillStyle = verticalDrape;
+    c.fill();
+
+    // Soft drop shadow cast by sleeves onto the torso flanks
+    c.fillStyle = 'rgba(25, 14, 8, 0.18)';
+    c.beginPath();
+    c.ellipse(475, 410, 16, 45, 0.15, 0, Math.PI * 2);
+    c.ellipse(725, 410, 16, 45, -0.15, 0, Math.PI * 2);
+    c.fill();
 
     c.restore(); // Exit clipping
 
@@ -1295,127 +1844,401 @@
   }
 
   /**
-   * Tailoring details: collar, placket buttons, pocket, and seams
+   * MASTER TAILORING DETAILS
+   * Seams, armhole scye seams (kerung lengan), 3D collar stand, double-needle topstitch,
+   * carved 4-hole coconut buttons with thread, bespoke breast pocket, and fabric drape folds.
    */
   function drawGarmentTailoringDetails(c, garment) {
     c.save();
-    c.strokeStyle = '#2F1C10';
-    c.lineWidth = 4;
     c.lineJoin = 'round';
     c.lineCap = 'round';
 
-    // 1. Draw outer garment outline
+    // 1. Refined outer garment seam stroke
+    c.strokeStyle = '#2C1A10';
+    c.lineWidth = 2.6;
     defineGarmentPath(c, garment);
     c.stroke();
 
     if (garment === 'kebaya') {
-      // Kebaya front edge & gold kerongsang brooches
+      // KEBAYA KARTINI: Embroidered front border, Kutubaru lapels, and 3-tier gold brooches
+      c.strokeStyle = '#8C6D46';
+      c.lineWidth = 2.0;
+
+      // Bebie / Kartini front lapel borders
       c.beginPath();
-      c.moveTo(600, 330);
-      c.lineTo(600, 625);
+      c.moveTo(550, 242);
+      c.lineTo(594, 335);
+      c.lineTo(594, 628);
+      c.moveTo(650, 242);
+      c.lineTo(606, 335);
+      c.lineTo(606, 628);
       c.stroke();
 
-      // Brooches / Peniti susun
-      [370, 420, 470, 520, 570].forEach(y => {
-        c.fillStyle = '#8C6D46';
+      // Armhole seams (kerung lengan)
+      c.strokeStyle = 'rgba(44, 26, 16, 0.35)';
+      c.lineWidth = 1.6;
+      c.beginPath();
+      c.moveTo(445, 270);
+      c.quadraticCurveTo(465, 340, 480, 400);
+      c.moveTo(755, 270);
+      c.quadraticCurveTo(735, 340, 720, 400);
+      c.stroke();
+
+      // Triple Ornate Gold Kerongsang Susun Brooches
+      [360, 420, 480].forEach((by, idx) => {
+        c.save();
+        c.translate(600, by);
+
+        // Brooch filigree gold flower plate
+        c.fillStyle = '#C5A572';
         c.beginPath();
-        c.arc(600, y, 6, 0, Math.PI * 2);
+        c.ellipse(0, 0, 11, 8, 0, 0, Math.PI * 2);
         c.fill();
+        c.strokeStyle = '#8C6D46';
+        c.lineWidth = 1.4;
         c.stroke();
+
+        // Faceted center ruby/topaz cabochon gem
+        c.fillStyle = idx === 1 ? '#9C2C28' : '#785522';
+        c.beginPath();
+        c.arc(0, 0, 4, 0, Math.PI * 2);
+        c.fill();
+
+        // Dangling pearl / gold pendant on bottom brooch
+        if (idx === 2) {
+          c.strokeStyle = '#C5A572';
+          c.beginPath();
+          c.moveTo(0, 8);
+          c.lineTo(0, 16);
+          c.stroke();
+          c.fillStyle = '#FAF7F2';
+          c.beginPath();
+          c.arc(0, 18, 2.8, 0, Math.PI * 2);
+          c.fill();
+        }
+        c.restore();
       });
 
     } else if (garment === 'beskap') {
-      // Beskap Keraton asymmetric overlapping flap (Kancingan Serong)
+      // BESKAP KERATON: High mandarin collar stand, asymmetric Kancingan Serong, brass buttons & chain
+      // High Mandarin Collar Stand
+      c.fillStyle = '#EFE7DA';
       c.beginPath();
-      c.moveTo(565, 230);
-      c.lineTo(630, 290);
-      c.lineTo(630, 580);
+      c.moveTo(552, 226);
+      c.lineTo(552, 244);
+      c.quadraticCurveTo(600, 250, 648, 244);
+      c.lineTo(648, 226);
+      c.quadraticCurveTo(600, 230, 552, 226);
+      c.closePath();
+      c.fill();
+      c.strokeStyle = '#2C1A10';
+      c.lineWidth = 2.4;
       c.stroke();
 
-      // Brass buttons along the flap
-      [285, 335, 385, 435, 485, 535].forEach(y => {
-        c.fillStyle = '#8C6D46';
+      // Asymmetric overlapping flap (Kancingan Serong)
+      c.strokeStyle = '#2C1A10';
+      c.lineWidth = 2.4;
+      c.beginPath();
+      c.moveTo(568, 244);
+      c.bezierCurveTo(585, 275, 625, 290, 630, 310);
+      c.lineTo(630, 578);
+      c.stroke();
+
+      // Royal Gold Pocket Chain (Rantai Kalung Jam Kantong Keraton)
+      c.strokeStyle = '#C5A572';
+      c.lineWidth = 1.6;
+      c.beginPath();
+      c.moveTo(630, 395);
+      c.bezierCurveTo(600, 435, 550, 430, 535, 410);
+      c.stroke();
+
+      // Royal Brass Buttons along the flap
+      [275, 325, 375, 425, 475, 525].forEach(by => {
+        c.fillStyle = '#C5A572';
         c.beginPath();
-        c.arc(630, y, 6, 0, Math.PI * 2);
+        c.arc(630, by, 5.5, 0, Math.PI * 2);
         c.fill();
+        c.strokeStyle = '#8C6D46';
+        c.lineWidth = 1.4;
         c.stroke();
+
+        // Button shine highlight
+        c.fillStyle = '#FFF8E7';
+        c.beginPath();
+        c.arc(628, by - 1.5, 1.6, 0, Math.PI * 2);
+        c.fill();
       });
+
+      // Armhole seams (kerung lengan)
+      c.strokeStyle = 'rgba(44, 26, 16, 0.4)';
+      c.lineWidth = 1.8;
+      c.beginPath();
+      c.moveTo(430, 262);
+      c.quadraticCurveTo(456, 325, 482, 385);
+      c.moveTo(770, 262);
+      c.quadraticCurveTo(744, 325, 718, 385);
+      c.stroke();
 
     } else {
-      // Kemeja Batik Pria
-      // Collar Lapels
+      // KEMEJA BATIK PRIA: 3D Collar stand, folded lapels, placket with topstitch, 5 carved buttons, bespoke pocket
+      c.save();
+
+      // 1. Armhole Scye Seams (Kerung Lengan) - separates sleeve cylinder from torso
+      c.strokeStyle = 'rgba(44, 26, 16, 0.45)';
+      c.lineWidth = 2.0;
       c.beginPath();
-      c.moveTo(545, 235);
-      c.lineTo(580, 290);
-      c.lineTo(600, 265);
-      c.lineTo(620, 290);
-      c.lineTo(655, 235);
+      // Left armhole
+      c.moveTo(430, 268);
+      c.bezierCurveTo(454, 315, 470, 355, 482, 385);
+      // Right armhole
+      c.moveTo(770, 268);
+      c.bezierCurveTo(746, 315, 730, 355, 718, 385);
       c.stroke();
 
-      // Front Button Placket
+      // Double-needle topstitch along armhole seams
+      c.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+      c.lineWidth = 1.0;
       c.beginPath();
-      c.moveTo(588, 265);
-      c.lineTo(588, 592);
-      c.moveTo(612, 265);
-      c.lineTo(612, 592);
+      c.moveTo(432, 268);
+      c.bezierCurveTo(456, 315, 472, 355, 484, 385);
+      c.moveTo(768, 268);
+      c.bezierCurveTo(744, 315, 728, 355, 716, 385);
       c.stroke();
 
-      // 5 traditional coconut-shell buttons
-      [315, 370, 425, 480, 535].forEach(y => {
+      // 2. Collar Stand & Crisp Pointed Folded Lapels
+      // Soft lapel drop shadow onto chest fabric
+      c.fillStyle = 'rgba(44, 26, 16, 0.22)';
+      c.beginPath();
+      c.moveTo(545, 238);
+      c.lineTo(578, 296);
+      c.lineTo(600, 270);
+      c.lineTo(622, 296);
+      c.lineTo(655, 238);
+      c.closePath();
+      c.fill();
+
+      // Left Lapel
+      c.fillStyle = '#F8F3EA';
+      c.strokeStyle = '#2C1A10';
+      c.lineWidth = 2.2;
+      c.beginPath();
+      c.moveTo(545, 238);
+      c.lineTo(576, 292); // Crisp collar point
+      c.lineTo(600, 268); // V-notch center
+      c.lineTo(572, 248);
+      c.closePath();
+      c.fill();
+      c.stroke();
+
+      // Right Lapel
+      c.beginPath();
+      c.moveTo(655, 238);
+      c.lineTo(624, 292); // Crisp collar point
+      c.lineTo(600, 268); // V-notch center
+      c.lineTo(628, 248);
+      c.closePath();
+      c.fill();
+      c.stroke();
+
+      // Collar Roll Topstitch
+      c.strokeStyle = 'rgba(44, 26, 16, 0.35)';
+      c.lineWidth = 1.2;
+      c.beginPath();
+      c.moveTo(547, 242);
+      c.lineTo(574, 288);
+      c.moveTo(653, 242);
+      c.lineTo(626, 288);
+      c.stroke();
+
+      // 3. Front Button Placket with Double-Needle Topstitch
+      c.fillStyle = 'rgba(44, 26, 16, 0.04)';
+      c.fillRect(589, 268, 22, 326);
+
+      c.strokeStyle = '#2C1A10';
+      c.lineWidth = 2.0;
+      c.beginPath();
+      c.moveTo(589, 268);
+      c.lineTo(589, 594);
+      c.moveTo(611, 268);
+      c.lineTo(611, 594);
+      c.stroke();
+
+      // Fine topstitching inside placket edges
+      c.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+      c.lineWidth = 1.0;
+      c.beginPath();
+      c.moveTo(592, 268);
+      c.lineTo(592, 594);
+      c.moveTo(608, 268);
+      c.lineTo(608, 594);
+      c.stroke();
+
+      // 4. Five Bespoke Carved Coconut-Shell Buttons with 4 Thread Holes
+      [315, 370, 425, 480, 535].forEach(by => {
+        // Outer wood rim bevel
+        c.fillStyle = '#361F10';
+        c.beginPath();
+        c.arc(600, by, 5.5, 0, Math.PI * 2);
+        c.fill();
+        c.strokeStyle = '#22140A';
+        c.lineWidth = 1.2;
+        c.stroke();
+
+        // Inner button face
         c.fillStyle = '#4E311D';
         c.beginPath();
-        c.arc(600, y, 5, 0, Math.PI * 2);
+        c.arc(600, by, 4.2, 0, Math.PI * 2);
         c.fill();
+
+        // 4 Thread Holes
+        c.fillStyle = '#1D1108';
+        [-1.5, 1.5].forEach(dx => {
+          [-1.5, 1.5].forEach(dy => {
+            c.beginPath();
+            c.arc(600 + dx, by + dy, 0.7, 0, Math.PI * 2);
+            c.fill();
+          });
+        });
+
+        // Crossed thread stitch (Cream)
+        c.strokeStyle = '#F8F3EB';
+        c.lineWidth = 0.9;
+        c.beginPath();
+        c.moveTo(598.5, by - 1.5);
+        c.lineTo(601.5, by + 1.5);
+        c.moveTo(601.5, by - 1.5);
+        c.lineTo(598.5, by + 1.5);
         c.stroke();
       });
 
-      // Left breast pocket
+      // 5. Bespoke Peaked Left Breast Pocket with Dimensional Shadow
+      c.save();
+      // Drop shadow cast by pocket patch onto chest
+      c.fillStyle = 'rgba(40, 24, 14, 0.16)';
       c.beginPath();
-      c.moveTo(480, 325);
-      c.lineTo(530, 325);
-      c.lineTo(530, 375);
-      c.quadraticCurveTo(505, 388, 480, 375);
+      c.moveTo(502, 327);
+      c.lineTo(543, 327);
+      c.lineTo(543, 373);
+      c.lineTo(521, 384);
+      c.lineTo(502, 373);
       c.closePath();
+      c.fill();
+
+      // Pocket fabric patch
+      c.fillStyle = 'rgba(244, 236, 224, 0.25)';
+      c.beginPath();
+      c.moveTo(500, 325);
+      c.lineTo(540, 325);
+      c.lineTo(540, 370);
+      c.lineTo(520, 380); // Classical tailor's pointed hem
+      c.lineTo(500, 370);
+      c.closePath();
+      c.fill();
+      c.strokeStyle = 'rgba(44, 26, 16, 0.65)';
+      c.lineWidth = 1.6;
       c.stroke();
 
-      // Sleeve cuff seams
+      // Pocket Top Bar Welt
+      c.fillStyle = 'rgba(65, 40, 24, 0.18)';
+      c.fillRect(500, 325, 40, 7);
+      c.strokeStyle = 'rgba(44, 26, 16, 0.75)';
+      c.strokeRect(500, 325, 40, 7);
+
+      // Fine inner topstitch
+      c.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+      c.lineWidth = 0.9;
       c.beginPath();
-      c.moveTo(345, 410);
-      c.lineTo(395, 435);
-      c.moveTo(805, 435);
-      c.lineTo(855, 410);
+      c.moveTo(502, 335);
+      c.lineTo(538, 335);
+      c.lineTo(538, 368);
+      c.lineTo(520, 377);
+      c.lineTo(502, 368);
+      c.closePath();
       c.stroke();
+      c.restore();
+
+      // 6. Sleeve Cuff Bands & Tailored Horn Buttons
+      c.strokeStyle = '#2C1A10';
+      c.lineWidth = 2.0;
+      c.beginPath();
+      c.moveTo(398, 418);
+      c.lineTo(454, 430);
+      c.moveTo(802, 418);
+      c.lineTo(746, 430);
+      c.stroke();
+
+      // Double topstitch on cuffs
+      c.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+      c.lineWidth = 1.0;
+      c.beginPath();
+      c.moveTo(400, 414);
+      c.lineTo(452, 426);
+      c.moveTo(800, 414);
+      c.lineTo(748, 426);
+      c.stroke();
+
+      // Tailored Cuff Buttons
+      [{ x: 426, y: 423 }, { x: 774, y: 423 }].forEach(cb => {
+        c.fillStyle = '#361F10';
+        c.beginPath();
+        c.arc(cb.x, cb.y, 3.2, 0, Math.PI * 2);
+        c.fill();
+        c.strokeStyle = '#D4AF37';
+        c.lineWidth = 0.8;
+        c.stroke();
+      });
+
+      // 7. Subtle Fabric Drape Creases (Underarm & Waist Folds)
+      c.strokeStyle = 'rgba(44, 26, 16, 0.15)';
+      c.lineWidth = 1.4;
+      c.beginPath();
+      // Left armpit fold
+      c.moveTo(482, 390);
+      c.quadraticCurveTo(495, 410, 490, 430);
+      // Right armpit fold
+      c.moveTo(718, 390);
+      c.quadraticCurveTo(705, 410, 710, 430);
+      // Waist side tension folds
+      c.moveTo(482, 470);
+      c.quadraticCurveTo(500, 480, 520, 475);
+      c.moveTo(718, 470);
+      c.quadraticCurveTo(700, 480, 680, 475);
+      c.stroke();
+
+      c.restore();
     }
 
     c.restore();
   }
 
   /**
-   * FACE APERTURE FOR PHOTO BOOTH
-   * Sits right on top of the collar: center (600, 160), oval (75 x 92)
+   * CERMIN POTRET ADAT (ROYAL ANTIQUE JAVANESE VANITY MIRROR)
+   * Replaces flat cutout with an authentic royal bronze-framed heirloom looking-glass (Cermin Pusaka).
+   * Center (600, 162), Oval (66 x 82) perfectly crowning collar & neckline.
+   * When camera is off: Warm smoked convex bronze glass, diagonal specular reflection, and gold serif typography.
+   * When camera/photo is active: Smoothly clipped live video or photo with feathered antique brass framing.
    */
   function drawFaceInFrame(c) {
     const faceX = 600;
-    const faceY = 160;
-    const radiusX = 75;
-    const radiusY = 92;
+    const faceY = 162;
+    const radiusX = 66;
+    const radiusY = 82;
 
     c.save();
-
-    // Define Head Oval Path
-    c.beginPath();
-    c.ellipse(faceX, faceY, radiusX, radiusY, 0, 0, Math.PI * 2);
 
     // If Webcam is actively streaming OR user has uploaded a photo
     const hasLiveVideo = (state.cameraActive && videoEl && videoEl.readyState >= 2);
     const hasPhoto = (state.userFaceImg !== null);
 
     if (hasLiveVideo || hasPhoto) {
+      // 1. ACTIVE SELFIE / USER PHOTO PORTRAIT
       c.save();
-      c.clip(); // Clip video/photo strictly inside face oval
+      c.beginPath();
+      c.ellipse(faceX, faceY, radiusX - 2, radiusY - 2, 0, 0, Math.PI * 2);
+      c.clip(); // Clip video/photo strictly inside mirror glass
 
       // Fill background behind face
-      c.fillStyle = '#000';
+      c.fillStyle = '#0D0704';
       c.fillRect(faceX - radiusX, faceY - radiusY, radiusX * 2, radiusY * 2);
 
       // Apply User Zoom & Pan adjustments
@@ -1438,124 +2261,280 @@
         const targetW = (img.width / img.height) * targetH;
         c.drawImage(img, -targetW / 2, -targetH / 2, targetW, targetH);
       }
-
       c.restore();
 
-      // Subtle inner shadow around collar neck joint
+      // Soft feathered inner vignette around portrait edges
       c.save();
+      const innerVig = c.createRadialGradient(faceX, faceY, radiusX * 0.7, faceX, faceY, radiusY);
+      innerVig.addColorStop(0, 'transparent');
+      innerVig.addColorStop(0.85, 'rgba(30, 18, 10, 0.35)');
+      innerVig.addColorStop(1, 'rgba(20, 12, 6, 0.75)');
+      c.fillStyle = innerVig;
       c.beginPath();
       c.ellipse(faceX, faceY, radiusX, radiusY, 0, 0, Math.PI * 2);
-      c.lineWidth = 4.5;
-      c.strokeStyle = 'rgba(47, 28, 16, 0.4)';
-      c.stroke();
+      c.fill();
       c.restore();
 
     } else {
-      // ARTISANAL ATELIER PORTRAIT GUIDE (When camera is off)
-      // Graceful fitting mannequin head with refined cultural camera aperture guide
-      c.fillStyle = '#F5EFEB';
-      c.fill();
-      c.strokeStyle = '#2E1C12';
-      c.lineWidth = 2.5;
-      c.stroke();
+      // 2. IDLE STATE: CERMIN POTRET PUSAKA (Antique Javanese Convex Mirror)
+      // Convex Smoked Bronze Glass Surface
+      const mirrorGlass = c.createRadialGradient(faceX - 18, faceY - 25, 8, faceX, faceY, radiusY);
+      mirrorGlass.addColorStop(0, '#362418');
+      mirrorGlass.addColorStop(0.45, '#24160E');
+      mirrorGlass.addColorStop(0.8, '#160D08');
+      mirrorGlass.addColorStop(1, '#0C0704');
 
-      // Subtle jawline contour shading
-      c.fillStyle = 'rgba(78, 49, 29, 0.05)';
+      c.fillStyle = mirrorGlass;
       c.beginPath();
-      c.ellipse(faceX, faceY + 45, radiusX * 0.65, 22, 0, 0, Math.PI);
+      c.ellipse(faceX, faceY, radiusX, radiusY, 0, 0, Math.PI * 2);
       c.fill();
 
-      // Minimalist portrait fitting mark (Aperture & Camera Icon)
+      // Diagonal Specular Reflection Sheen (Curved glass reflection)
       c.save();
-      c.strokeStyle = 'rgba(140, 109, 70, 0.5)';
-      c.lineWidth = 1.4;
+      c.beginPath();
+      c.ellipse(faceX, faceY, radiusX - 2, radiusY - 2, 0, 0, Math.PI * 2);
+      c.clip();
+
+      const sheenGrad = c.createLinearGradient(faceX - radiusX, faceY - radiusY, faceX + radiusX, faceY + radiusY);
+      sheenGrad.addColorStop(0, 'rgba(255, 245, 225, 0.18)');
+      sheenGrad.addColorStop(0.28, 'rgba(255, 245, 225, 0.05)');
+      sheenGrad.addColorStop(0.48, 'transparent');
+      sheenGrad.addColorStop(0.72, 'rgba(212, 175, 55, 0.08)');
+      sheenGrad.addColorStop(1, 'transparent');
+      c.fillStyle = sheenGrad;
+      c.fillRect(faceX - radiusX, faceY - radiusY, radiusX * 2, radiusY * 2);
+
+      // Subtle Concave Glass Vignette
+      const concaveVig = c.createRadialGradient(faceX, faceY, 20, faceX, faceY, radiusY);
+      concaveVig.addColorStop(0, 'transparent');
+      concaveVig.addColorStop(1, 'rgba(0, 0, 0, 0.45)');
+      c.fillStyle = concaveVig;
+      c.fillRect(faceX - radiusX, faceY - radiusY, radiusX * 2, radiusY * 2);
+      c.restore();
+
+      // Inner Concentric Brass Filigree Ring
+      c.save();
+      c.strokeStyle = 'rgba(197, 165, 114, 0.45)';
+      c.lineWidth = 1.0;
       c.setLineDash([4, 4]);
       c.beginPath();
-      c.ellipse(faceX, faceY - 5, 48, 56, 0, 0, Math.PI * 2);
+      c.ellipse(faceX, faceY, radiusX - 8, radiusY - 8, 0, 0, Math.PI * 2);
       c.stroke();
       c.setLineDash([]);
 
-      // Camera glyph
-      c.translate(faceX, faceY - 8);
-      c.strokeStyle = '#8C6D46';
-      c.lineWidth = 1.8;
+      // Antique Brass Camera / Royal Looking-Glass Emblem
+      c.translate(faceX, faceY - 12);
+
+      // Camera body
+      c.fillStyle = 'rgba(212, 175, 55, 0.12)';
+      c.strokeStyle = '#D4AF37';
+      c.lineWidth = 1.6;
       c.beginPath();
-      c.roundRect(-15, -9, 30, 20, 3);
+      c.roundRect(-16, -10, 32, 21, 4);
+      c.fill();
       c.stroke();
+
+      // Camera top pentaprism housing
       c.beginPath();
-      c.arc(0, 1, 5, 0, Math.PI * 2);
+      c.moveTo(-6, -10);
+      c.lineTo(-4, -14);
+      c.lineTo(4, -14);
+      c.lineTo(6, -10);
+      c.closePath();
+      c.fillStyle = '#C5A572';
+      c.fill();
       c.stroke();
+
+      // Camera lens ring & gold diamond center
+      c.strokeStyle = '#EAD8B8';
+      c.lineWidth = 1.4;
       c.beginPath();
-      c.rect(-5, -13, 10, 4);
+      c.arc(0, 1, 6, 0, Math.PI * 2);
       c.stroke();
+
+      c.fillStyle = '#D4AF37';
+      c.beginPath();
+      c.arc(0, 1, 2.5, 0, Math.PI * 2);
+      c.fill();
       c.restore();
 
-      // Clean editorial prompt typography
+      // Classical Serif Gold Typography
       c.save();
-      c.font = '600 11px Cinzel, "Playfair Display", Georgia, serif';
-      c.fillStyle = '#4E311D';
       c.textAlign = 'center';
-      c.fillText('PHOTO BOOTH', faceX, faceY + 28);
-      c.font = 'italic 400 9.5px "Plus Jakarta Sans", sans-serif';
-      c.fillStyle = '#8C6D46';
-      c.fillText('Buka kamera untuk mencoba', faceX, faceY + 42);
+      c.font = '700 10.5px Cinzel, "Newsreader", "Playfair Display", Georgia, serif';
+      c.fillStyle = '#EAD8B8';
+      c.shadowColor = 'rgba(0, 0, 0, 0.8)';
+      c.shadowBlur = 4;
+      c.shadowOffsetY = 1;
+      c.fillText('CERMIN ADAT JAWA', faceX, faceY + 24);
+
+      c.font = 'italic 400 9px "Plus Jakarta Sans", sans-serif';
+      c.fillStyle = '#C5A572';
+      c.shadowColor = 'transparent';
+      c.fillText('Buka Kamera • Coba Busana', faceX, faceY + 40);
       c.restore();
     }
+
+    // 3. MASTER BEVELED HEIRLOOM BRASS FRAME (Shared in both Idle & Active states)
+    // Deep Outer Relief Shadow
+    c.save();
+    c.shadowColor = 'rgba(15, 9, 5, 0.65)';
+    c.shadowBlur = 14;
+    c.shadowOffsetY = 5;
+    c.strokeStyle = '#3D2616';
+    c.lineWidth = 3.6;
+    c.beginPath();
+    c.ellipse(faceX, faceY, radiusX, radiusY, 0, 0, Math.PI * 2);
+    c.stroke();
+    c.restore();
+
+    // Main Antique Brass Rim
+    c.strokeStyle = '#C5A572';
+    c.lineWidth = 2.4;
+    c.beginPath();
+    c.ellipse(faceX, faceY, radiusX, radiusY, 0, 0, Math.PI * 2);
+    c.stroke();
+
+    // Fine Gold Hairline Highlight
+    c.strokeStyle = '#D4AF37';
+    c.lineWidth = 1.0;
+    c.beginPath();
+    c.ellipse(faceX, faceY, radiusX - 2, radiusY - 2, 0, 0, Math.PI * 2);
+    c.stroke();
+
+    // 4 Cardinal Golden Pamor Diamond Studs (Pamor Permata Emas)
+    const studs = [
+      { x: faceX, y: faceY - radiusY },
+      { x: faceX, y: faceY + radiusY },
+      { x: faceX - radiusX, y: faceY },
+      { x: faceX + radiusX, y: faceY }
+    ];
+    studs.forEach(st => {
+      c.fillStyle = '#D4AF37';
+      c.strokeStyle = '#2D1B11';
+      c.lineWidth = 1.0;
+      c.beginPath();
+      c.arc(st.x, st.y, 2.8, 0, Math.PI * 2);
+      c.fill();
+      c.stroke();
+    });
 
     c.restore();
   }
 
   /**
-   * AUTHENTIC JAVANESE BLANGKON KERATON HAT
-   * Sits majestically on top of the head
+   * AUTHENTIC JAVANESE BLANGKON KERATON
+   * Sculpted Solonese/Yogya royal blangkon that sits naturally on the head crown,
+   * with arched Kemada band, layered diagonal Wiron pleats, rear Mondholan bun, and soft drop shadow.
    */
   function drawBlangkonHat(c) {
     const headX = 600;
-    const hatY = 88;
+    const hatY = 96;
 
     c.save();
     c.translate(headX, hatY);
 
-    // 1. Hat Shadow
-    c.shadowColor = 'rgba(35, 27, 21, 0.45)';
-    c.shadowBlur = 10;
-    c.shadowOffsetY = 5;
-
-    // 2. Main Blangkon Cap Crown (Sogan batik fabric)
-    c.fillStyle = '#4E311D';
+    // 1. Soft Hat Drop Shadow onto Forehead
+    c.fillStyle = 'rgba(35, 20, 12, 0.38)';
     c.beginPath();
-    c.ellipse(0, 0, 80, 30, 0, Math.PI, Math.PI * 2);
-    c.quadraticCurveTo(70, 14, 0, 16);
-    c.quadraticCurveTo(-70, 14, -80, 0);
+    c.ellipse(0, 36, 62, 12, 0, 0, Math.PI * 2);
+    c.fill();
+
+    // 2. Mondholan (Rear Javanese Hair Bun) on the back right
+    c.save();
+    const mondholanGrad = c.createRadialGradient(58, 20, 3, 58, 20, 16);
+    mondholanGrad.addColorStop(0, '#5A3822');
+    mondholanGrad.addColorStop(0.7, '#3A2012');
+    mondholanGrad.addColorStop(1, '#221208');
+    c.fillStyle = mondholanGrad;
+    c.beginPath();
+    c.ellipse(58, 20, 14, 18, 0.15, 0, Math.PI * 2);
+    c.fill();
+    c.strokeStyle = '#221208';
+    c.lineWidth = 1.6;
+    c.stroke();
+    // Mondholan fabric crease line
+    c.strokeStyle = '#8C6D46';
+    c.lineWidth = 1.2;
+    c.beginPath();
+    c.arc(58, 20, 9, -0.4 * Math.PI, 0.6 * Math.PI);
+    c.stroke();
+    c.restore();
+
+    // 3. Main Blangkon Crown Dome (Batik Sogan Fabric Cap)
+    c.save();
+    const crownGrad = c.createLinearGradient(0, -22, 0, 30);
+    crownGrad.addColorStop(0, '#422818');
+    crownGrad.addColorStop(0.5, '#56341F');
+    crownGrad.addColorStop(1, '#3A2214');
+    c.fillStyle = crownGrad;
+
+    c.beginPath();
+    c.moveTo(-68, 26);
+    c.bezierCurveTo(-72, 4, -58, -18, -35, -24);
+    c.bezierCurveTo(-15, -28, 15, -28, 38, -22);
+    c.bezierCurveTo(62, -16, 74, 4, 68, 26);
+    c.quadraticCurveTo(0, 38, -68, 26);
+    c.closePath();
+    c.fill();
+    c.strokeStyle = '#24140B';
+    c.lineWidth = 2.2;
+    c.stroke();
+
+    // 4. Layered Diagonal Wiron Blangkon Pleats (Batik Sogan Folds)
+    c.save();
+    c.clip(); // Clip inside the crown dome
+
+    const pleats = [
+      { x1: -50, y1: -20, x2: -15, y2: 36 },
+      { x1: -32, y1: -26, x2: 4, y2: 36 },
+      { x1: -14, y1: -28, x2: 24, y2: 36 },
+      { x1: 6, y1: -26, x2: 44, y2: 36 },
+      { x1: 26, y1: -22, x2: 60, y2: 34 }
+    ];
+
+    pleats.forEach(pt => {
+      // Pleat fold shadow
+      c.strokeStyle = 'rgba(26, 14, 8, 0.65)';
+      c.lineWidth = 3.2;
+      c.beginPath();
+      c.moveTo(pt.x1, pt.y1);
+      c.lineTo(pt.x2, pt.y2);
+      c.stroke();
+
+      // Pleat fold golden-sogan highlight edge
+      c.strokeStyle = '#A88456';
+      c.lineWidth = 1.4;
+      c.beginPath();
+      c.moveTo(pt.x1 + 1.5, pt.y1);
+      c.lineTo(pt.x2 + 1.5, pt.y2);
+      c.stroke();
+    });
+    c.restore();
+
+    // 5. Kemada (Forehead Arched Band)
+    const kemadaGrad = c.createLinearGradient(0, 18, 0, 34);
+    kemadaGrad.addColorStop(0, '#2F1A0E');
+    kemadaGrad.addColorStop(1, '#1A0D07');
+    c.fillStyle = kemadaGrad;
+
+    c.beginPath();
+    c.moveTo(-68, 24);
+    c.quadraticCurveTo(0, 36, 68, 24);
+    c.quadraticCurveTo(55, 32, 0, 34);
+    c.quadraticCurveTo(-55, 32, -68, 24);
     c.closePath();
     c.fill();
 
-    // 3. Blangkon Front Overlap Fold (Wiron Blangkon)
-    c.strokeStyle = '#8C6D46';
-    c.lineWidth = 2.2;
-    [-38, -20, -4, 12, 28].forEach(x => {
-      c.beginPath();
-      c.moveTo(x, -24);
-      c.lineTo(x + 10, 14);
-      c.stroke();
-    });
-
-    // 4. Forehead Band (Kemada)
-    c.fillStyle = '#2F1C10';
+    // Kemada Gold Edge Stitch
+    c.strokeStyle = '#D4AF37';
+    c.lineWidth = 1.2;
     c.beginPath();
-    c.moveTo(-80, 0);
-    c.quadraticCurveTo(0, 18, 80, 0);
-    c.quadraticCurveTo(0, 24, -80, 0);
-    c.fill();
-
-    // 5. Back Mondholan Bun (Khas Jogja / Solo) on the right side
-    c.fillStyle = '#3A2415';
-    c.beginPath();
-    c.arc(65, 6, 12, 0, Math.PI * 2);
-    c.fill();
-    c.strokeStyle = '#8C6D46';
+    c.moveTo(-66, 25);
+    c.quadraticCurveTo(0, 35, 66, 25);
     c.stroke();
 
+    c.restore();
     c.restore();
   }
 
@@ -1565,45 +2544,53 @@
    */
   function drawSanggulTradisional(c) {
     const headX = 600;
-    const headY = 160;
+    const headY = 162;
 
     c.save();
     c.translate(headX, headY);
 
     // 1. Back Sanggul Bun Volume (Konde Ukel Klasik)
-    c.fillStyle = '#18120E';
+    const sanggulGrad = c.createRadialGradient(0, -68, 20, 0, -68, 75);
+    sanggulGrad.addColorStop(0, '#2A201A');
+    sanggulGrad.addColorStop(0.7, '#16100C');
+    sanggulGrad.addColorStop(1, '#0C0806');
+    c.fillStyle = sanggulGrad;
+
     c.beginPath();
-    c.ellipse(0, -66, 84, 38, 0, 0, Math.PI * 2);
+    c.ellipse(0, -66, 80, 36, 0, 0, Math.PI * 2);
     c.fill();
+    c.strokeStyle = '#0C0806';
+    c.lineWidth = 2.0;
+    c.stroke();
 
     // 2. Delicate hair texture lines (Sasak Halus)
-    c.strokeStyle = '#2E221B';
-    c.lineWidth = 1.4;
-    [-60, -42, -24, 0, 24, 42, 60].forEach(ox => {
+    c.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+    c.lineWidth = 1.2;
+    [-54, -36, -18, 0, 18, 36, 54].forEach(ox => {
       c.beginPath();
-      c.moveTo(ox, -60);
+      c.moveTo(ox, -58);
       c.quadraticCurveTo(ox * 0.6, -92, 0, -96);
       c.stroke();
     });
 
     // 3. Gold Cunduk Mentul Hairpins (Kembang Goyang Emas)
-    drawCundukMentulPin(c, 0, -98, 0);
-    drawCundukMentulPin(c, -36, -90, -0.25);
-    drawCundukMentulPin(c, 36, -90, 0.25);
+    drawCundukMentulPin(c, 0, -96, 0);
+    drawCundukMentulPin(c, -34, -88, -0.25);
+    drawCundukMentulPin(c, 34, -88, 0.25);
 
     // 4. Roncean Melati (Cascading white jasmine garland along the right contour)
     c.fillStyle = '#FAF7F2';
     c.strokeStyle = '#D5CBBA';
-    c.lineWidth = 1;
+    c.lineWidth = 1.0;
     const jasmineDots = [
-      { x: 54, y: -48, r: 4.5 },
-      { x: 62, y: -35, r: 4.2 },
-      { x: 68, y: -20, r: 4.0 },
-      { x: 72, y: -4, r: 3.8 },
-      { x: 74, y: 12, r: 3.5 },
-      { x: 72, y: 28, r: 3.2 },
-      { x: 68, y: 42, r: 3.0 },
-      { x: 62, y: 56, r: 2.8 }
+      { x: 52, y: -48, r: 4.5 },
+      { x: 60, y: -35, r: 4.2 },
+      { x: 66, y: -20, r: 4.0 },
+      { x: 70, y: -4, r: 3.8 },
+      { x: 72, y: 12, r: 3.5 },
+      { x: 70, y: 28, r: 3.2 },
+      { x: 66, y: 42, r: 3.0 },
+      { x: 60, y: 56, r: 2.8 }
     ];
     jasmineDots.forEach(pt => {
       c.beginPath();
@@ -1612,7 +2599,7 @@
       c.stroke();
 
       // Tiny golden pollen center
-      c.fillStyle = '#8C6D46';
+      c.fillStyle = '#C5A572';
       c.beginPath();
       c.arc(pt.x, pt.y, 1.2, 0, Math.PI * 2);
       c.fill();
@@ -1632,7 +2619,7 @@
 
     // Golden pin stalk
     c.strokeStyle = '#C5A572';
-    c.lineWidth = 2;
+    c.lineWidth = 1.8;
     c.beginPath();
     c.moveTo(0, 14);
     c.lineTo(0, -16);
@@ -2192,32 +3179,27 @@
 
     let savedRecord = null;
 
-    try {
-      // Send to Laravel API
-      const res = await fetch(API_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (res.ok) {
-        const json = await res.json();
-        savedRecord = json.data;
+    // 1. Simpan ke Supabase jika terkonfigurasi
+    if (window.LelanaSupabase && window.LelanaSupabase.isConfigured()) {
+      try {
+        const res = await window.LelanaSupabase.saveArtwork(payload);
+        if (res && res.success && res.data) {
+          savedRecord = res.data;
+        } else if (res && res.error) {
+          console.warn('Supabase save warning:', res.error);
+        }
+      } catch (err) {
+        console.warn('Gagal menyimpan ke Supabase Cloud (beralih ke cache lokal):', err);
       }
-    } catch (err) {
-      console.warn('Backend API offline, saving to local gallery cache:', err);
     }
 
-    // Client-side fallback
+    // 2. Client-side fallback / local cache
     if (!savedRecord) {
       savedRecord = {
         id: 'local_' + Date.now(),
         nama_kain: namaKain,
         filosofi_karya: filosofi,
-        palet_warna: palet.split(',').map(s => s.trim()),
+        palet_warna: palet.split(',').map(s => s.trim()).filter(Boolean),
         motif: motif,
         pembuat: pembuat,
         file_gambar_url: base64Png,
@@ -2232,7 +3214,7 @@
     closeSaveModal();
 
     alert('Karya foto busana batik Anda berhasil disimpan ke Pameran Virtual!');
-    loadExhibitionGallery();
+    await loadExhibitionGallery();
 
     const gallerySection = document.getElementById('pameran-virtual');
     if (gallerySection) {
@@ -2273,39 +3255,36 @@
   }
 
   /* =====================================================================
-     9. VIRTUAL EXHIBITION GALLERY (Pameran Kain Virtual)
+     9. VIRTUAL EXHIBITION GALLERY (Pameran Kain Virtual - Supabase BaaS)
      ===================================================================== */
   async function loadExhibitionGallery() {
     if (!els.galleryGrid) return;
     let items = [];
 
-    try {
-      const res = await fetch(API_ENDPOINT, {
-        headers: { 'Accept': 'application/json' }
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (json.data && json.data.length > 0) {
-          items = json.data;
+    // Ambil data karya dari database Supabase
+    if (window.LelanaSupabase && window.LelanaSupabase.isConfigured()) {
+      try {
+        const res = await window.LelanaSupabase.getArtworks({ limit: 40 });
+        if (res && res.success && Array.isArray(res.data)) {
+          items = res.data;
         }
+      } catch (e) {
+        console.log('Loading exhibition from local cache fallback...');
       }
-    } catch (e) {
-      console.log('Loading exhibition from local cache...');
     }
 
     const localItems = getLocalCache();
     const mergedMap = new Map();
 
-    localItems.forEach(item => mergedMap.set(item.nama_kain, item));
+    // Gabungkan item lokal dengan item Supabase (utamakan Supabase)
+    localItems.forEach(item => mergedMap.set(item.nama_kain || item.id, item));
     items.forEach(item => {
-      if (item.file_gambar_url && !item.file_gambar_url.startsWith('http') && !item.file_gambar_url.startsWith('data:')) {
-        item.file_gambar_url = 'http://127.0.0.1:8000/' + item.file_gambar_url;
-      }
-      mergedMap.set(item.nama_kain, item);
+      mergedMap.set(item.nama_kain || item.id, item);
     });
 
     state.galleryArtworks = Array.from(mergedMap.values());
     renderGalleryUI(state.galleryArtworks);
+    updateSupabaseBadge();
   }
 
   function renderGalleryUI(artworks) {
@@ -2325,7 +3304,7 @@
 
       const paletArray = Array.isArray(art.palet_warna)
         ? art.palet_warna
-        : (art.palet_warna ? art.palet_warna.split(',') : []);
+        : (art.palet_warna ? String(art.palet_warna).split(',') : []);
 
       card.innerHTML = `
         <div>
@@ -2360,7 +3339,7 @@
             <div class="flex flex-wrap gap-1 mb-2">
               ${paletArray.slice(0, 3).map(p => `
                 <span class="text-[10px] px-2 py-0.5 rounded-full bg-[#20140c] text-[#E5D8BE]/90 border border-white/10">
-                  ${p.trim()}
+                  ${String(p).trim()}
                 </span>
               `).join('')}
             </div>
@@ -2395,14 +3374,12 @@
     const confirmMsg = `Hapus karya busana "${item.nama_kain}" dari Pameran Virtual?`;
     if (!confirm(confirmMsg)) return;
 
-    if (item.id) {
+    // Hapus dari Supabase jika terdaftar di cloud
+    if (item.id && !String(item.id).startsWith('local_') && window.LelanaSupabase && window.LelanaSupabase.isConfigured()) {
       try {
-        await fetch(`${API_ENDPOINT}/${item.id}`, {
-          method: 'DELETE',
-          headers: { 'Accept': 'application/json' }
-        });
+        await window.LelanaSupabase.deleteArtwork(item.id, item.file_gambar_url);
       } catch (err) {
-        console.warn('API delete error:', err);
+        console.warn('Gagal menghapus dari Supabase:', err);
       }
     }
 
@@ -2421,16 +3398,11 @@
       return;
     }
 
-    for (const item of state.galleryArtworks) {
-      if (item.id) {
-        try {
-          await fetch(`${API_ENDPOINT}/${item.id}`, {
-            method: 'DELETE',
-            headers: { 'Accept': 'application/json' }
-          });
-        } catch (e) {
-          console.warn('API error deleting item:', e);
-        }
+    if (window.LelanaSupabase && window.LelanaSupabase.isConfigured()) {
+      try {
+        await window.LelanaSupabase.clearAll();
+      } catch (e) {
+        console.warn('Gagal mengosongkan Supabase:', e);
       }
     }
 
@@ -2442,6 +3414,179 @@
 
     closeDetailModal();
     await loadExhibitionGallery();
+  }
+
+  /* =====================================================================
+     9.5. SUPABASE SETTINGS & MODAL CONTROLS
+     ===================================================================== */
+  const SUPABASE_SCHEMA_SQL = `-- =====================================================================
+-- Lelana Jateng: Skema Database & Storage Supabase untuk Studio Canting
+-- Jalankan di SQL Editor Supabase: https://supabase.com
+-- =====================================================================
+
+-- 1. Tabel karya_batik
+CREATE TABLE IF NOT EXISTS public.karya_batik (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    user_id UUID DEFAULT NULL,
+    nama_kain TEXT NOT NULL,
+    filosofi_karya TEXT NOT NULL,
+    file_gambar_url TEXT NOT NULL,
+    palet_warna JSONB DEFAULT '[]'::jsonb,
+    motif TEXT DEFAULT 'Kreasi Bebas',
+    pembuat TEXT DEFAULT 'Pengrajin Lelana',
+    is_publik BOOLEAN DEFAULT TRUE NOT NULL
+);
+
+-- Indeks
+CREATE INDEX IF NOT EXISTS idx_karya_batik_created_at ON public.karya_batik (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_karya_batik_motif ON public.karya_batik (motif);
+CREATE INDEX IF NOT EXISTS idx_karya_batik_is_publik ON public.karya_batik (is_publik);
+
+-- 2. Hak Akses Row Level Security (RLS)
+ALTER TABLE public.karya_batik ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Publik dapat melihat karya batik" ON public.karya_batik;
+CREATE POLICY "Publik dapat melihat karya batik" ON public.karya_batik FOR SELECT USING (is_publik = TRUE);
+
+DROP POLICY IF EXISTS "Pengunjung dapat menyimpan karya batik baru" ON public.karya_batik;
+CREATE POLICY "Pengunjung dapat menyimpan karya batik baru" ON public.karya_batik FOR INSERT WITH CHECK (TRUE);
+
+DROP POLICY IF EXISTS "Pengunjung dapat menghapus karya batik" ON public.karya_batik;
+CREATE POLICY "Pengunjung dapat menghapus karya batik" ON public.karya_batik FOR DELETE USING (TRUE);
+
+-- 3. Bucket Storage 'karya-batik'
+INSERT INTO storage.buckets (id, name, public) VALUES ('karya-batik', 'karya-batik', TRUE) ON CONFLICT (id) DO UPDATE SET public = TRUE;
+
+DROP POLICY IF EXISTS "Public Read Karya Batik Storage" ON storage.objects;
+CREATE POLICY "Public Read Karya Batik Storage" ON storage.objects FOR SELECT USING (bucket_id = 'karya-batik');
+
+DROP POLICY IF EXISTS "Public Upload Karya Batik Storage" ON storage.objects;
+CREATE POLICY "Public Upload Karya Batik Storage" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'karya-batik');
+
+DROP POLICY IF EXISTS "Public Delete Karya Batik Storage" ON storage.objects;
+CREATE POLICY "Public Delete Karya Batik Storage" ON storage.objects FOR DELETE USING (bucket_id = 'karya-batik');`;
+
+  function updateSupabaseBadge() {
+    if (!els.supabaseStatusDot || !els.supabaseStatusText) return;
+    if (window.LelanaSupabase && window.LelanaSupabase.isConfigured()) {
+      els.supabaseStatusDot.className = 'w-2 h-2 rounded-full bg-[#3ECF8E] shadow-[0_0_8px_#3ECF8E]';
+      els.supabaseStatusText.textContent = 'Supabase Terhubung';
+    } else {
+      els.supabaseStatusDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+      els.supabaseStatusText.textContent = 'Supabase (Mode Lokal)';
+    }
+  }
+
+  function openSupabaseModal() {
+    if (!els.supabaseModal) return;
+    const cfg = window.LelanaSupabase ? window.LelanaSupabase.getConfig() : { url: '', anonKey: '' };
+    if (els.inputSupabaseUrl) els.inputSupabaseUrl.value = cfg.url;
+    if (els.inputSupabaseKey) els.inputSupabaseKey.value = cfg.anonKey;
+
+    if (els.supabaseTestResult) {
+      els.supabaseTestResult.className = 'hidden';
+      els.supabaseTestResult.textContent = '';
+    }
+
+    if (window.LelanaSupabase && window.LelanaSupabase.isConfigured()) {
+      if (els.supabaseBannerDot) els.supabaseBannerDot.className = 'w-2.5 h-2.5 rounded-full bg-[#3ECF8E] shadow-[0_0_8px_#3ECF8E] mt-1 shrink-0';
+      if (els.supabaseBannerTitle) els.supabaseBannerTitle.textContent = 'Terhubung ke Supabase Cloud';
+      if (els.supabaseBannerDesc) {
+        els.supabaseBannerDesc.textContent = `Proyek aktif: ${cfg.url}. Gambar dan data busana tersimpan di PostgreSQL & Storage Supabase.`;
+      }
+    } else {
+      if (els.supabaseBannerDot) els.supabaseBannerDot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 mt-1 shrink-0';
+      if (els.supabaseBannerTitle) els.supabaseBannerTitle.textContent = 'Mode Cadangan Lokal Aktif';
+      if (els.supabaseBannerDesc) {
+        els.supabaseBannerDesc.textContent = 'Supabase belum terhubung. Masukkan Project URL & Anon Key di bawah ini untuk menghubungkan database cloud.';
+      }
+    }
+
+    els.supabaseModal.classList.add('is-open');
+  }
+
+  function closeSupabaseModal() {
+    if (els.supabaseModal) {
+      els.supabaseModal.classList.remove('is-open');
+    }
+  }
+
+  async function handleSaveSupabaseConfig(e) {
+    if (e) e.preventDefault();
+    const url = els.inputSupabaseUrl ? els.inputSupabaseUrl.value.trim() : '';
+    const key = els.inputSupabaseKey ? els.inputSupabaseKey.value.trim() : '';
+
+    if (!url || !key) {
+      showSupabaseFeedback('Mohon isi Project URL dan Anon Key Supabase Anda.', false);
+      return;
+    }
+
+    if (els.supabaseSaveSpinner) els.supabaseSaveSpinner.classList.remove('hidden');
+
+    const testRes = await window.LelanaSupabase.testConnection(url, key);
+
+    if (els.supabaseSaveSpinner) els.supabaseSaveSpinner.classList.add('hidden');
+
+    if (testRes.success) {
+      window.LelanaSupabase.setConfig(url, key);
+      showSupabaseFeedback('✅ ' + testRes.message, true);
+      updateSupabaseBadge();
+      setTimeout(() => {
+        closeSupabaseModal();
+        loadExhibitionGallery();
+      }, 1200);
+    } else {
+      showSupabaseFeedback('⚠️ ' + testRes.message, false);
+    }
+  }
+
+  function handleResetSupabaseConfig() {
+    if (confirm('Kembalikan konfigurasi Supabase ke mode awal (Local Cache)?')) {
+      if (window.LelanaSupabase) {
+        window.LelanaSupabase.setConfig('', '');
+      }
+      if (els.inputSupabaseUrl) els.inputSupabaseUrl.value = '';
+      if (els.inputSupabaseKey) els.inputSupabaseKey.value = '';
+      showSupabaseFeedback('Pengaturan Supabase dikosongkan. Beralih ke penyimpanan lokal.', true);
+      updateSupabaseBadge();
+      loadExhibitionGallery();
+    }
+  }
+
+  function showSupabaseFeedback(msg, isSuccess) {
+    if (!els.supabaseTestResult) return;
+    els.supabaseTestResult.className = `p-3 rounded-lg text-xs leading-relaxed border ${
+      isSuccess
+        ? 'bg-[#12281E] border-[#3ECF8E]/60 text-[#3ECF8E]'
+        : 'bg-[#2D1612] border-red-700/60 text-red-200'
+    }`;
+    els.supabaseTestResult.textContent = msg;
+    els.supabaseTestResult.classList.remove('hidden');
+  }
+
+  function openSqlModal() {
+    if (els.sqlSchemaCode) {
+      els.sqlSchemaCode.textContent = SUPABASE_SCHEMA_SQL;
+    }
+    if (els.copySqlSuccess) els.copySqlSuccess.classList.add('hidden');
+    if (els.supabaseSqlModal) els.supabaseSqlModal.classList.add('is-open');
+  }
+
+  function closeSqlModal() {
+    if (els.supabaseSqlModal) els.supabaseSqlModal.classList.remove('is-open');
+  }
+
+  async function handleCopySql() {
+    try {
+      await navigator.clipboard.writeText(SUPABASE_SCHEMA_SQL);
+      if (els.copySqlSuccess) els.copySqlSuccess.classList.remove('hidden');
+      setTimeout(() => {
+        if (els.copySqlSuccess) els.copySqlSuccess.classList.add('hidden');
+      }, 3000);
+    } catch (err) {
+      alert('Gagal menyalin otomatis, silakan salin teks SQL secara manual.');
+    }
   }
 
   function openDetailModal(idx) {
@@ -2677,8 +3822,8 @@
     // Stroke Width Buttons
     document.querySelectorAll('[data-stroke]').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-stroke]').forEach(b => b.classList.remove('active', 'bg-[#4E311D]', 'text-white'));
-        btn.classList.add('active', 'bg-[#4E311D]', 'text-white');
+        document.querySelectorAll('[data-stroke]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
         state.strokeWidth = parseInt(btn.getAttribute('data-stroke'), 10);
       });
     });
@@ -2763,6 +3908,21 @@
     if (els.btnClearAllGallery) els.btnClearAllGallery.addEventListener('click', clearAllGallery);
     if (els.btnCloseDetail) els.btnCloseDetail.addEventListener('click', closeDetailModal);
 
+    // Supabase Configuration & Modal Events
+    if (els.btnSupabaseConfig) els.btnSupabaseConfig.addEventListener('click', openSupabaseModal);
+    if (els.btnCloseSupabaseModal) els.btnCloseSupabaseModal.addEventListener('click', closeSupabaseModal);
+    if (els.supabaseConfigForm) els.supabaseConfigForm.addEventListener('submit', handleSaveSupabaseConfig);
+    if (els.btnResetSupabase) els.btnResetSupabase.addEventListener('click', handleResetSupabaseConfig);
+    if (els.btnOpenSqlSchema) els.btnOpenSqlSchema.addEventListener('click', openSqlModal);
+    if (els.btnCloseSqlModal) els.btnCloseSqlModal.addEventListener('click', closeSqlModal);
+    if (els.btnCopySql) els.btnCopySql.addEventListener('click', handleCopySql);
+    if (els.btnToggleKeyVisibility && els.inputSupabaseKey) {
+      els.btnToggleKeyVisibility.addEventListener('click', () => {
+        const isPassword = els.inputSupabaseKey.getAttribute('type') === 'password';
+        els.inputSupabaseKey.setAttribute('type', isPassword ? 'text' : 'password');
+      });
+    }
+
     if (els.galleryGrid) {
       els.galleryGrid.addEventListener('click', (e) => {
         const targetBtn = e.target.closest('[data-action]');
@@ -2792,6 +3952,16 @@
     if (els.previewModal) {
       els.previewModal.addEventListener('click', (e) => {
         if (e.target === els.previewModal) closeDetailModal();
+      });
+    }
+    if (els.supabaseModal) {
+      els.supabaseModal.addEventListener('click', (e) => {
+        if (e.target === els.supabaseModal) closeSupabaseModal();
+      });
+    }
+    if (els.supabaseSqlModal) {
+      els.supabaseSqlModal.addEventListener('click', (e) => {
+        if (e.target === els.supabaseSqlModal) closeSqlModal();
       });
     }
 
@@ -2830,6 +4000,12 @@
         }
         if (els.previewModal && els.previewModal.classList.contains('is-open')) {
           closeDetailModal();
+        }
+        if (els.supabaseModal && els.supabaseModal.classList.contains('is-open')) {
+          closeSupabaseModal();
+        }
+        if (els.supabaseSqlModal && els.supabaseSqlModal.classList.contains('is-open')) {
+          closeSqlModal();
         }
       }
     });

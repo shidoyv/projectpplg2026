@@ -50,10 +50,10 @@ body.studio-canting-page {
 /* SECTION 2: DISTINCT ATELIER WORKSPACE (NON-MERGING BACKGROUND) */
 .sc-workspace-stage {
   position: relative;
-  background: linear-gradient(180deg, #170F0A 0%, #130D08 50%, #0F0906 100%);
+  background-color: #120B07;
+  border: 1px solid rgba(140, 109, 70, 0.3);
   border-radius: 20px;
-  border: none;
-  box-shadow: none;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
   padding: 24px 18px;
 }
 
@@ -72,10 +72,10 @@ body.studio-canting-page {
 /* SECTION 3: VIRTUAL EXHIBITION STAGE */
 .sc-exhibition-stage {
   position: relative;
-  background: linear-gradient(180deg, #160E09 0%, #110B07 100%);
+  background-color: #0E0906;
+  border: 1px solid rgba(140, 109, 70, 0.25);
   border-radius: 20px;
-  border: none;
-  box-shadow: none;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
   padding: 24px 18px;
 }
 
@@ -85,23 +85,21 @@ body.studio-canting-page {
   }
 }
 
-/* Studio Stage Frame */
+/* Studio Stage Frame (Bespoke Teak & Brass Atelier Easel Frame) */
 .sc-fabric-frame {
   position: relative;
-  background: #24180f;
+  background-color: #18100A;
   border-radius: 20px;
   box-shadow:
-    0 25px 60px -12px rgba(0, 0, 0, 0.85),
-    0 10px 25px rgba(0, 0, 0, 0.6),
-    inset 0 1px 1px rgba(255, 255, 255, 0.12),
-    inset 0 -3px 6px rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(140, 109, 70, 0.35);
+    0 25px 60px -15px rgba(0, 0, 0, 0.85),
+    0 10px 25px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(140, 109, 70, 0.45);
   overflow: hidden;
 }
 
 /* Stand Header */
 .sc-fabric-header {
-  background: linear-gradient(180deg, #322115 0%, #20140c 100%);
+  background-color: #20150D;
   border-bottom: 1px solid rgba(140, 109, 70, 0.3);
   padding: 12px 20px;
   display: flex;
@@ -114,9 +112,9 @@ body.studio-canting-page {
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 3.4;
-  max-height: 75vh;
+  max-height: 78vh;
   background-color: var(--sc-mori);
-  box-shadow: inset 0 0 50px rgba(60, 40, 20, 0.15);
+  box-shadow: inset 0 0 60px rgba(45, 28, 14, 0.25);
   user-select: none;
   touch-action: none;
   overflow: hidden;
@@ -272,17 +270,17 @@ body.studio-canting-page {
 #scTabModeDoodle.active,
 #scTabModePhoto.active {
   color: #fff !important;
-  background: linear-gradient(135deg, #4E311D 0%, #342013 100%) !important;
-  border-color: rgba(140, 109, 70, 0.85) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  background-color: #4E311D !important;
+  border-color: #C5A572 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
 }
 
-/* Tool & Motif Cards (Artisan Workbench Styling) */
+/* Tool & Motif Cards (Artisan Workbench Styling - No Gradients) */
 .sc-tool-card {
-  background: rgba(38, 26, 17, 0.75);
-  border: 1px solid rgba(140, 109, 70, 0.3);
-  border-radius: 12px;
-  padding: 10px 12px;
+  background-color: #1C120B;
+  border: 1px solid rgba(140, 109, 70, 0.32);
+  border-radius: 10px;
+  padding: 9px 9px;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
   position: relative;
@@ -290,16 +288,19 @@ body.studio-canting-page {
 }
 
 .sc-tool-card:hover {
-  background: rgba(54, 37, 24, 0.9);
-  border-color: rgba(220, 200, 170, 0.6);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+  background-color: #26190F;
+  border-color: rgba(197, 165, 114, 0.6);
+  transform: translateY(-1px);
 }
 
 .sc-tool-card.active {
-  background: linear-gradient(135deg, rgba(78, 49, 29, 0.95) 0%, rgba(47, 28, 16, 0.95) 100%) !important;
-  border-color: #dfcfb6 !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  background-color: #382215 !important;
+  border-color: #C5A572 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45) !important;
+}
+
+.sc-tool-card.active svg {
+  color: #FAF7F2 !important;
 }
 
 /* Stamp Button */
@@ -308,12 +309,13 @@ body.studio-canting-page {
   height: 44px;
   border-radius: 12px;
   background: rgba(40, 26, 17, 0.85);
-  border: 1px solid rgba(140, 109, 70, 0.35);
+  border: 1px solid rgba(197, 165, 114, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #dfcfb6;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
 }
 
 .sc-stamp-btn:hover {
@@ -326,29 +328,110 @@ body.studio-canting-page {
 .sc-stamp-btn.active {
   background: #4e311d !important;
   color: #fff !important;
-  border-color: #fff !important;
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.35) !important;
+  border-color: #d4af37 !important;
+  box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.6), 0 4px 14px rgba(0, 0, 0, 0.45) !important;
 }
 
-/* Destination Background Cards */
+/* Destination Background Cards - No Gradients */
 .sc-bg-card {
-  background: rgba(38, 26, 17, 0.75);
-  border: 1px solid rgba(140, 109, 70, 0.3);
-  border-radius: 10px;
+  background-color: #1C120B;
+  border: 1px solid rgba(140, 109, 70, 0.28);
+  border-radius: 8px;
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .sc-bg-card:hover {
-  background: rgba(54, 37, 24, 0.9);
-  border-color: rgba(220, 200, 170, 0.6);
-  transform: translateY(-2px);
+  background-color: #26190F;
+  border-color: rgba(197, 165, 114, 0.55);
+  transform: translateY(-1px);
 }
 
 .sc-bg-card.active {
-  background: linear-gradient(135deg, rgba(78, 49, 29, 0.95) 0%, rgba(47, 28, 16, 0.95) 100%);
-  border-color: #dfcfb6;
-  box-shadow: 0 0 12px rgba(223, 207, 182, 0.35);
+  background-color: #382215 !important;
+  border-color: #C5A572 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+/* Artisan Segmented Switcher Controls (Anti-Slop Rework) */
+.sc-segment-track {
+  display: flex;
+  align-items: center;
+  background-color: #130C07;
+  border: 1px solid rgba(140, 109, 70, 0.35);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 3px;
+}
+
+.sc-segment-btn {
+  flex: 1;
+  padding: 7px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #E5D8BE;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  text-align: center;
+  transition: all 0.18s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.sc-segment-btn:hover {
+  color: #fff;
+  background-color: rgba(78, 49, 29, 0.3);
+}
+
+.sc-segment-btn.active {
+  color: #FAF7F2 !important;
+  background-color: #3E2516 !important;
+  border-color: #8C6D46 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Artisan Toggle Chip (Crafted Wood & Prada Brass - Anti-Slop) */
+.sc-toggle-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6.5px 13px;
+  font-size: 11.5px;
+  font-family: inherit;
+  font-weight: 500;
+  color: #D6C5A9;
+  background-color: #17100A;
+  border: 1px solid rgba(140, 109, 70, 0.35);
+  border-radius: 7px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.sc-toggle-chip:hover {
+  background-color: #26180F;
+  border-color: rgba(197, 165, 114, 0.6);
+  color: #FAF7F2;
+}
+
+.sc-toggle-chip:focus-visible {
+  outline: 2px solid #C5A572;
+  outline-offset: 2px;
+}
+
+.sc-toggle-chip.active {
+  background-color: #382215;
+  border-color: #C5A572;
+  color: #FAF7F2;
+  font-weight: 600;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.sc-toggle-chip:active {
+  transform: scale(0.98);
 }
 
 /* Custom Thin Scrollbar */

@@ -4,3 +4,5 @@ Thumbs.db
 .env
 .env.local
 scratch/
+*.blend1
+*.blend2

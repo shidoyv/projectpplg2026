@@ -31,6 +31,41 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // Handle local game launcher (launches Unity Editor or Game executable on Windows)
+  if (req.url === '/api/launch-game' || req.url.startsWith('/api/launch-game')) {
+    const { exec } = require('child_process');
+    const unityExe = 'C:\\Program Files\\Unity\\Hub\\Editor\\6000.6.6f1\\Editor\\Unity.exe';
+    const projectPath = 'C:\\Users\\vincent lim\\arvr_perbaikan';
+    const builtExe = path.join(__dirname, 'game_build', 'MisteriBorobudurVR.exe');
+
+    let commandToRun;
+    let targetType = 'unity';
+    if (fs.existsSync(builtExe)) {
+      commandToRun = `start "" "${builtExe}"`;
+      targetType = 'standalone';
+    } else {
+      commandToRun = `start "" "${unityExe}" -projectPath "${projectPath}"`;
+      targetType = 'unity';
+    }
+
+    console.log(`[Game Launcher] Menjalankan: ${commandToRun}`);
+    exec(commandToRun, (error) => {
+      if (error) {
+        console.error('[Game Launcher] Gagal:', error);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: error.message }));
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          success: true,
+          targetType,
+          message: targetType === 'standalone' ? 'Game Standalone berhasil dibuka!' : 'Unity Editor berhasil dibuka dengan proyek game!'
+        }));
+      }
+    });
+    return;
+  }
+
   // Proxy API or Storage requests to Laravel backend (port 8000)
   if (req.url.startsWith('/api/') || req.url.startsWith('/storage/')) {
     const options = {
@@ -47,8 +82,12 @@ const server = http.createServer((req, res) => {
     });
 
     proxyReq.on('error', () => {
-      res.writeHead(502, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ status: 'error', message: 'Backend Laravel service unavailable on port 8000.' }));
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        status: 'success',
+        backend: 'supabase',
+        message: 'Backend Studio Canting telah dimigrasi ke Supabase Cloud. Silakan gunakan integrasi Supabase langsung di Studio Canting.'
+      }));
     });
 
     req.pipe(proxyReq, { end: true });

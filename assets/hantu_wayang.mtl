@@ -1,0 +1,52 @@
+# Blender 5.1.0 MTL File: 'karakter_hantu_wayang.blend'
+# www.blender.org
+
+newmtl Antique_Teak_Wood
+Ns 422.499969
+Ka 0.050000 0.050000 0.050000
+Kd 0.120000 0.060000 0.030000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 3
+
+newmtl Spirit_Crimson_Eye
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.900000 0.050000 0.020000
+Ks 0.500000 0.500000 0.500000
+Ke 8.000000 0.640000 0.160000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl ardzuna_body
+Ns 276.786652
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:/ardzuna_body_baseColor.jpeg
+
+newmtl ardzuna_body_FLIP
+Ns 303.045166
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:/ardzuna_body_FLIP_baseColor.jpeg
+
+newmtl ardzuna_sukienka
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:/ardzuna_sukienka_baseColor.jpeg

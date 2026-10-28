@@ -49,8 +49,8 @@ public static class FixVisibilityAndLighting
         Light dirLight = dirLightObj.GetComponent<Light>();
         if (dirLight == null) dirLight = dirLightObj.AddComponent<Light>();
         dirLight.type = LightType.Directional;
-        dirLight.color = new Color(0.72f, 0.84f, 1.0f); // Cahaya rembulan perak kebiruan
-        dirLight.intensity = isURP ? 380.0f : 2.2f;      // Terang & jelas menerangi seluruh area candi & pepohonan
+        dirLight.color = new Color(0.38f, 0.50f, 0.72f); // Cahaya rembulan perak kebiruan
+        dirLight.intensity = 0.04f;      // Terang & jelas menerangi seluruh area candi & pepohonan
         dirLight.shadows = LightShadows.Soft;
         dirLight.enabled = true;
         RenderSettings.sun = dirLight;
@@ -131,20 +131,20 @@ public static class FixVisibilityAndLighting
                 Light spot = senterObj.GetComponent<Light>();
                 if (spot == null) spot = senterObj.AddComponent<Light>();
                 spot.type = LightType.Spot;
-                spot.range = 100.0f;       // Sorot panjang 100 meter
-                spot.spotAngle = 72.0f;     // Sudut lebar 72 derajat
-                spot.innerSpotAngle = 38.0f;
+                spot.range = 48.0f;       // Sorot panjang 100 meter
+                spot.spotAngle = 68.0f;     // Sudut lebar 72 derajat
+                spot.innerSpotAngle = 36.0f;
                 spot.color = new Color(1.0f, 0.97f, 0.90f);
-                spot.intensity = isURP ? 2500.0f : 8.5f;
-                spot.shadows = LightShadows.None;
+                spot.intensity = 32.0f;
+                spot.shadows = LightShadows.Soft;
                 spot.enabled = true;
 
                 FlashlightController fc = senterObj.GetComponent<FlashlightController>();
                 if (fc == null) fc = senterObj.AddComponent<FlashlightController>();
                 fc.flashlight = spot;
-                fc.normalIntensity = isURP ? 2500.0f : 8.5f;
-                fc.range = 100.0f;
-                fc.spotAngle = 72.0f;
+                fc.normalIntensity = 32.0f;
+                fc.range = 48.0f;
+                fc.spotAngle = 68.0f;
                 fc.innerSpotAngle = 38.0f;
                 fc.isOn = true;
                 fc.enforcePitchBlackAtRuntime = true;
@@ -166,11 +166,11 @@ public static class FixVisibilityAndLighting
                 Light fillL = fillObj.GetComponent<Light>();
                 if (fillL == null) fillL = fillObj.AddComponent<Light>();
                 fillL.type = LightType.Point;
-                fillL.range = 30.0f;
-                fillL.intensity = isURP ? 160.0f : 2.0f;
+                fillL.range = 4.0f;
+                fillL.intensity = 0.15f;
                 fillL.color = new Color(1.0f, 0.96f, 0.88f);
                 fillL.shadows = LightShadows.None;
-                fillL.enabled = true;
+                fillL.enabled = false;
                 fc.fillLight = fillL;
 
                 EditorUtility.SetDirty(cam);

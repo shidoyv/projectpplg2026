@@ -88,8 +88,8 @@ public static class SetupCandiScene
         Light dirLight = dirLightObj.GetComponent<Light>();
         if (dirLight == null) dirLight = dirLightObj.AddComponent<Light>();
         dirLight.type = LightType.Directional;
-        dirLight.color = new Color(0.95f, 0.97f, 1.0f);
-        dirLight.intensity = isURP ? 2000.0f : 2.5f;
+        dirLight.color = new Color(0.38f, 0.50f, 0.72f);
+        dirLight.intensity = 0.04f;
         dirLight.shadows = LightShadows.Soft;
         dirLight.shadowStrength = 0.35f;
         dirLight.enabled = true;
@@ -171,14 +171,14 @@ public static class SetupCandiScene
 
         // Posisikan Player di Walkway Masuk Selatan (Z = 48) menghadap Candi Borobudur (Rotasi Y = 180)
         cc.enabled = false;
-        player.transform.position = new Vector3(0f, 1.5f, 48.0f);
+        player.transform.position = new Vector3(0f, 1.0f, 118.0f);
         player.transform.rotation = Quaternion.Euler(0f, 180.0f, 0f); // Menghadap lurus ke Candi
         cc.enabled = true;
 
         FirstPersonMovement fpm = player.GetComponent<FirstPersonMovement>();
         if (fpm == null) fpm = player.AddComponent<FirstPersonMovement>();
-        fpm.spawnLocation = PlayerSpawnLocation.SouthMainEntrance;
-        fpm.spawnPosition = new Vector3(0f, 1.5f, 48.0f);
+        fpm.spawnLocation = PlayerSpawnLocation.GerbangLuar;
+        fpm.spawnPosition = new Vector3(0f, 1.0f, 118.0f);
         fpm.spawnRotationY = 180.0f;
         fpm.enforceSpawnOnStart = true;
         fpm.cameraFarClip = 2000.0f;
@@ -206,7 +206,8 @@ public static class SetupCandiScene
         mainCam.fieldOfView = 75.0f;
         mainCam.nearClipPlane = 0.03f;
         mainCam.farClipPlane = 2000.0f;
-        mainCam.clearFlags = CameraClearFlags.Skybox;
+        mainCam.clearFlags = CameraClearFlags.SolidColor;
+        mainCam.backgroundColor = Color.black;
         mainCam.cullingMask = -1;
         mainCam.useOcclusionCulling = false;
         mainCam.depth = 100f;
@@ -231,21 +232,21 @@ public static class SetupCandiScene
         Light spot = senterObj.GetComponent<Light>();
         if (spot == null) spot = senterObj.AddComponent<Light>();
         spot.type = LightType.Spot;
-        spot.range = 300.0f;
-        spot.spotAngle = 95.0f;
-        spot.innerSpotAngle = 60.0f;
+        spot.range = 48.0f;
+        spot.spotAngle = 68.0f;
+        spot.innerSpotAngle = 36.0f;
         spot.color = new Color(1.0f, 0.98f, 0.92f);
-        spot.intensity = isURP ? 4500.0f : 15.0f;
-        spot.shadows = LightShadows.None;
+        spot.intensity = 32.0f;
+        spot.shadows = LightShadows.Soft;
         spot.enabled = true;
 
         FlashlightController fc = senterObj.GetComponent<FlashlightController>();
         if (fc == null) fc = senterObj.AddComponent<FlashlightController>();
         fc.flashlight = spot;
-        fc.normalIntensity = isURP ? 4500.0f : 15.0f;
-        fc.range = 300.0f;
-        fc.spotAngle = 95.0f;
-        fc.innerSpotAngle = 60.0f;
+        fc.normalIntensity = 32.0f;
+        fc.range = 48.0f;
+        fc.spotAngle = 68.0f;
+        fc.innerSpotAngle = 36.0f;
         fc.isOn = true;
 
         // Setup Fill / Omni Light di Sekitar Pemain (150 Meter)
@@ -265,19 +266,23 @@ public static class SetupCandiScene
         Light fillL = fillObj.GetComponent<Light>();
         if (fillL == null) fillL = fillObj.AddComponent<Light>();
         fillL.type = LightType.Point;
-        fillL.range = 150.0f;
+        fillL.range = 4.0f;
         fillL.color = new Color(1.0f, 0.98f, 0.92f);
-        fillL.intensity = isURP ? 800.0f : 4.0f;
+        fillL.intensity = 0.15f;
         fillL.shadows = LightShadows.None;
-        fillL.enabled = true;
+        fillL.enabled = false;
         fc.fillLight = fillL;
     }
 
     private static void SetupKeys()
     {
-        CreateKeyInstance("Kunci_1_Ruby (Joglo Dukun)", new Vector3(-90.0f, 0.8f, 88.0f), KeyType.Ruby);
-        CreateKeyInstance("Kunci_2_Amber (Joglo Utama)", new Vector3(90.0f, 0.8f, -88.0f), KeyType.Amber);
-        CreateKeyInstance("Kunci_3_Jade (Joglo Punden)", new Vector3(-90.0f, 0.8f, -88.0f), KeyType.Jade);
+        // Bersihkan kunci duplikat jika ada
+        string[] dups = new string[] { "Kunci_1_Ruby (Joglo Dukun)", "Kunci_2_Amber (Joglo Utama)", "Kunci_3_Jade (Joglo Punden)" };
+        foreach (var d in dups)
+        {
+            GameObject obj = GameObject.Find(d);
+            if (obj != null) GameObject.DestroyImmediate(obj);
+        }
     }
 
     private static void CreateKeyInstance(string name, Vector3 pos, KeyType type)
@@ -305,34 +310,15 @@ public static class SetupCandiScene
 
     private static void SetupGate()
     {
-        GameObject gateTrigger = GameObject.Find("Trigger_Gerbang");
-        if (gateTrigger == null) gateTrigger = new GameObject("Trigger_Gerbang");
-        // Di pilar gerbang luar Selatan (Z = 125.0)
-        gateTrigger.transform.position = new Vector3(0f, 1.5f, 125.0f);
+        // Hapus Trigger_Gerbang duplikat yang kosong tanpa gembok
+        GameObject oldTrigger = GameObject.Find("Trigger_Gerbang");
+        if (oldTrigger != null) GameObject.DestroyImmediate(oldTrigger);
 
-        BoxCollider bc = gateTrigger.GetComponent<BoxCollider>();
-        if (bc == null) bc = gateTrigger.AddComponent<BoxCollider>();
-        bc.isTrigger = true;
-        bc.size = new Vector3(8f, 5f, 6f);
-
-        LockedGate lg = gateTrigger.GetComponent<LockedGate>();
-        if (lg == null) lg = gateTrigger.AddComponent<LockedGate>();
-
-        // Posisikan Lentera Pilar di samping gerbang luar
+        // Pastikan Lentera Pilar luar tetap ada
         GameObject lenteraKiri = GameObject.Find("Lentera_Pilar_Kiri");
         if (lenteraKiri != null) lenteraKiri.transform.position = new Vector3(-3.2f, 2.5f, 125.0f);
         GameObject lenteraKanan = GameObject.Find("Lentera_Pilar_Kanan");
         if (lenteraKanan != null) lenteraKanan.transform.position = new Vector3(3.2f, 2.5f, 125.0f);
-
-        // Hubungkan daun pintu jika ada di candi
-        GameObject candi = GameObject.Find("candi_borobudur");
-        if (candi != null)
-        {
-            Transform pKiri = candi.transform.Find("Pintu_Gerbang_Kiri");
-            Transform pKanan = candi.transform.Find("Pintu_Gerbang_Kanan");
-            if (pKiri != null) lg.daunPintuKiri = pKiri;
-            if (pKanan != null) lg.daunPintuKanan = pKanan;
-        }
     }
 
     private static void SetupGhost()

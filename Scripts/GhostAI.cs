@@ -190,25 +190,20 @@ public class GhostAI : MonoBehaviour
 
     private void AttackPlayer()
     {
-        // Jumpscare dorongan mundur saat tertangkap hantu
-        FirstPersonMovement fpm = player.GetComponent<FirstPersonMovement>();
-        if (fpm != null)
+        // Langsung serang pemain dan trigger sistem nyawa / respawn ke titik spawn
+        PlayerController pc = player != null ? player.GetComponent<PlayerController>() : null;
+        if (pc != null)
         {
-            fpm.ShowNotification("⚠️ HANTU WAYANG MENYERANGMU! JAUHI DARI JANGKAUANNYA!", 3f);
+            pc.OnGhostAttack(transform.position);
         }
-
-        // Dorong pemain mundur
-        Vector3 pushDir = (player.position - transform.position).normalized;
-        CharacterController playerCC = player.GetComponent<CharacterController>();
-        if (playerCC != null)
+        else
         {
-            playerCC.Move(pushDir * 4.0f);
+            FirstPersonMovement fpm = player != null ? player.GetComponent<FirstPersonMovement>() : null;
+            if (fpm != null)
+            {
+                fpm.ShowNotification("⚠️ HANTU MENYERANGMU!", 3f);
+            }
         }
-
-        // Teleport hantu sedikit mundur agar tidak menempel terus-menerus
-        if (_controller != null) _controller.enabled = false;
-        transform.position -= pushDir * 8.0f;
-        if (_controller != null) _controller.enabled = true;
         _isChasing = false;
     }
 }

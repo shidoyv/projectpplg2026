@@ -24,16 +24,16 @@ public class HorrorVisionEffect : MonoBehaviour
 
     [Header("Pengaturan Jarak Pandang Terbatas (Kabut Hitam)")]
     public bool enforceDarkFog = true;
-    public float fogStart = 5.0f;
-    public float fogEnd = 42.0f;
+    public float fogStart = 8.0f;
+    public float fogEnd = 58.0f;
     public Color fogColor = new Color(0.012f, 0.012f, 0.018f, 1.0f);
-    public float cameraFarClip = 50.0f;
+    public float cameraFarClip = 75.0f;
 
     [Header("Vignette Horor & Penglihatan Gelap")]
     [Range(0.2f, 1.0f)]
     public float baseVignetteDarkness = 0.38f;
     [Range(0.1f, 1.0f)]
-    public float vignetteSize = 0.68f; // Ukuran area terang di tengah
+    public float vignetteSize = 0.78f; // Ukuran area terang di tengah
     public Color darkOverlayColor = new Color(0f, 0f, 0f, 1f);
 
     [Header("Efek Panik & Kabur Saat Lari / Dekat Hantu")]
@@ -60,6 +60,10 @@ public class HorrorVisionEffect : MonoBehaviour
     private bool _flashlightClicked = false;
     private float _wakeUpSubtitleTimer = 0f;
     private AudioSource _clickAudioSource;
+    private string _customWakeUpSubtitle = "";
+    private bool _hasGasped = false;
+    private bool _hasSighed = false;
+    private bool _hasBeatenHeart = false;
 
     // Status Jumpscare
     private bool _isJumpscareActive = false;
@@ -236,8 +240,8 @@ public class HorrorVisionEffect : MonoBehaviour
 
     private void GenerateEyelidTextures()
     {
-        int width = 512;
-        int height = 256;
+        int width = 1024;
+        int height = 512;
 
         _topEyelidTex = new Texture2D(width, height, TextureFormat.RGBA32, false);
         _topEyelidTex.wrapMode = TextureWrapMode.Clamp;
@@ -247,21 +251,25 @@ public class HorrorVisionEffect : MonoBehaviour
         _bottomEyelidTex.wrapMode = TextureWrapMode.Clamp;
         _bottomEyelidTex.filterMode = FilterMode.Bilinear;
 
-        float feather = 32.0f;
+        float feather = 72.0f; // Gradasi bulu mata & kelopak mata lembut alami
 
         for (int y = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
             {
                 float u = (float)x / (width - 1);
+                // Bentuk kelopak mata melengkung organik manusia
                 float arch = Mathf.Sin(u * Mathf.PI);
+                float curvedArch = Mathf.Pow(arch, 0.82f);
 
-                float topEdgeY = 35.0f + 160.0f * arch;
+                // Kelopak atas
+                float topEdgeY = 40.0f + 325.0f * curvedArch;
                 float distTop = y - topEdgeY;
                 float alphaTop = Mathf.Clamp01((distTop + feather * 0.5f) / feather);
                 _topEyelidTex.SetPixel(x, y, new Color(0.005f, 0.005f, 0.005f, alphaTop));
 
-                float bottomEdgeY = (height - 35.0f) - 160.0f * arch;
+                // Kelopak bawah
+                float bottomEdgeY = (height - 40.0f) - 325.0f * curvedArch;
                 float distBottom = bottomEdgeY - y;
                 float alphaBottom = Mathf.Clamp01((distBottom + feather * 0.5f) / feather);
                 _bottomEyelidTex.SetPixel(x, y, new Color(0.005f, 0.005f, 0.005f, alphaBottom));
@@ -269,6 +277,112 @@ public class HorrorVisionEffect : MonoBehaviour
         }
         _topEyelidTex.Apply();
         _bottomEyelidTex.Apply();
+    }
+
+    public void TriggerWakeUp(string customSubtitle = null)
+    {
+        _isWakingUp = true;
+        _wakeUpTimer = 0f;
+        _eyeOpenAmount = 0f;
+        _flashlightClicked = false;
+        _hasGasped = false;
+        _hasSighed = false;
+        _hasBeatenHeart = false;
+        _customWakeUpSubtitle = customSubtitle ?? "";
+
+        PlayWakingHeartbeatSound();
+    }
+
+    public void PlayDeathAudio()
+    {
+        if (_clickAudioSource == null)
+        {
+            _clickAudioSource = gameObject.AddComponent<AudioSource>();
+            _clickAudioSource.spatialBlend = 0f;
+            _clickAudioSource.playOnAwake = false;
+        }
+        AudioClip deathClip = CreateDeathDroneClip();
+        _clickAudioSource.PlayOneShot(deathClip, 1.0f);
+    }
+
+    private AudioClip CreateDeathDroneClip()
+    {
+        int rate = 44100;
+        int samples = (int)(rate * 2.8f);
+        float[] data = new float[samples];
+        for (int i = 0; i < samples; i++)
+        {
+            float t = (float)i / rate;
+            float s1 = Mathf.Sin(2f * Mathf.PI * 46f * t);
+            float s2 = Mathf.Sin(2f * Mathf.PI * 49.2f * t);
+            float env = Mathf.Exp(-t * 0.85f);
+            data[i] = (s1 * 0.5f + s2 * 0.5f) * env * 0.75f;
+        }
+        AudioClip clip = AudioClip.Create("DeathDrone", samples, 1, rate, false);
+        clip.SetData(data, 0);
+        return clip;
+    }
+
+    private void PlayWakingHeartbeatSound()
+    {
+        if (_clickAudioSource == null)
+        {
+            _clickAudioSource = gameObject.AddComponent<AudioSource>();
+            _clickAudioSource.spatialBlend = 0f;
+            _clickAudioSource.playOnAwake = false;
+        }
+        AudioClip clip = CreateHeartbeatClip();
+        _clickAudioSource.PlayOneShot(clip, 0.9f);
+    }
+
+    private void PlayWakingBreathSound()
+    {
+        if (_clickAudioSource == null)
+        {
+            _clickAudioSource = gameObject.AddComponent<AudioSource>();
+            _clickAudioSource.spatialBlend = 0f;
+            _clickAudioSource.playOnAwake = false;
+        }
+        AudioClip clip = CreateBreathGaspClip();
+        _clickAudioSource.PlayOneShot(clip, 0.75f);
+    }
+
+    private AudioClip CreateHeartbeatClip()
+    {
+        int rate = 44100;
+        int samples = (int)(rate * 1.1f);
+        float[] data = new float[samples];
+        for (int i = 0; i < samples; i++)
+        {
+            float t = (float)i / rate;
+            float b1 = (t >= 0.05f && t < 0.28f) ? Mathf.Sin(2f * Mathf.PI * 58f * (t - 0.05f)) * Mathf.Exp(-(t - 0.05f) * 15f) : 0f;
+            float b2 = (t >= 0.36f && t < 0.62f) ? Mathf.Sin(2f * Mathf.PI * 48f * (t - 0.36f)) * Mathf.Exp(-(t - 0.36f) * 13f) * 0.75f : 0f;
+            data[i] = (b1 + b2) * 0.88f;
+        }
+        AudioClip clip = AudioClip.Create("WakingHeartbeat", samples, 1, rate, false);
+        clip.SetData(data, 0);
+        return clip;
+    }
+
+    private AudioClip CreateBreathGaspClip()
+    {
+        int rate = 44100;
+        int samples = (int)(rate * 1.25f);
+        float[] data = new float[samples];
+        float lastNoise = 0f;
+        for (int i = 0; i < samples; i++)
+        {
+            float t = (float)i / rate;
+            float white = (Random.value * 2f - 1f);
+            lastNoise = Mathf.Lerp(lastNoise, white, 0.14f);
+            float env = 0f;
+            if (t < 0.38f) env = Mathf.SmoothStep(0f, 1f, t / 0.38f);
+            else env = Mathf.Exp(-(t - 0.38f) * 4.2f);
+            data[i] = lastNoise * env * 0.55f;
+        }
+        AudioClip clip = AudioClip.Create("BreathGasp", samples, 1, rate, false);
+        clip.SetData(data, 0);
+        return clip;
     }
 
     public void TriggerJumpscare(Transform ghost)
@@ -542,37 +656,57 @@ public class HorrorVisionEffect : MonoBehaviour
             t = wakeUpDuration;
         }
 
-        // 1. Kurva Gerakan Kelopak Mata
-        float open = 0f;
-        if (t < 0.8f)
+        // Suara nafas tersentak (gasp) saat pertama kali membuka mata
+        if (t >= 0.85f && !_hasGasped)
         {
+            _hasGasped = true;
+            PlayWakingBreathSound();
+        }
+
+        // Suara degup jantung sekunder
+        if (t >= 1.4f && !_hasBeatenHeart)
+        {
+            _hasBeatenHeart = true;
+            PlayWakingHeartbeatSound();
+        }
+
+        // 1. Kurva Gerakan Kelopak Mata Multi-Kedipan (Sangat Realistis)
+        float open = 0f;
+        if (t < 0.85f)
+        {
+            // 0.0s - 0.85s: Gelap total (mata terpejam lelap)
             open = 0f;
         }
         else if (t < 2.0f)
         {
-            float p = Mathf.SmoothStep(0f, 1f, (t - 0.8f) / 1.2f);
-            open = p * 0.35f;
+            // 0.85s - 2.0s: Membuka perlahan pertama kali (intipan awal ~32%)
+            float p = Mathf.SmoothStep(0f, 1f, (t - 0.85f) / 1.15f);
+            open = p * 0.32f;
         }
-        else if (t < 2.6f)
+        else if (t < 2.65f)
         {
-            float p = Mathf.SmoothStep(0f, 1f, (t - 2.0f) / 0.6f);
-            open = Mathf.Lerp(0.35f, 0.02f, p);
+            // 2.0s - 2.65s: Kelopak mata berat terpejam kembali (kedipan lelah ~4%)
+            float p = Mathf.SmoothStep(0f, 1f, (t - 2.0f) / 0.65f);
+            open = Mathf.Lerp(0.32f, 0.04f, p);
         }
-        else if (t < 3.6f)
+        else if (t < 3.75f)
         {
-            float p = Mathf.SmoothStep(0f, 1f, (t - 2.6f) / 1.0f);
-            open = Mathf.Lerp(0.02f, 0.65f, p);
+            // 2.65s - 3.75s: Kesadaran pulih dan membuka lebih lebar (~78%)
+            float p = Mathf.SmoothStep(0f, 1f, (t - 2.65f) / 1.10f);
+            open = Mathf.Lerp(0.04f, 0.78f, p);
         }
-        else if (t < 4.0f)
+        else if (t < 4.15f)
         {
-            float p = (t - 3.6f) / 0.4f;
-            float dip = Mathf.Sin(p * Mathf.PI) * 0.28f;
-            open = Mathf.Max(0.1f, 0.65f - dip);
+            // 3.75s - 4.15s: Kedipan refleks cepat (flutter 78% -> 55% -> 85%)
+            float p = (t - 3.75f) / 0.40f;
+            float dip = Mathf.Sin(p * Mathf.PI) * 0.23f;
+            open = Mathf.Max(0.2f, 0.78f - dip);
         }
         else if (t < 5.0f)
         {
-            float p = Mathf.SmoothStep(0f, 1f, (t - 4.0f) / 1.0f);
-            open = Mathf.Lerp(0.65f, 1.0f, p);
+            // 4.15s - 5.0s: Melek penuh 100%
+            float p = Mathf.SmoothStep(0f, 1f, (t - 4.15f) / 0.85f);
+            open = Mathf.Lerp(0.78f, 1.0f, p);
         }
         else
         {
@@ -585,44 +719,44 @@ public class HorrorVisionEffect : MonoBehaviour
         if (_cam != null)
         {
             float pitch, roll, yaw, yOffset;
-            if (t < 0.8f)
+            if (t < 0.85f)
             {
                 pitch = 24.0f;
                 roll = 12.0f;
                 yaw = -4.0f;
-                yOffset = -0.22f;
+                yOffset = -0.25f;
             }
             else if (t < 2.0f)
             {
-                float p = Mathf.SmoothStep(0f, 1f, (t - 0.8f) / 1.2f);
-                pitch = Mathf.Lerp(24.0f, 17.0f, p);
-                roll = Mathf.Lerp(12.0f, 8.0f, p);
+                float p = Mathf.SmoothStep(0f, 1f, (t - 0.85f) / 1.15f);
+                pitch = Mathf.Lerp(24.0f, 16.0f, p);
+                roll = Mathf.Lerp(12.0f, 7.0f, p);
                 yaw = Mathf.Lerp(-4.0f, -2.0f, p);
-                yOffset = Mathf.Lerp(-0.22f, -0.15f, p);
+                yOffset = Mathf.Lerp(-0.25f, -0.16f, p);
             }
-            else if (t < 2.6f)
+            else if (t < 2.65f)
             {
-                float p = Mathf.SmoothStep(0f, 1f, (t - 2.0f) / 0.6f);
-                pitch = Mathf.Lerp(17.0f, 21.0f, p);
-                roll = Mathf.Lerp(8.0f, 10.0f, p);
+                float p = Mathf.SmoothStep(0f, 1f, (t - 2.0f) / 0.65f);
+                pitch = Mathf.Lerp(16.0f, 20.0f, p);
+                roll = Mathf.Lerp(7.0f, 9.0f, p);
                 yaw = -2.0f;
-                yOffset = Mathf.Lerp(-0.15f, -0.18f, p);
+                yOffset = Mathf.Lerp(-0.16f, -0.20f, p);
             }
-            else if (t < 3.6f)
+            else if (t < 3.75f)
             {
-                float p = Mathf.SmoothStep(0f, 1f, (t - 2.6f) / 1.0f);
-                pitch = Mathf.Lerp(21.0f, 6.0f, p);
-                roll = Mathf.Lerp(10.0f, 2.5f, p);
+                float p = Mathf.SmoothStep(0f, 1f, (t - 2.65f) / 1.10f);
+                pitch = Mathf.Lerp(20.0f, 5.0f, p);
+                roll = Mathf.Lerp(9.0f, 2.0f, p);
                 yaw = Mathf.Lerp(-2.0f, 0.0f, p);
-                yOffset = Mathf.Lerp(-0.18f, -0.06f, p);
+                yOffset = Mathf.Lerp(-0.20f, -0.05f, p);
             }
             else if (t < 5.0f)
             {
-                float p = Mathf.SmoothStep(0f, 1f, (t - 3.6f) / 1.4f);
-                pitch = Mathf.Lerp(6.0f, 0.0f, p);
-                roll = Mathf.Lerp(2.5f, 0.0f, p);
+                float p = Mathf.SmoothStep(0f, 1f, (t - 3.75f) / 1.25f);
+                pitch = Mathf.Lerp(5.0f, 0.0f, p);
+                roll = Mathf.Lerp(2.0f, 0.0f, p);
                 yaw = 0.0f;
-                yOffset = Mathf.Lerp(-0.06f, 0.0f, p);
+                yOffset = Mathf.Lerp(-0.05f, 0.0f, p);
             }
             else
             {
@@ -634,15 +768,15 @@ public class HorrorVisionEffect : MonoBehaviour
 
             if (t < 4.5f)
             {
-                pitch += Mathf.Sin(t * 2.8f) * 0.8f;
+                pitch += Mathf.Sin(t * 3.0f) * 0.7f * (1.0f - open);
             }
 
             _cam.transform.localRotation = Quaternion.Euler(pitch, yaw, roll);
             _cam.transform.localPosition = _originalCamLocalPos + new Vector3(0f, yOffset, 0f);
         }
 
-        // 3. Suara & Nyala Senter saat Sadar (t >= 4.4s)
-        if (t >= 4.4f && !_flashlightClicked)
+        // 3. Suara & Nyala Senter saat Sadar (t >= 4.0s)
+        if (t >= 4.0f && !_flashlightClicked)
         {
             _flashlightClicked = true;
             PlayFlashlightClickSound();
@@ -653,16 +787,10 @@ public class HorrorVisionEffect : MonoBehaviour
                 {
                     _playerController.flashlight.enabled = true;
                 }
-                Transform fill = _playerController.flashlight != null ? _playerController.flashlight.transform.Find("Flashlight_Fill") : null;
-                if (fill != null)
-                {
-                    Light fl = fill.GetComponent<Light>();
-                    if (fl != null) fl.enabled = true;
-                }
             }
         }
 
-        // 4. Proses Bangun Selesai (t >= wakeUpDuration)
+        // 4. Proses Bangun Selesai
         if (t >= wakeUpDuration)
         {
             _isWakingUp = false;
@@ -940,6 +1068,23 @@ public class HorrorVisionEffect : MonoBehaviour
             };
             skipStyle.normal.textColor = new Color(1f, 1f, 1f, 0.45f);
             GUI.Label(new Rect(w - 270, 20, 250, 30), "[Spasi / Klik untuk Lewati]", skipStyle);
+
+            // Teks Narasi / Status Buka Mata
+            if (_wakeUpTimer > 0.5f)
+            {
+                GUIStyle narrativeStyle = new GUIStyle(GUI.skin.label)
+                {
+                    fontSize = 16,
+                    fontStyle = FontStyle.Italic,
+                    alignment = TextAnchor.MiddleCenter
+                };
+                narrativeStyle.normal.textColor = new Color(0.92f, 0.92f, 0.92f, Mathf.Clamp01((_wakeUpTimer - 0.5f) * 1.5f));
+
+                string msg = !string.IsNullOrEmpty(_customWakeUpSubtitle) 
+                    ? _customWakeUpSubtitle 
+                    : "Kepalamu berdenyut... Kamu tersadar di depan gerbang candi kuno...";
+                GUI.Label(new Rect(20, h - 90, w - 40, 50), msg, narrativeStyle);
+            }
             return;
         }
 

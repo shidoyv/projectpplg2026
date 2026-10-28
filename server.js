@@ -66,31 +66,14 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Proxy API or Storage requests to Laravel backend (port 8000)
+  // API fallback (Backend menggunakan Supabase Cloud)
   if (req.url.startsWith('/api/') || req.url.startsWith('/storage/')) {
-    const options = {
-      hostname: '127.0.0.1',
-      port: 8000,
-      path: req.url,
-      method: req.method,
-      headers: req.headers
-    };
-
-    const proxyReq = http.request(options, (proxyRes) => {
-      res.writeHead(proxyRes.statusCode, proxyRes.headers);
-      proxyRes.pipe(res, { end: true });
-    });
-
-    proxyReq.on('error', () => {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({
-        status: 'success',
-        backend: 'supabase',
-        message: 'Backend Studio Canting telah dimigrasi ke Supabase Cloud. Silakan gunakan integrasi Supabase langsung di Studio Canting.'
-      }));
-    });
-
-    req.pipe(proxyReq, { end: true });
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      status: 'success',
+      backend: 'supabase',
+      message: 'Backend Studio Canting telah menggunakan Supabase Cloud secara langsung.'
+    }));
     return;
   }
 

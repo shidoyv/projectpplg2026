@@ -1,3 +1,4 @@
+using UnityEngine.SceneManagement;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -29,14 +30,20 @@ public class PlayerController : MonoBehaviour
     [Header("Senter Horor (Flashlight)")]
     public Light flashlight;
     public bool flashlightOn = true;
-    public float flashlightIntensity = 8.5f;
-    public float flashlightRange = 65.0f;
-    public float flashlightSpotAngle = 72.0f;
+    public float flashlightIntensity = 32.0f;
+    public float flashlightRange = 56.0f;
+    public float flashlightSpotAngle = 74.0f;
 
     [Header("Sadar dari Pingsan (Wake Up)")]
     public bool playWakeUpOnStart = true;
     private bool _isWakingUp = false;
     public bool isWakingUp => _isWakingUp;
+
+    [Header("Sistem Nyawa")]
+    public int maxLives = 3;
+    public int currentLives = 3;
+    private bool _isGameOver = false;
+    public bool isGameOver => _isGameOver;
 
     private CharacterController _controller;
     private Vector3 _velocity;
@@ -67,6 +74,14 @@ public class PlayerController : MonoBehaviour
         // Pasang komponen pendukung VR otomatis
         if (GetComponent<VRPlayerRig>() == null) gameObject.AddComponent<VRPlayerRig>();
         if (GetComponent<VRHUDCanvas>() == null) gameObject.AddComponent<VRHUDCanvas>();
+
+        // Pastikan sistem penghalang pagar & batas peta aktif agar tidak bisa melompat keluar map
+        if (FindFirstObjectByType<MapBoundaryBarrier>() == null)
+        {
+            GameObject barrierObj = GameObject.Find("Sistem_Penghalang_Pagar_Dan_Batas_Peta");
+            if (barrierObj == null) barrierObj = new GameObject("Sistem_Penghalang_Pagar_Dan_Batas_Peta");
+            if (barrierObj.GetComponent<MapBoundaryBarrier>() == null) barrierObj.AddComponent<MapBoundaryBarrier>();
+        }
 
         // Pasang atau cari senter di kamera
         SetupFlashlightIfMissing();
@@ -130,7 +145,7 @@ public class PlayerController : MonoBehaviour
             flashlight.color = new Color(1.0f, 0.97f, 0.90f); // Cahaya bohlam terang senter
             flashlight.range = flashlightRange;
             flashlight.spotAngle = flashlightSpotAngle;
-            flashlight.innerSpotAngle = 46.0f;
+            flashlight.innerSpotAngle = 38.0f;
             flashlight.intensity = flashlightIntensity;
             flashlight.shadows = LightShadows.Soft;
             flashlight.enabled = flashlightOn;
@@ -142,10 +157,10 @@ public class PlayerController : MonoBehaviour
             Light fill = fillObj.AddComponent<Light>();
             fill.type = LightType.Point;
             fill.color = new Color(1.0f, 0.98f, 0.92f);
-            fill.range = 12.0f;
-            fill.intensity = 1.6f;
+            fill.range = 4.0f;
+            fill.intensity = 0.15f;
             fill.shadows = LightShadows.None;
-            fill.enabled = flashlightOn;
+            fill.enabled = false;
         }
         else
         {
@@ -156,7 +171,7 @@ public class PlayerController : MonoBehaviour
                 flashlight.intensity = flashlightIntensity;
                 flashlight.range = flashlightRange;
                 flashlight.spotAngle = flashlightSpotAngle;
-                flashlight.innerSpotAngle = 46.0f;
+                flashlight.innerSpotAngle = 38.0f;
                 flashlight.enabled = flashlightOn;
             }
             Transform fillT = flT.Find("Flashlight_Fill");
@@ -166,9 +181,9 @@ public class PlayerController : MonoBehaviour
                 if (fLight != null)
                 {
                     fLight.color = new Color(1.0f, 0.98f, 0.92f);
-                    fLight.range = 12.0f;
-                    fLight.intensity = 1.6f;
-                    fLight.enabled = flashlightOn;
+                    fLight.range = 4.0f;
+                    fLight.intensity = 0.15f;
+                    fLight.enabled = false;
                 }
             }
         }
@@ -190,7 +205,7 @@ public class PlayerController : MonoBehaviour
             if (fill != null)
             {
                 Light fLight = fill.GetComponent<Light>();
-                if (fLight != null) fLight.enabled = flashlightOn;
+                if (fLight != null) fLight.enabled = false;
             }
         }
 
@@ -240,20 +255,71 @@ public class PlayerController : MonoBehaviour
     {
         _isUnderJumpscare = false;
 
-        // Dorongan kejut mundur keras dari hantu
-        if (_controller != null)
-        {
-            Vector3 pushDir = -transform.forward;
-            pushDir.y = 0.25f;
-            _velocity = pushDir * 11f;
-        }
+        // Kurangi 1 nyawa saat tertangkap hantu
+        currentLives--;
+        if (currentLives < 0) currentLives = 0;
 
-        // Kembalikan senter
-        if (flashlight != null)
+        if (currentLives > 0)
         {
-            flashlight.intensity = flashlightIntensity;
-            flashlight.enabled = flashlightOn;
+            // Reset velocity & langsung kembalikan ke titik spawn depan gerbang
+            _velocity = Vector3.zero;
+            PosisikanDiDepanGerbang();
+            currentStamina = maxStamina;
+
+            // Relokasi hantu wayang jauh ke dalam kompleks candi
+            RelocateGhostFar();
+
+            // Senter mati sejenak, akan menyala otomatis saat membuka mata
+            if (flashlight != null)
+            {
+                flashlight.intensity = flashlightIntensity;
+                flashlight.enabled = false;
+            }
+
+            // Jalankan efek buka mata realistis saat sadar di depan gerbang
+            _isWakingUp = true;
+            HorrorVisionEffect vision = Camera.main != null ? Camera.main.GetComponent<HorrorVisionEffect>() : null;
+            if (vision == null && cameraTransform != null) vision = cameraTransform.GetComponent<HorrorVisionEffect>();
+            if (vision != null)
+            {
+                vision.TriggerWakeUp(string.Format("Kamu terserang hantu dan tersadar kembali di depan gerbang!\nSisa Nyawa: {0} / {1}", currentLives, maxLives));
+            }
         }
+        else
+        {
+            // Game Over jika seluruh 3 nyawa habis
+            _isGameOver = true;
+            _velocity = Vector3.zero;
+            if (flashlight != null) flashlight.enabled = false;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+            HorrorVisionEffect vision = Camera.main != null ? Camera.main.GetComponent<HorrorVisionEffect>() : null;
+            if (vision == null && cameraTransform != null) vision = cameraTransform.GetComponent<HorrorVisionEffect>();
+            if (vision != null)
+            {
+                vision.PlayDeathAudio();
+            }
+        }
+    }
+
+    public void RelocateGhostFar()
+    {
+        HantuWayangAI hw = Object.FindAnyObjectByType<HantuWayangAI>();
+        if (hw != null)
+        {
+            hw.SpawnInitialPosition();
+        }
+        GhostAI g = Object.FindAnyObjectByType<GhostAI>();
+        if (g != null)
+        {
+            g.RandomizeSpawnPosition();
+        }
+    }
+
+    public void RestartFromBeginning()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     private System.Collections.IEnumerator FlashlightJumpscareGlitch()
@@ -297,6 +363,14 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (_isGameOver)
+        {
+#if ENABLE_INPUT_SYSTEM
+            if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame) RestartFromBeginning();
+#endif
+            if (Input.GetKeyDown(KeyCode.R)) RestartFromBeginning();
+            return;
+        }
         if (_isWakingUp || _isUnderJumpscare || isGameWon)
         {
             return;
@@ -471,8 +545,8 @@ public class PlayerController : MonoBehaviour
         _velocity.y += gravity * Time.deltaTime;
         _controller.Move(_velocity * Time.deltaTime);
 
-        // Failsafe jika jatuh dari pelataran
-        if (transform.position.y < -15f)
+        // Failsafe jika jatuh dari pelataran atau melompat keluar batas pagar map
+        if (transform.position.y < -3.0f || Mathf.Abs(transform.position.x) > 140f || Mathf.Abs(transform.position.z) > 140f)
         {
             _velocity = Vector3.zero;
             PosisikanDiDepanGerbang();
@@ -481,6 +555,150 @@ public class PlayerController : MonoBehaviour
 
     private void OnGUI()
     {
+        if (_isGameOver)
+        {
+            GUI.depth = -300;
+            float sw = Screen.width;
+            float sh = Screen.height;
+
+            // Overlay Merah Gelap Menakutkan
+            GUI.color = new Color(0.08f, 0.01f, 0.01f, 0.96f);
+            GUI.DrawTexture(new Rect(0, 0, sw, sh), Texture2D.whiteTexture);
+
+            // Kotak Pesan Game Over
+            float cW = Mathf.Min(680f, sw * 0.90f);
+            float cH = Mathf.Min(420f, sh * 0.85f);
+            float cX = (sw - cW) * 0.5f;
+            float cY = (sh - cH) * 0.5f;
+
+            GUI.color = new Color(0.03f, 0.03f, 0.04f, 0.95f);
+            GUI.DrawTexture(new Rect(cX, cY, cW, cH), Texture2D.whiteTexture);
+
+            // Border Darah
+            GUI.color = new Color(0.85f, 0.15f, 0.15f, 0.95f);
+            GUI.DrawTexture(new Rect(cX, cY, cW, 3), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(cX, cY + cH - 3, cW, 3), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(cX, cY, 3, cH), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(cX + cW - 3, cY, 3, cH), Texture2D.whiteTexture);
+
+            // Judul Besar
+            GUIStyle deathTitleStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 38,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleCenter
+            };
+            deathTitleStyle.normal.textColor = new Color(0.95f, 0.15f, 0.15f, 1f);
+            GUI.color = Color.white;
+            GUI.Label(new Rect(cX, cY + 35, cW, 50), "☠️ KAMU TEWAS", deathTitleStyle);
+
+            GUIStyle subStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 16,
+                fontStyle = FontStyle.Italic,
+                alignment = TextAnchor.MiddleCenter
+            };
+            subStyle.normal.textColor = new Color(0.85f, 0.85f, 0.85f, 0.9f);
+            GUI.Label(new Rect(cX + 20, cY + 105, cW - 40, 30), "Jiwa Anda Terjebak Selamanya di Pelataran Candi Borobudur...", subStyle);
+
+            GUIStyle infoStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 15,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleCenter
+            };
+            infoStyle.normal.textColor = new Color(0.95f, 0.55f, 0.35f, 0.95f);
+            GUI.Label(new Rect(cX + 20, cY + 155, cW - 40, 30), "Semua 3 Nyawa Telah Habis! Hantu Wayang Berhasil Menangkapmu.", infoStyle);
+
+            // Tombol Restart
+            float btnW = 340f;
+            float btnH = 55f;
+            float btnX = (sw - btnW) * 0.5f;
+            float btnY = cY + cH - 110f;
+
+            GUI.color = new Color(0.7f, 0.12f, 0.12f, 0.95f);
+            GUI.DrawTexture(new Rect(btnX, btnY, btnW, btnH), Texture2D.whiteTexture);
+
+            GUIStyle btnStyle = new GUIStyle(GUI.skin.button)
+            {
+                fontSize = 15,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleCenter
+            };
+            btnStyle.normal.textColor = Color.white;
+
+            if (GUI.Button(new Rect(btnX, btnY, btnW, btnH), "🔄 ULANG DARI AWAL (TEKAN 'R')", btnStyle))
+            {
+                RestartFromBeginning();
+            }
+
+            GUIStyle hintStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 12,
+                alignment = TextAnchor.MiddleCenter
+            };
+            hintStyle.normal.textColor = new Color(0.7f, 0.7f, 0.7f, 0.7f);
+            GUI.Label(new Rect(cX, btnY + btnH + 12, cW, 20), "Klik tombol di atas atau tekan tombol [R] di keyboard", hintStyle);
+
+            return;
+        }
+
+        // 1. Gambar Panel Nyawa (3 Kesempatan Bertahan Hidup)
+        if (VRPlayerRig.Instance == null || !VRPlayerRig.Instance.isVREnabled)
+        {
+            float lifeX = 20f;
+            float lifeY = 56f;
+            float lifeW = 195f;
+            float lifeH = 32f;
+
+            GUI.color = new Color(0.04f, 0.04f, 0.06f, 0.85f);
+            GUI.DrawTexture(new Rect(lifeX, lifeY, lifeW, lifeH), Texture2D.whiteTexture);
+
+            Color borderColor = currentLives switch
+            {
+                3 => new Color(0.85f, 0.2f, 0.25f, 0.8f),
+                2 => new Color(0.95f, 0.65f, 0.2f, 0.8f),
+                _ => new Color(1.0f, 0.15f, 0.15f, 0.95f)
+            };
+            GUI.color = borderColor;
+            GUI.DrawTexture(new Rect(lifeX, lifeY, lifeW, 2), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(lifeX, lifeY + lifeH - 2, lifeW, 2), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(lifeX, lifeY, 2, lifeH), Texture2D.whiteTexture);
+            GUI.DrawTexture(new Rect(lifeX + lifeW - 2, lifeY, 2, lifeH), Texture2D.whiteTexture);
+
+            GUIStyle lifeStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 13,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleLeft
+            };
+            lifeStyle.normal.textColor = Color.white;
+            GUI.color = Color.white;
+            GUI.Label(new Rect(lifeX + 10, lifeY + 4, 75, 24), "NYAWA:", lifeStyle);
+
+            string heartsStr = "";
+            for (int i = 0; i < maxLives; i++)
+            {
+                heartsStr += (i < currentLives) ? "❤ " : "🖤 ";
+            }
+            GUIStyle heartStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 15,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleLeft
+            };
+            heartStyle.normal.textColor = (currentLives > 1) ? new Color(1.0f, 0.25f, 0.3f, 1f) : new Color(1.0f, 0.1f, 0.1f, 1f);
+            GUI.Label(new Rect(lifeX + 75, lifeY + 4, 70, 24), heartsStr, heartStyle);
+
+            GUIStyle countStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 12,
+                fontStyle = FontStyle.Normal,
+                alignment = TextAnchor.MiddleRight
+            };
+            countStyle.normal.textColor = new Color(0.85f, 0.85f, 0.85f, 0.8f);
+            GUI.Label(new Rect(lifeX + lifeW - 55, lifeY + 5, 45, 22), $"{currentLives}/{maxLives}", countStyle);
+        }
         if (!showStaminaBar) return;
         if (VRPlayerRig.Instance != null && VRPlayerRig.Instance.isVREnabled) return;
 

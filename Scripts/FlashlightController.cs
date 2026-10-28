@@ -8,10 +8,10 @@ public class FlashlightController : MonoBehaviour
 
     [Header("Pengaturan Senter")]
     [SerializeField] private bool _isOn = true;
-    [SerializeField] private float _range = 300.0f;
-    [SerializeField] private float _spotAngle = 95.0f;
-    [SerializeField] private float _innerSpotAngle = 60.0f;
-    [SerializeField] private float _normalIntensity = 4500.0f;
+    [SerializeField] private float _range = 56.0f;
+    [SerializeField] private float _spotAngle = 74.0f;
+    [SerializeField] private float _innerSpotAngle = 38.0f;
+    [SerializeField] private float _normalIntensity = 32.0f;
 
     public Light flashlight { get => _flashlight; set => _flashlight = value; }
     public Light fillLight { get => _fillLight; set => _fillLight = value; }
@@ -36,8 +36,8 @@ public class FlashlightController : MonoBehaviour
     private void SetupLights()
     {
         bool isURP = UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline != null;
-        float mainInt = isURP ? 4500.0f : 15.0f;
-        float fillInt = isURP ? 800.0f : 4.0f;
+        float mainInt = 32.0f;
+        float fillInt = 0.0f;
 
         // 1. Spotlight Utama Jarak Jauh (300 Meter, Sangat Lebar 95 Derajat)
         if (_flashlight == null) _flashlight = GetComponent<Light>();
@@ -50,33 +50,15 @@ public class FlashlightController : MonoBehaviour
             _flashlight.innerSpotAngle = _innerSpotAngle;
             _flashlight.color = new Color(1.0f, 0.98f, 0.92f);
             _flashlight.intensity = mainInt;
-            _flashlight.shadows = LightShadows.None;
+            _flashlight.shadows = LightShadows.Soft;
             _flashlight.enabled = _isOn;
         }
 
         // 2. Fill / Omni Light di Sekitar Pemain (Radius 150 Meter 360 Derajat - Terang Benderang)
-        Transform fillT = transform.Find("Flashlight_Fill_Light");
-        if (fillT == null)
-        {
-            GameObject fillObj = new GameObject("Flashlight_Fill_Light");
-            fillObj.transform.SetParent(transform, false);
-            fillObj.transform.localPosition = Vector3.zero;
-            _fillLight = fillObj.AddComponent<Light>();
-        }
-        else
-        {
-            _fillLight = fillT.GetComponent<Light>();
-        }
-
-        if (_fillLight != null)
-        {
-            _fillLight.type = LightType.Point;
-            _fillLight.range = 150.0f;
-            _fillLight.color = new Color(1.0f, 0.98f, 0.92f);
-            _fillLight.intensity = fillInt;
-            _fillLight.shadows = LightShadows.None;
-            _fillLight.enabled = _isOn;
-        }
+        Transform fillT1 = transform.Find("Flashlight_Fill_Light");
+        if (fillT1 != null) Destroy(fillT1.gameObject);
+        Transform fillT2 = transform.Find("Flashlight_Fill");
+        if (fillT2 != null) Destroy(fillT2.gameObject);
     }
 
     private void Update()
@@ -92,7 +74,7 @@ public class FlashlightController : MonoBehaviour
     {
         _isOn = !_isOn;
         if (_flashlight != null) _flashlight.enabled = _isOn;
-        if (_fillLight != null) _fillLight.enabled = _isOn;
+        if (_fillLight != null) _fillLight.enabled = false;
 
         // Feedback bunyi klik senter
         AudioSource.PlayClipAtPoint(CreateFlashlightClick(), transform.position, 0.5f);
@@ -100,21 +82,33 @@ public class FlashlightController : MonoBehaviour
 
     public static void ApplyHorrorAtmosphere()
     {
-        bool isURP = UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline != null;
+        // 1. Kamera: Solid Color Pitch Black (Langit 100% Gelap Pekat, Senter Tidak Menembus/Menerangi Langit)
+        Camera cam = Camera.main;
+        if (cam != null)
+        {
+            cam.clearFlags = CameraClearFlags.SolidColor;
+            cam.backgroundColor = Color.black;
+        }
 
-        // 1. Pencahayaan Ambient Terang & Jelas (Full Visibility - Tidak Ada Objek Hitam/Hilang)
+        // 2. Skybox dinonaktifkan / disetel hitam pekat
+        RenderSettings.skybox = null;
+
+        // 3. Ambient Light Gelap Gulita Malam Horor (Hanya senter yang menerangi objek)
         RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
-        RenderSettings.ambientSkyColor = new Color(0.80f, 0.86f, 0.96f);     // Langit terang jernih
-        RenderSettings.ambientEquatorColor = new Color(0.70f, 0.76f, 0.88f); // Horison terang
-        RenderSettings.ambientGroundColor = new Color(0.60f, 0.66f, 0.78f);  // Tanah & batu terang
-        RenderSettings.ambientIntensity = 3.0f;
-        RenderSettings.reflectionIntensity = 0.8f;
+        RenderSettings.ambientSkyColor = new Color(0.012f, 0.012f, 0.018f);     // Langit malam gelap pekat
+        RenderSettings.ambientEquatorColor = new Color(0.008f, 0.008f, 0.012f); // Horison gelap
+        RenderSettings.ambientGroundColor = new Color(0.004f, 0.004f, 0.006f);  // Tanah gelap
+        RenderSettings.ambientIntensity = 0.15f;
+        RenderSettings.reflectionIntensity = 0.05f;
         DynamicGI.UpdateEnvironment();
 
-        // 2. Matikan kabut buta 100%
-        RenderSettings.fog = false;
+        // 4. Kabut Hitam Pekat Realistis (Jarak Pandang Terbatas ~25 Meter)
+        RenderSettings.fog = true;
+        RenderSettings.fogMode = FogMode.Exponential;
+        RenderSettings.fogDensity = 0.012f;
+        RenderSettings.fogColor = Color.black;
 
-        // 3. Cahaya Utama Terang Benderang (Directional Light)
+        // 5. Directional Light Redup Pekat (Tidak menyinari langit/tanah, hanya siluet samar)
         GameObject dirLightObj = GameObject.Find("Directional Light");
         if (dirLightObj == null)
         {
@@ -128,10 +122,7 @@ public class FlashlightController : MonoBehaviour
             }
         }
 
-        if (dirLightObj == null)
-        {
-            dirLightObj = new GameObject("Directional Light");
-        }
+        if (dirLightObj == null) dirLightObj = new GameObject("Directional Light");
 
         dirLightObj.SetActive(true);
         dirLightObj.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
@@ -140,22 +131,14 @@ public class FlashlightController : MonoBehaviour
         if (dirLight == null) dirLight = dirLightObj.AddComponent<Light>();
 
         dirLight.type = LightType.Directional;
-        dirLight.color = new Color(0.95f, 0.97f, 1.0f);
-        dirLight.intensity = isURP ? 2000.0f : 2.5f;
+        dirLight.color = new Color(0.25f, 0.35f, 0.55f);
+        dirLight.intensity = 0.04f; // Redup pekat, tanpa menerangi langit
         dirLight.shadows = LightShadows.Soft;
-        dirLight.shadowStrength = 0.35f; // Bayangan lembut agar tidak gelap gulita
+        dirLight.shadowStrength = 0.8f;
         dirLight.enabled = true;
         RenderSettings.sun = dirLight;
 
-        // 4. Pastikan Skybox Terang & Menyeluruh
-        if (RenderSettings.skybox != null)
-        {
-            if (RenderSettings.skybox.HasProperty("_Exposure")) RenderSettings.skybox.SetFloat("_Exposure", 1.0f);
-            if (RenderSettings.skybox.HasProperty("_SkyTint")) RenderSettings.skybox.SetColor("_SkyTint", new Color(0.6f, 0.75f, 0.95f, 1.0f));
-            if (RenderSettings.skybox.HasProperty("_GroundColor")) RenderSettings.skybox.SetColor("_GroundColor", new Color(0.5f, 0.6f, 0.75f, 1.0f));
-        }
-
-        // Matikan objek Horror_Moon jika ada
+        // Matikan objek Horror_Moon quad jika ada
         GameObject moon = GameObject.Find("Horror_Moon");
         if (moon != null) moon.SetActive(false);
     }

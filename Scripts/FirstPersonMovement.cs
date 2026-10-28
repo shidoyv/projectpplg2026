@@ -34,8 +34,8 @@ public class FirstPersonMovement : MonoBehaviour
     public float cameraFarClip = 2000.0f;
 
     [Header("Spawn Awal")]
-    public PlayerSpawnLocation spawnLocation = PlayerSpawnLocation.SouthMainEntrance;
-    public Vector3 spawnPosition = new Vector3(0f, 1.5f, 48.0f);
+    public PlayerSpawnLocation spawnLocation = PlayerSpawnLocation.GerbangLuar;
+    public Vector3 spawnPosition = new Vector3(0f, 1.0f, 118.0f);
     public float spawnRotationY = 180.0f;
     public bool enforceSpawnOnStart = true;
 
@@ -50,6 +50,11 @@ public class FirstPersonMovement : MonoBehaviour
 
     private void Awake()
     {
+        if (GetComponent<PlayerController>() != null)
+        {
+            enabled = false;
+            return;
+        }
         _controller = GetComponent<CharacterController>();
         if (_controller != null)
         {
@@ -65,6 +70,14 @@ public class FirstPersonMovement : MonoBehaviour
         _inventory = GetComponent<PlayerInventory>();
         if (_inventory == null) _inventory = gameObject.AddComponent<PlayerInventory>();
 
+        // Pastikan sistem penghalang pagar & batas peta aktif agar tidak bisa melompat keluar map
+        if (FindFirstObjectByType<MapBoundaryBarrier>() == null)
+        {
+            GameObject barrierObj = GameObject.Find("Sistem_Penghalang_Pagar_Dan_Batas_Peta");
+            if (barrierObj == null) barrierObj = new GameObject("Sistem_Penghalang_Pagar_Dan_Batas_Peta");
+            if (barrierObj.GetComponent<MapBoundaryBarrier>() == null) barrierObj.AddComponent<MapBoundaryBarrier>();
+        }
+
         SetupCamera();
     }
 
@@ -77,11 +90,11 @@ public class FirstPersonMovement : MonoBehaviour
         {
             Vector3 targetSpawn = spawnPosition;
             if (spawnLocation == PlayerSpawnLocation.SouthMainEntrance)
-                targetSpawn = new Vector3(0f, 1.5f, 48.0f);
+                targetSpawn = (GameObject.Find("Titik_Spawn_Pemain") != null) ? GameObject.Find("Titik_Spawn_Pemain").transform.position : new Vector3(0f, 1.0f, 118.0f);
             else if (spawnLocation == PlayerSpawnLocation.PelataranCandi)
                 targetSpawn = new Vector3(0f, 1.5f, 30.0f);
             else if (spawnLocation == PlayerSpawnLocation.GerbangLuar)
-                targetSpawn = new Vector3(0f, 1.5f, 110.0f);
+                targetSpawn = new Vector3(0f, 1.0f, 118.0f);
 
             if (_controller != null) _controller.enabled = false;
             transform.position = targetSpawn;
@@ -162,11 +175,11 @@ public class FirstPersonMovement : MonoBehaviour
             if (_notificationTimer <= 0f) _notificationText = "";
         }
 
-        // Failsafe jika jatuh dari pelataran
-        if (transform.position.y < -8f)
+        // Failsafe jika jatuh dari pelataran atau melompat keluar batas pagar map
+        if (transform.position.y < -3.0f || Mathf.Abs(transform.position.x) > 140f || Mathf.Abs(transform.position.z) > 140f)
         {
             if (_controller != null) _controller.enabled = false;
-            transform.position = new Vector3(0f, 1.5f, -38.0f);
+            transform.position = new Vector3(0f, 1.5f, 48.0f);
             _velocity = Vector3.zero;
             if (_controller != null) _controller.enabled = true;
         }

@@ -990,86 +990,10 @@ public static class SetupCandiDanHalaman
 
     private static Mesh BuatProceduralShackleMesh()
     {
-        Mesh mesh = new Mesh();
-        mesh.name = "Procedural_Antique_Shackle";
-
-        int segments = 24;
-        int crossSegments = 8;
-        float radius = 0.22f;
-        float tubeRadius = 0.038f;
-        float legLength = 0.25f;
-
-        System.Collections.Generic.List<Vector3> verts = new System.Collections.Generic.List<Vector3>();
-        System.Collections.Generic.List<int> tris = new System.Collections.Generic.List<int>();
-        System.Collections.Generic.List<Vector3> norms = new System.Collections.Generic.List<Vector3>();
-
-        // Generate curved arch & legs
-        for (int i = 0; i <= segments; i++)
-        {
-            float t = (float)i / segments;
-            Vector3 center;
-            Vector3 forward;
-
-            if (t <= 0.25f)
-            {
-                // Kaki kiri lurus
-                float legT = t / 0.25f;
-                center = new Vector3(-radius, Mathf.Lerp(-legLength, 0f, legT), 0f);
-                forward = Vector3.up;
-            }
-            else if (t <= 0.75f)
-            {
-                // Lengkungan setengah lingkaran (busur atas penyangkut)
-                float archT = (t - 0.25f) / 0.5f;
-                float angle = Mathf.PI * (1f - archT);
-                center = new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius, 0f);
-                forward = new Vector3(-Mathf.Sin(angle), Mathf.Cos(angle), 0f);
-            }
-            else
-            {
-                // Kaki kanan lurus
-                float legT = (t - 0.75f) / 0.25f;
-                center = new Vector3(radius, Mathf.Lerp(0f, -legLength, legT), 0f);
-                forward = Vector3.down;
-            }
-
-            Vector3 right = Vector3.forward;
-            Vector3 up = Vector3.Cross(forward, right).normalized;
-
-            for (int j = 0; j <= crossSegments; j++)
-            {
-                float phi = (float)j / crossSegments * Mathf.PI * 2f;
-                Vector3 normal = (Mathf.Cos(phi) * right + Mathf.Sin(phi) * up).normalized;
-                Vector3 p = center + normal * tubeRadius;
-                verts.Add(p);
-                norms.Add(normal);
-            }
-        }
-
-        int ringStride = crossSegments + 1;
-        for (int i = 0; i < segments; i++)
-        {
-            for (int j = 0; j < crossSegments; j++)
-            {
-                int c = i * ringStride + j;
-                int n = (i + 1) * ringStride + j;
-
-                tris.Add(c);
-                tris.Add(n);
-                tris.Add(c + 1);
-
-                tris.Add(c + 1);
-                tris.Add(n);
-                tris.Add(n + 1);
-            }
-        }
-
-        mesh.SetVertices(verts);
-        mesh.SetNormals(norms);
-        mesh.SetTriangles(tris, 0);
-        mesh.RecalculateBounds();
-        return mesh;
+        return KeyPickup.GetOrCreateRealisticKeyMesh();
     }
+
+
 
     private static void SetupSistemGerbangTerkunci(GameObject candiObj)
     {

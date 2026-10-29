@@ -105,10 +105,15 @@
 
         <!-- Mobile hamburger toggle button -->
         <button id="mobile-nav-toggle"
-          class="md:hidden p-2 text-white/90 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8c6d46] rounded-lg"
+          class="md:hidden p-2 text-white/90 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8c6d46] rounded-lg transition-colors cursor-pointer"
           aria-label="Buka Menu Navigasi" aria-expanded="false" aria-controls="mobile-nav-dropdown">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <!-- Hamburger Icon -->
+          <svg id="hamburger-icon-svg" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+          </svg>
+          <!-- Close (X) Icon -->
+          <svg id="close-icon-svg" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
@@ -117,17 +122,101 @@
 
     <!-- Mobile Navigation Dropdown -->
     <div id="mobile-nav-dropdown"
-      class="hidden md:hidden px-6 pb-4 pt-2 border-t border-white/10 bg-[#16110d]/98 backdrop-blur-lg space-y-2">
+      class="hidden md:hidden px-6 pb-5 pt-3 border-t border-[#8c6d46]/25 bg-[#16110d]/98 backdrop-blur-xl shadow-2xl space-y-1">
       <a href="index.html#beranda"
-        class="block py-2 text-sm text-white/90 font-medium hover:text-[#e5d8be] transition-colors">Beranda</a>
+        class="block px-3 py-2.5 text-sm text-white/90 font-medium rounded-lg hover:bg-white/5 hover:text-[#e5d8be] transition-colors">Beranda</a>
       <a href="index.html#destinasi"
-        class="block py-2 text-sm text-white/90 hover:text-[#e5d8be] transition-colors">Destinasi</a>
-      <a href="studio-canting.html" class="block py-2 text-sm text-white font-semibold">Studio Canting (Aktif)</a>
-      <a href="arvr.html" class="block py-2 text-sm text-[#e5d8be]/90 hover:text-white transition-colors">AR/VR</a>
-      <a href="#pameran-virtual" class="block py-2 text-sm text-[#e5d8be]/80 hover:text-white">Pameran Busana
-        Virtual</a>
+        class="block px-3 py-2.5 text-sm text-white/90 rounded-lg hover:bg-white/5 hover:text-[#e5d8be] transition-colors">Destinasi</a>
+      <a href="studio-canting.html"
+        class="block px-3 py-2.5 text-sm text-[#e5d8be] font-semibold bg-[#8c6d46]/20 border border-[#8c6d46]/40 rounded-lg">Studio Canting (Aktif)</a>
+      <a href="arvr.html"
+        class="block px-3 py-2.5 text-sm text-[#e5d8be]/90 rounded-lg hover:bg-white/5 hover:text-white transition-colors">AR/VR</a>
+      <a href="history.html"
+        class="block px-3 py-2.5 text-sm text-[#e5d8be]/90 rounded-lg hover:bg-white/5 hover:text-white transition-colors">History</a>
+      <a href="#pameran-virtual"
+        class="block px-3 py-2.5 text-sm text-[#e5d8be]/85 rounded-lg hover:bg-white/5 hover:text-white transition-colors flex items-center justify-between">
+        <span>Pameran Busana Virtual</span>
+        <svg class="w-4 h-4 text-[#8c6d46]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
     </div>
   </header>
+
+  <!-- Immediate Mobile Navigation Initializer -->
+  <script>
+    (function () {
+      function initMobileNav() {
+        const toggleBtn = document.getElementById('mobile-nav-toggle');
+        const dropdown = document.getElementById('mobile-nav-dropdown');
+        const hamburgerIcon = document.getElementById('hamburger-icon-svg');
+        const closeIcon = document.getElementById('close-icon-svg');
+
+        if (!toggleBtn || !dropdown) return;
+        if (toggleBtn.dataset.navBound === 'true') return;
+        toggleBtn.dataset.navBound = 'true';
+
+        function openNav() {
+          dropdown.classList.remove('hidden');
+          toggleBtn.setAttribute('aria-expanded', 'true');
+          if (hamburgerIcon) hamburgerIcon.classList.add('hidden');
+          if (closeIcon) closeIcon.classList.remove('hidden');
+        }
+
+        function closeNav() {
+          dropdown.classList.add('hidden');
+          toggleBtn.setAttribute('aria-expanded', 'false');
+          if (hamburgerIcon) hamburgerIcon.classList.remove('hidden');
+          if (closeIcon) closeIcon.classList.add('hidden');
+        }
+
+        function toggleNav(e) {
+          if (e) e.stopPropagation();
+          const isClosed = dropdown.classList.contains('hidden');
+          if (isClosed) {
+            openNav();
+          } else {
+            closeNav();
+          }
+        }
+
+        toggleBtn.addEventListener('click', toggleNav);
+
+        dropdown.querySelectorAll('a').forEach(function (link) {
+          link.addEventListener('click', function () {
+            closeNav();
+          });
+        });
+
+        document.addEventListener('click', function (e) {
+          if (!dropdown.classList.contains('hidden')) {
+            const header = document.getElementById('main-navbar');
+            if (header && !header.contains(e.target)) {
+              closeNav();
+            }
+          }
+        });
+
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && !dropdown.classList.contains('hidden')) {
+            closeNav();
+          }
+        });
+
+        window.addEventListener('resize', function () {
+          if (window.innerWidth >= 768 && !dropdown.classList.contains('hidden')) {
+            closeNav();
+          }
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initMobileNav);
+      } else {
+        initMobileNav();
+      }
+    })();
+  </script>
 
   <!-- ==================== 2. PEMBUKA ATELIER KRIYA (EDITORIAL HERO) ==================== -->
   <section id="pembuka-studio" class="sc-hero-wayang relative w-full py-16 sm:py-20 lg:py-24 px-6 sm:px-10 lg:px-14">

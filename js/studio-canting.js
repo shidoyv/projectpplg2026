@@ -196,9 +196,13 @@
   /* =====================================================================
      3. INITIALIZATION
      ===================================================================== */
-  document.addEventListener('DOMContentLoaded', () => {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      init();
+    });
+  } else {
     init();
-  });
+  }
 
   function init() {
     cacheDom();
@@ -318,15 +322,6 @@
     els.btnDownloadArtwork = document.getElementById('scBtnDownloadArtwork');
     els.btnDeleteArtwork = document.getElementById('scBtnDeleteArtwork');
     els.btnCloseDetail = document.getElementById('scBtnCloseDetail');
-
-    // Mobile nav
-    const mobileNavToggle = document.getElementById('mobile-nav-toggle');
-    const mobileNavDropdown = document.getElementById('mobile-nav-dropdown');
-    if (mobileNavToggle && mobileNavDropdown) {
-      mobileNavToggle.addEventListener('click', () => {
-        mobileNavDropdown.classList.toggle('hidden');
-      });
-    }
   }
 
   function setupCanvases() {
@@ -3966,27 +3961,71 @@ CREATE POLICY "Public Delete Karya Batik Storage" ON storage.objects FOR DELETE 
     }
 
     // Mobile Navigation Toggle
+    setupMobileNav();
+  }
+
+  function setupMobileNav() {
     const mobileNavToggle = document.getElementById('mobile-nav-toggle');
     const mobileNavDropdown = document.getElementById('mobile-nav-dropdown');
-    if (mobileNavToggle && mobileNavDropdown) {
-      mobileNavToggle.addEventListener('click', () => {
-        const isHidden = mobileNavDropdown.classList.contains('hidden');
-        if (isHidden) {
-          mobileNavDropdown.classList.remove('hidden');
-          mobileNavToggle.setAttribute('aria-expanded', 'true');
-        } else {
-          mobileNavDropdown.classList.add('hidden');
-          mobileNavToggle.setAttribute('aria-expanded', 'false');
-        }
-      });
+    const hamburgerIcon = document.getElementById('hamburger-icon-svg');
+    const closeIcon = document.getElementById('close-icon-svg');
 
-      mobileNavDropdown.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-          mobileNavDropdown.classList.add('hidden');
-          mobileNavToggle.setAttribute('aria-expanded', 'false');
-        });
-      });
+    if (!mobileNavToggle || !mobileNavDropdown) return;
+    if (mobileNavToggle.dataset.navBound === 'true') return;
+    mobileNavToggle.dataset.navBound = 'true';
+
+    function openNav() {
+      mobileNavDropdown.classList.remove('hidden');
+      mobileNavToggle.setAttribute('aria-expanded', 'true');
+      if (hamburgerIcon) hamburgerIcon.classList.add('hidden');
+      if (closeIcon) closeIcon.classList.remove('hidden');
     }
+
+    function closeNav() {
+      mobileNavDropdown.classList.add('hidden');
+      mobileNavToggle.setAttribute('aria-expanded', 'false');
+      if (hamburgerIcon) hamburgerIcon.classList.remove('hidden');
+      if (closeIcon) closeIcon.classList.add('hidden');
+    }
+
+    function toggleNav(e) {
+      if (e) e.stopPropagation();
+      const isHidden = mobileNavDropdown.classList.contains('hidden');
+      if (isHidden) {
+        openNav();
+      } else {
+        closeNav();
+      }
+    }
+
+    mobileNavToggle.addEventListener('click', toggleNav);
+
+    mobileNavDropdown.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        closeNav();
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!mobileNavDropdown.classList.contains('hidden')) {
+        const header = document.getElementById('main-navbar');
+        if (header && !header.contains(e.target)) {
+          closeNav();
+        }
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !mobileNavDropdown.classList.contains('hidden')) {
+        closeNav();
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768 && !mobileNavDropdown.classList.contains('hidden')) {
+        closeNav();
+      }
+    });
 
     // Keyboard Shortcuts (Undo/Redo & Escape to close modals)
     window.addEventListener('keydown', (e) => {

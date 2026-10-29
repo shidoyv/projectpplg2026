@@ -71,9 +71,10 @@ public class PlayerController : MonoBehaviour
             flashlightOn = false;
         }
 
-        // Pasang komponen pendukung VR otomatis
+        // Pasang komponen pendukung VR dan Minimap otomatis
         if (GetComponent<VRPlayerRig>() == null) gameObject.AddComponent<VRPlayerRig>();
         if (GetComponent<VRHUDCanvas>() == null) gameObject.AddComponent<VRHUDCanvas>();
+        if (GetComponent<HorrorMinimap>() == null) gameObject.AddComponent<HorrorMinimap>();
 
         // Pastikan sistem penghalang pagar & batas peta aktif agar tidak bisa melompat keluar map
         if (FindFirstObjectByType<MapBoundaryBarrier>() == null)

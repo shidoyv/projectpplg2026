@@ -94,15 +94,15 @@ public class PlayerInventory : MonoBehaviour
             _autoExpandTimer -= Time.deltaTime;
         }
 
-        // Tekan Tab atau M untuk meminimalkan / memperluas tampilan misi
+        // Tekan Tab untuk meminimalkan / memperluas tampilan misi (Tombol M khusus untuk Minimap)
         bool toggle = false;
 #if ENABLE_INPUT_SYSTEM
-        if (UnityEngine.InputSystem.Keyboard.current != null && (UnityEngine.InputSystem.Keyboard.current.tabKey.wasPressedThisFrame || UnityEngine.InputSystem.Keyboard.current.mKey.wasPressedThisFrame))
+        if (UnityEngine.InputSystem.Keyboard.current != null && UnityEngine.InputSystem.Keyboard.current.tabKey.wasPressedThisFrame)
         {
             toggle = true;
         }
 #else
-        if (Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.M))
+        if (Input.GetKeyDown(KeyCode.Tab))
         {
             toggle = true;
         }

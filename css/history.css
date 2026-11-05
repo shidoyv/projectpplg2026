@@ -586,8 +586,8 @@
   left: 0;
   height: 3px;
   width: 0%;
-  background: linear-gradient(90deg, #c92a2a, #f59e0b);
-  box-shadow: 0 0 8px rgba(201, 42, 42, 0.6);
+  background: #c92a2a;
+  box-shadow: none;
   transition: width 0.08s ease-out;
 }
 
@@ -611,11 +611,7 @@
 }
 
 .history-reader-badge .badge-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--hist-accent-crimson);
-  animation: pulse 2s infinite;
+  display: none !important;
 }
 
 .history-reader-tools {

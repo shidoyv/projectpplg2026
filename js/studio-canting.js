@@ -448,20 +448,7 @@
 
     c.drawImage(img, sx, sy, sw, sh, 0, 0, w, h);
 
-    // Warm scenic ambient lighting wash
-    const grad = c.createLinearGradient(0, 0, 0, h);
-    grad.addColorStop(0, 'rgba(20, 14, 10, 0.28)');
-    grad.addColorStop(0.5, 'rgba(20, 14, 10, 0.10)');
-    grad.addColorStop(1, 'rgba(20, 14, 10, 0.50)');
-    c.fillStyle = grad;
-    c.fillRect(0, 0, w, h);
-
-    // Soft corner vignette
-    const vig = c.createRadialGradient(w / 2, h / 2, w * 0.35, w / 2, h / 2, w * 0.75);
-    vig.addColorStop(0, 'transparent');
-    vig.addColorStop(1, 'rgba(15, 10, 7, 0.40)');
-    c.fillStyle = vig;
-    c.fillRect(0, 0, w, h);
+    // Clean scenic background without artificial AI-slop gradients or vignettes
 
     // Bespoke Museum Atelier Seal Stamp in bottom corner
     c.save();
@@ -535,14 +522,8 @@
     const columnTopY = (garment === 'kebaya') ? 610 : 575;
     const pedestalY = 780;
 
-    // 1. Turned Wooden Column (Pilar Penyangga Kayu Jati)
-    const colGrad = c.createLinearGradient(590, 0, 610, 0);
-    colGrad.addColorStop(0, '#2D1B11');
-    colGrad.addColorStop(0.35, '#543622');
-    colGrad.addColorStop(0.7, '#3A2415');
-    colGrad.addColorStop(1, '#20130B');
-
-    c.fillStyle = colGrad;
+    // 1. Turned Wooden Column (Pilar Penyangga Kayu Jati - Solid Teak)
+    c.fillStyle = '#3A2415';
     c.fillRect(592, columnTopY, 16, pedestalY - columnTopY);
 
     // Turned wood decorative rings on the column
@@ -625,7 +606,7 @@
   /**
    * ANATOMICAL ATELIER NECK & THROAT
    * Seamlessly connects the chin (Y=240-248) to the garment collar base (Y=275).
-   * Features realistic skin gradient, throat shadow, subtle clavicles, and suprasternal notch.
+   * Features authentic atelier skin silhouette, subtle clavicles, and suprasternal notch.
    */
   function drawAnatomicalNeck(c, garment) {
     c.save();
@@ -642,24 +623,14 @@
     c.bezierCurveTo(642, 260, 636, 242, 634, neckTopY);
     c.closePath();
 
-    // Natural skin gradient (cylindrical volume lighting)
-    const neckGrad = c.createLinearGradient(554, 0, 646, 0);
-    neckGrad.addColorStop(0, '#D4A680');
-    neckGrad.addColorStop(0.25, skinTone);
-    neckGrad.addColorStop(0.5, '#EAD1B6');
-    neckGrad.addColorStop(0.75, skinTone);
-    neckGrad.addColorStop(1, '#D4A680');
-    c.fillStyle = neckGrad;
+    // Solid traditional skin tone
+    c.fillStyle = skinTone;
     c.fill();
 
-    // 2. Throat Shadow under the Chin
-    const throatShadow = c.createLinearGradient(600, neckTopY, 600, neckTopY + 36);
-    throatShadow.addColorStop(0, 'rgba(68, 42, 23, 0.28)');
-    throatShadow.addColorStop(0.55, 'rgba(68, 42, 23, 0.12)');
-    throatShadow.addColorStop(1, 'transparent');
-    c.fillStyle = throatShadow;
+    // 2. Throat Shadow under the Chin (Subtle flat shadow)
+    c.fillStyle = 'rgba(68, 42, 23, 0.14)';
     c.beginPath();
-    c.ellipse(600, neckTopY + 14, 38, 18, 0, 0, Math.PI * 2);
+    c.ellipse(600, neckTopY + 14, 38, 16, 0, 0, Math.PI * 2);
     c.fill();
 
     // 3. Delicate Sternocleidomastoid & Suprasternal Notch Contours
@@ -916,14 +887,8 @@
       c.strokeStyle = '#241710';
       c.lineWidth = 2.4;
 
-      // Left Pant Leg with 3D cylindrical wool drape
-      const leftPantGrad = c.createLinearGradient(484, 0, 600, 0);
-      leftPantGrad.addColorStop(0, '#130D09');
-      leftPantGrad.addColorStop(0.48, '#261C16'); // Center leg thigh highlight
-      leftPantGrad.addColorStop(0.55, '#201611');
-      leftPantGrad.addColorStop(1, '#110C08');
-
-      c.fillStyle = leftPantGrad;
+      // Left Pant Leg (Solid bespoke charcoal wool)
+      c.fillStyle = '#1A130E';
       c.beginPath();
       c.moveTo(484, topY);
       c.bezierCurveTo(488, 615, 510, kneeY, 520, ankleY); // Outer hip-to-ankle
@@ -934,14 +899,8 @@
       c.fill();
       c.stroke();
 
-      // Right Pant Leg with 3D cylindrical wool drape
-      const rightPantGrad = c.createLinearGradient(600, 0, 716, 0);
-      rightPantGrad.addColorStop(0, '#110C08');
-      rightPantGrad.addColorStop(0.45, '#201611');
-      rightPantGrad.addColorStop(0.52, '#261C16'); // Center leg thigh highlight
-      rightPantGrad.addColorStop(1, '#130D09');
-
-      c.fillStyle = rightPantGrad;
+      // Right Pant Leg (Solid bespoke charcoal wool)
+      c.fillStyle = '#1A130E';
       c.beginPath();
       c.moveTo(716, topY);
       c.bezierCurveTo(712, 615, 690, kneeY, 680, ankleY); // Outer hip-to-ankle
@@ -952,13 +911,9 @@
       c.fill();
       c.stroke();
 
-      // Soft ambient drop shadow cast by shirt hem onto upper trousers
-      const hemShadow = c.createLinearGradient(0, topY, 0, topY + 45);
-      hemShadow.addColorStop(0, 'rgba(10, 7, 5, 0.60)');
-      hemShadow.addColorStop(0.65, 'rgba(10, 7, 5, 0.20)');
-      hemShadow.addColorStop(1, 'transparent');
-      c.fillStyle = hemShadow;
-      c.fillRect(484, topY, 232, 45);
+      // Flat drop shadow cast by shirt hem onto upper trousers
+      c.fillStyle = 'rgba(10, 7, 5, 0.35)';
+      c.fillRect(484, topY, 232, 12);
 
       // Fly placket stitching
       c.strokeStyle = 'rgba(255, 255, 255, 0.08)';
@@ -1101,12 +1056,8 @@
     c.closePath();
     c.fill();
 
-    // Calfskin Leather Shoe Body
-    const shoeGrad = c.createLinearGradient(-20, -10, 38, 4);
-    shoeGrad.addColorStop(0, '#100B08');
-    shoeGrad.addColorStop(0.5, '#1C130E');
-    shoeGrad.addColorStop(1, '#0C0806');
-    c.fillStyle = shoeGrad;
+    // Calfskin Leather Shoe Body (Solid dark leather)
+    c.fillStyle = '#16100B';
     c.strokeStyle = '#261810';
     c.lineWidth = 1.8;
 
@@ -1198,13 +1149,6 @@
       c.fill();
       c.stroke();
 
-      // Left forearm muscle gradient shading
-      const leftArmGrad = c.createLinearGradient(leftCuff.outer.x, 420, wristLeft.x, 520);
-      leftArmGrad.addColorStop(0, 'rgba(196, 142, 98, 0.25)');
-      leftArmGrad.addColorStop(1, 'transparent');
-      c.fillStyle = leftArmGrad;
-      c.fill();
-
       // 2. Right Forearm
       c.beginPath();
       c.moveTo(rightCuff.outer.x, rightCuff.outer.y);
@@ -1215,12 +1159,6 @@
       c.fillStyle = skinBase;
       c.fill();
       c.stroke();
-
-      const rightArmGrad = c.createLinearGradient(rightCuff.outer.x, 420, wristRight.x, 520);
-      rightArmGrad.addColorStop(0, 'rgba(196, 142, 98, 0.25)');
-      rightArmGrad.addColorStop(1, 'transparent');
-      c.fillStyle = rightArmGrad;
-      c.fill();
 
       // 3. Hands Clasped Politely in Center (Ngapurancang)
       drawNgapurancangHands(c, 600, 525);
@@ -1345,12 +1283,8 @@
     c.lineCap = 'round';
     c.lineJoin = 'round';
 
-    // 1. Left hand back & palm resting beneath with volumetric skin shading
-    const leftHandGrad = c.createLinearGradient(-35, -12, 35, 18);
-    leftHandGrad.addColorStop(0, '#E6C19E');
-    leftHandGrad.addColorStop(0.5, '#D5A47A');
-    leftHandGrad.addColorStop(1, '#BE8358');
-    c.fillStyle = leftHandGrad;
+    // 1. Left hand back & palm resting beneath (Solid skin tone)
+    c.fillStyle = '#D5A47A';
 
     c.beginPath();
     c.moveTo(-36, -8);
@@ -1367,12 +1301,8 @@
     c.ellipse(5, 5, 24, 7, -0.15, 0, Math.PI * 2);
     c.fill();
 
-    // 2. Right hand folded gracefully over the left hand
-    const rightHandGrad = c.createLinearGradient(-20, -15, 35, 18);
-    rightHandGrad.addColorStop(0, '#EAD1B6');
-    rightHandGrad.addColorStop(0.4, '#DCAC84');
-    rightHandGrad.addColorStop(1, '#C2885D');
-    c.fillStyle = rightHandGrad;
+    // 2. Right hand folded gracefully over the left hand (Solid skin tone)
+    c.fillStyle = '#DCAC84';
 
     c.beginPath();
     c.moveTo(-18, -12);
@@ -1441,12 +1371,8 @@
 
     const strokeCol = 'rgba(45, 27, 17, 0.75)';
 
-    // Volumetric skin tone
-    const handGrad = c.createLinearGradient(-10, 0, 15, 45);
-    handGrad.addColorStop(0, '#E8C7A8');
-    handGrad.addColorStop(0.5, '#D7A77E');
-    handGrad.addColorStop(1, '#BE8458');
-    c.fillStyle = handGrad;
+    // Solid skin tone
+    c.fillStyle = '#D7A77E';
     c.strokeStyle = strokeCol;
     c.lineWidth = 1.5;
     c.lineCap = 'round';
@@ -1660,29 +1586,7 @@
       drawBuketanOnGarment(c);
     }
 
-    // 2b. Haute Couture Volumetric 3D cylindrical lighting across torso & sleeves
-    // Gives the garment luxurious natural cloth depth instead of flat cardboard
-    const torsoShading = c.createLinearGradient(380, 0, 820, 0);
-    torsoShading.addColorStop(0, 'rgba(40, 24, 14, 0.22)'); // Left arm outer flank shadow
-    torsoShading.addColorStop(0.18, 'rgba(40, 24, 14, 0.05)');
-    torsoShading.addColorStop(0.32, 'rgba(50, 30, 18, 0.16)'); // Left underarm crease shadow
-    torsoShading.addColorStop(0.40, 'rgba(255, 255, 255, 0.08)');
-    torsoShading.addColorStop(0.50, 'rgba(255, 255, 255, 0.20)'); // Central chest highlight
-    torsoShading.addColorStop(0.60, 'rgba(255, 255, 255, 0.08)');
-    torsoShading.addColorStop(0.68, 'rgba(50, 30, 18, 0.16)'); // Right underarm crease shadow
-    torsoShading.addColorStop(0.82, 'rgba(40, 24, 14, 0.05)');
-    torsoShading.addColorStop(1, 'rgba(40, 24, 14, 0.22)'); // Right arm outer flank shadow
-    c.fillStyle = torsoShading;
-    c.fill();
-
-    // Top-to-bottom natural lighting drape (soft shadow towards lower waist hem)
-    const verticalDrape = c.createLinearGradient(0, 230, 0, 610);
-    verticalDrape.addColorStop(0, 'rgba(255, 255, 255, 0.12)');
-    verticalDrape.addColorStop(0.35, 'transparent');
-    verticalDrape.addColorStop(0.85, 'rgba(45, 27, 16, 0.08)');
-    verticalDrape.addColorStop(1, 'rgba(35, 20, 12, 0.24)');
-    c.fillStyle = verticalDrape;
-    c.fill();
+    // Authentic flat batik mori cloth presentation (No artificial 3D lighting or airbrush gradients)
 
     // Soft drop shadow cast by sleeves onto the torso flanks
     c.fillStyle = 'rgba(25, 14, 8, 0.18)';
@@ -2258,54 +2162,12 @@
       }
       c.restore();
 
-      // Soft feathered inner vignette around portrait edges
-      c.save();
-      const innerVig = c.createRadialGradient(faceX, faceY, radiusX * 0.7, faceX, faceY, radiusY);
-      innerVig.addColorStop(0, 'transparent');
-      innerVig.addColorStop(0.85, 'rgba(30, 18, 10, 0.35)');
-      innerVig.addColorStop(1, 'rgba(20, 12, 6, 0.75)');
-      c.fillStyle = innerVig;
-      c.beginPath();
-      c.ellipse(faceX, faceY, radiusX, radiusY, 0, 0, Math.PI * 2);
-      c.fill();
-      c.restore();
-
     } else {
-      // 2. IDLE STATE: CERMIN POTRET PUSAKA (Antique Javanese Convex Mirror)
-      // Convex Smoked Bronze Glass Surface
-      const mirrorGlass = c.createRadialGradient(faceX - 18, faceY - 25, 8, faceX, faceY, radiusY);
-      mirrorGlass.addColorStop(0, '#362418');
-      mirrorGlass.addColorStop(0.45, '#24160E');
-      mirrorGlass.addColorStop(0.8, '#160D08');
-      mirrorGlass.addColorStop(1, '#0C0704');
-
-      c.fillStyle = mirrorGlass;
+      // 2. IDLE STATE: CERMIN POTRET PUSAKA (Clean Antique Javanese Mirror Face)
+      c.fillStyle = '#1C120A';
       c.beginPath();
       c.ellipse(faceX, faceY, radiusX, radiusY, 0, 0, Math.PI * 2);
       c.fill();
-
-      // Diagonal Specular Reflection Sheen (Curved glass reflection)
-      c.save();
-      c.beginPath();
-      c.ellipse(faceX, faceY, radiusX - 2, radiusY - 2, 0, 0, Math.PI * 2);
-      c.clip();
-
-      const sheenGrad = c.createLinearGradient(faceX - radiusX, faceY - radiusY, faceX + radiusX, faceY + radiusY);
-      sheenGrad.addColorStop(0, 'rgba(255, 245, 225, 0.18)');
-      sheenGrad.addColorStop(0.28, 'rgba(255, 245, 225, 0.05)');
-      sheenGrad.addColorStop(0.48, 'transparent');
-      sheenGrad.addColorStop(0.72, 'rgba(212, 175, 55, 0.08)');
-      sheenGrad.addColorStop(1, 'transparent');
-      c.fillStyle = sheenGrad;
-      c.fillRect(faceX - radiusX, faceY - radiusY, radiusX * 2, radiusY * 2);
-
-      // Subtle Concave Glass Vignette
-      const concaveVig = c.createRadialGradient(faceX, faceY, 20, faceX, faceY, radiusY);
-      concaveVig.addColorStop(0, 'transparent');
-      concaveVig.addColorStop(1, 'rgba(0, 0, 0, 0.45)');
-      c.fillStyle = concaveVig;
-      c.fillRect(faceX - radiusX, faceY - radiusY, radiusX * 2, radiusY * 2);
-      c.restore();
 
       // Inner Concentric Brass Filigree Ring
       c.save();
@@ -2437,11 +2299,7 @@
 
     // 2. Mondholan (Rear Javanese Hair Bun) on the back right
     c.save();
-    const mondholanGrad = c.createRadialGradient(58, 20, 3, 58, 20, 16);
-    mondholanGrad.addColorStop(0, '#5A3822');
-    mondholanGrad.addColorStop(0.7, '#3A2012');
-    mondholanGrad.addColorStop(1, '#221208');
-    c.fillStyle = mondholanGrad;
+    c.fillStyle = '#3A2012';
     c.beginPath();
     c.ellipse(58, 20, 14, 18, 0.15, 0, Math.PI * 2);
     c.fill();
@@ -2458,11 +2316,7 @@
 
     // 3. Main Blangkon Crown Dome (Batik Sogan Fabric Cap)
     c.save();
-    const crownGrad = c.createLinearGradient(0, -22, 0, 30);
-    crownGrad.addColorStop(0, '#422818');
-    crownGrad.addColorStop(0.5, '#56341F');
-    crownGrad.addColorStop(1, '#3A2214');
-    c.fillStyle = crownGrad;
+    c.fillStyle = '#422818';
 
     c.beginPath();
     c.moveTo(-68, 26);
@@ -2508,10 +2362,7 @@
     c.restore();
 
     // 5. Kemada (Forehead Arched Band)
-    const kemadaGrad = c.createLinearGradient(0, 18, 0, 34);
-    kemadaGrad.addColorStop(0, '#2F1A0E');
-    kemadaGrad.addColorStop(1, '#1A0D07');
-    c.fillStyle = kemadaGrad;
+    c.fillStyle = '#221208';
 
     c.beginPath();
     c.moveTo(-68, 24);
@@ -2545,11 +2396,7 @@
     c.translate(headX, headY);
 
     // 1. Back Sanggul Bun Volume (Konde Ukel Klasik)
-    const sanggulGrad = c.createRadialGradient(0, -68, 20, 0, -68, 75);
-    sanggulGrad.addColorStop(0, '#2A201A');
-    sanggulGrad.addColorStop(0.7, '#16100C');
-    sanggulGrad.addColorStop(1, '#0C0806');
-    c.fillStyle = sanggulGrad;
+    c.fillStyle = '#15100C';
 
     c.beginPath();
     c.ellipse(0, -66, 80, 36, 0, 0, Math.PI * 2);

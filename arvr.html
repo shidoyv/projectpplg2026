@@ -50,15 +50,13 @@
       flex-direction: column;
     }
 
-    /* Atmospheric Vignette & Andesite Texture Backdrop */
+    /* Atmospheric Photographic Backdrop (Hero Section Only) */
     .arvr-hero-backdrop {
       background-image:
-        radial-gradient(circle at 50% 10%, rgba(197, 165, 114, 0.12) 0%, transparent 60%),
-        radial-gradient(circle at 80% 30%, rgba(140, 109, 70, 0.08) 0%, transparent 50%),
-        linear-gradient(180deg, rgba(16, 11, 7, 0.88) 0%, rgba(16, 11, 7, 0.98) 100%),
-        url('assets/sketchbook/borobudur.jpg');
+        linear-gradient(180deg, rgba(10, 6, 4, 0.72) 0%, rgba(10, 6, 4, 0.88) 75%, #0A0604 100%),
+        url('assets/borobudur.jpg');
       background-size: cover;
-      background-position: center;
+      background-position: center 30%;
       background-repeat: no-repeat;
     }
 
@@ -77,7 +75,7 @@
   <!-- ==================== UNIFIED TOP STICKY NAVBAR (MATCHING INDEX.HTML) ==================== -->
   <header id="main-navbar"
     class="sticky top-0 z-50 w-full transition-all duration-300 backdrop-blur-md bg-black/60 border-b border-white/10">
-    <div class="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-14 py-3.5 flex items-center justify-between">
+    <div class="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-14 py-3.5 flex items-center justify-between relative">
 
       <!-- Brand Logo & Name -->
       <div class="flex items-center gap-3">
@@ -93,7 +91,9 @@
       </div>
 
       <!-- Navigation Links (Centered, Identical to index.html, No Underline Line) -->
-      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-white/80" aria-label="Navigasi Utama">
+      <nav
+        class="hidden md:flex items-center gap-5 lg:gap-7 text-sm font-medium text-white/80 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        aria-label="Navigasi Utama">
         <a href="index.html#beranda" class="text-white/75 hover:text-white transition-colors py-1">
           Beranda
         </a>
@@ -113,24 +113,6 @@
 
       <!-- Right Action Items (Matches index.html exactly) -->
       <div class="flex items-center gap-3">
-        <button id="sound-toggle-btn" type="button" aria-label="Toggle Suara Gamelan"
-          title="Nyalakan / Matikan Ketukan Gamelan"
-          class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-white bg-white/10 hover:bg-white/20 border border-white/25 rounded-full backdrop-blur-md transition-all shadow-sm group cursor-pointer">
-          <svg id="sound-icon-on" class="w-3.5 h-3.5 text-amber-300 drop-shadow-[0_0_6px_rgba(252,211,77,0.8)]"
-            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-          </svg>
-          <svg id="sound-icon-off" class="w-3.5 h-3.5 text-white/50 hidden" fill="none" stroke="currentColor"
-            viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
-          </svg>
-          <span id="sound-toggle-text" class="text-white/90 group-hover:text-white">Gamelan: Aktif</span>
-        </button>
-
         <!-- Mobile hamburger toggle button -->
         <button id="mobile-nav-toggle" class="md:hidden p-1.5 text-white/90 hover:text-white focus:outline-none"
           aria-label="Buka Menu Navigasi">
@@ -158,286 +140,236 @@
   </header>
 
   <!-- ==================== 2. HERO: KISAH & PELUNCUR GAME UTAMA ==================== -->
-  <section class="arvr-hero-backdrop flex-1 w-full py-12 lg:py-20">
-    <div class="max-w-6xl mx-auto px-5">
+  <section class="arvr-hero-backdrop w-full min-h-[calc(100vh-70px)] flex flex-col justify-between py-10 lg:py-14">
+    <div class="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-14 w-full flex-1 flex flex-col justify-center">
 
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+      <!-- Kolom Konten Utama Hero (Cinematic Editorial, Open & Breathable) -->
+      <div class="max-w-2xl py-6 space-y-6">
 
-        <!-- Kolom Kiri: Narasi & Tombol Aksi (7 Cols) -->
-        <div class="lg:col-span-7 space-y-6">
+        <!-- Kicker Kuratorial Alami (Bukan Capsule Badge AI) -->
+        <div class="flex items-center gap-2 text-xs font-serif text-[#C5A572] tracking-wider">
+          <span>Khazanah Virtual Reality</span>
+          <span class="text-[#8C6D46]">•</span>
+          <span class="text-[#E5D8BE]/75">Eksplorasi Malam Borobudur</span>
+        </div>
 
-          <!-- Editorial Chapter Kicker (Bukan Badge AI) -->
-          <div class="flex items-center gap-2 text-xs font-serif text-[#C5A572] tracking-wider uppercase">
-            <span>Babak Eksplorasi Virtual Reality</span>
-            <span class="text-[#8C6D46]">•</span>
-            <span class="text-[#E5D8BE]/60">Tahun 2026</span>
+        <!-- Headline Utama -->
+        <h1
+          class="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-[1.08] drop-shadow-[0_2px_16px_rgba(0,0,0,0.85)]">
+          Misteri Gerbang <br />
+          <span class="text-[#C5A572] font-normal italic">Candi Borobudur</span>
+        </h1>
+
+        <!-- Narasi Prolog (Rata Kiri, Tipografi Bersih & Elegan) -->
+        <div class="space-y-3">
+          <p class="text-base sm:text-lg text-[#FAF7F2]/90 font-serif leading-relaxed drop-shadow">
+            Malam merayap di atas pelataran batu andesit Candi Borobudur. Di bawah hening kabut Pegunungan Menoreh,
+            gerbang timur terkunci rapat oleh tiga pasak kuno—Kuningan, Besi, dan Perunggu.
+          </p>
+          <p class="text-xs sm:text-sm text-[#E5D8BE]/75 leading-relaxed font-light max-w-xl">
+            Berbekal lentera temaram dan detak jantung yang berpacu di kesunyian koridor stupa,
+            telusuri lorong relief abad ke-8, temukan ketiga kunci pusaka yang tersembunyi, dan hindari bayangan Buto
+            Abang yang mengintai dari kegelapan teras relief.
+          </p>
+        </div>
+
+        <!-- Tombol Aksi (Taktil, Bersih, Tanpa Glow Slop) -->
+        <div class="pt-2 space-y-3">
+          <div class="flex flex-wrap items-center gap-3.5">
+            <!-- Tombol Utama: Luncurkan Game -->
+            <button id="btnMainLaunch" type="button" onclick="window.launchUnityGame(event)"
+              class="inline-flex items-center gap-3 px-6 py-3.5 rounded-lg bg-[#382215] hover:bg-[#4E311D] text-[#FAF7F2] font-semibold text-sm border border-[#C5A572] shadow-[0_8px_24px_rgba(0,0,0,0.7)] transition-all active:scale-[0.98] cursor-pointer group">
+              <svg class="w-4 h-4 text-[#C5A572]" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              <span>Buka Game di Komputer</span>
+            </button>
+
+            <!-- Tombol Audio Ambience Kabut Malam -->
+            <button id="btnToggleAmbience" type="button"
+              class="inline-flex items-center gap-2.5 px-5 py-3.5 rounded-lg bg-black/60 hover:bg-black/80 text-xs font-medium text-[#E5D8BE] border border-white/20 backdrop-blur-md transition-all cursor-pointer">
+              <svg id="iconAudio" class="w-4 h-4 text-[#C5A572]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+              </svg>
+              <span id="ambienceLabel">Dengarkan Ambience Malam</span>
+            </button>
+            <audio id="ambientAudio" loop preload="none" src="audio/horror_ambient.mp3"></audio>
           </div>
 
-          <!-- Headline Utama -->
-          <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-[1.15]">
-            Misteri Gerbang Candi Borobudur
-          </h1>
-
-          <!-- Narasi Prolog Sastra Sejarah -->
-          <p class="text-sm sm:text-base text-[#E5D8BE]/90 font-serif leading-relaxed">
-            Malam merayap di atas pelataran batu andesit Candi Borobudur. Di bawah kabut hening Pegunungan Menoreh,
-            gerbang timur terkunci rapat oleh tiga gembok bersegel kuno—Kuningan, Besi, dan Perunggu.
+          <p class="text-[11.5px] text-[#E5D8BE]/55 font-mono">
+            Terhubung langsung ke Unity Engine via server lokal (Desktop Windows).
           </p>
-          <p class="text-xs sm:text-sm text-[#E5D8BE]/75 leading-relaxed">
-            Berbekal lentera temaram dan detak jantung yang berpacu di kesunyian candi, telusuri lorong relief abad
-            ke-8, temukan ketiga kunci pusaka yang tercerai-berai, dan hindari bayangan Buto Abang yang mengintai dari
-            kegelapan teras stupa.
-          </p>
+        </div>
 
-          <!-- Area Tombol Peluncur & Audio Ambience -->
-          <div class="pt-2 space-y-4">
+      </div>
 
-            <div class="flex flex-wrap items-center gap-3">
-              <!-- Tombol Utama: Luncurkan Game -->
-              <button id="btnMainLaunch" type="button" onclick="window.launchUnityGame(event)"
-                class="inline-flex items-center gap-3 px-6 py-3.5 rounded-lg bg-[#382215] hover:bg-[#4E311D] text-[#FAF7F2] font-semibold text-sm border border-[#C5A572] shadow-lg transition-all active:scale-[0.98] cursor-pointer">
-                <span>Buka Game di Komputer</span>
-                <svg class="w-4 h-4 text-[#C5A572]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-              </button>
+    </div>
 
-              <!-- Tombol Audio Ambience Kabut Malam -->
-              <button id="btnToggleAmbience" type="button"
-                class="inline-flex items-center gap-2.5 px-4 py-3 rounded-lg bg-[#18110B] hover:bg-[#251A10] text-xs text-[#E5D8BE] border border-[#8C6D46]/40 transition-colors cursor-pointer">
-                <svg id="iconAudio" class="w-4 h-4 text-[#C5A572]" fill="none" stroke="currentColor"
-                  viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                </svg>
-                <span id="ambienceLabel">Dengarkan Ambience Malam</span>
-              </button>
-              <audio id="ambientAudio" loop preload="none" src="audio/horror_ambient.mp3"></audio>
-            </div>
+    <!-- Pita Metadata Terpadu di Kaki Hero (Bukan Card, Terintegrasi Elegan) -->
+    <div class="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-14 w-full pt-6 border-t border-white/10">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs text-[#E5D8BE]/70">
+        <div class="flex flex-wrap items-center gap-6">
+          <div>
+            <span class="text-[10px] text-[#E5D8BE]/45 uppercase tracking-wider block font-mono">Sudut Pandang</span>
+            <span class="font-serif font-medium text-white">First-Person VR / PC</span>
+          </div>
+          <div>
+            <span class="text-[10px] text-[#E5D8BE]/45 uppercase tracking-wider block font-mono">Format Suara</span>
+            <span class="font-serif font-medium text-white">Audio Spasial 3D Binaural</span>
+          </div>
+          <div>
+            <span class="text-[10px] text-[#E5D8BE]/45 uppercase tracking-wider block font-mono">Perangkat</span>
+            <span class="font-serif font-medium text-white">Meta Quest &amp; Windows</span>
+          </div>
+        </div>
 
-            <!-- Petunjuk Ringkas Server -->
-            <p class="text-[11.5px] text-[#E5D8BE]/65">
-              Terhubung langsung ke Unity Engine via server lokal (Windows).
+        <a href="#panduan-kendali"
+          class="flex items-center gap-2 text-xs font-serif text-[#C5A572] hover:text-white transition-colors">
+          <span>Panduan Kendali Permainan</span>
+          <svg class="w-3.5 h-3.5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 3. PANDUAN KENDALI & NAVIGASI (WARNA SOLID - BUKAN GAMBAR) ==================== -->
+  <section id="panduan-kendali" class="w-full bg-[#0A0604] py-16 sm:py-20">
+    <div class="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-14">
+
+      <div class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#8C6D46]/20 pb-4">
+          <div>
+            <h2 class="font-display text-2xl font-bold text-white">
+              Panduan Kendali dan Navigasi Permainan
+            </h2>
+            <p class="text-xs text-[#E5D8BE]/70 font-light mt-1">
+              Dapat dimainkan di perangkat komputer (PC Desktop) maupun kacamata Virtual Reality (Oculus Quest
+              2/3).
             </p>
+          </div>
+          <span class="text-xs font-mono text-[#C5A572]">Standar OpenXR &amp; Windows</span>
+        </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs pt-4">
+
+          <!-- Kolom PC Keyboard & Mouse -->
+          <div class="space-y-3">
+            <span class="font-serif font-bold text-sm text-[#C5A572] block border-b border-[#8C6D46]/20 pb-2">
+              Mode Keyboard &amp; Mouse (Desktop Windows)
+            </span>
+
+            <div class="space-y-2 text-[#E5D8BE]/85">
+              <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+                <span>Berjalan Maju, Mundur, Samping</span>
+                <span
+                  class="font-mono font-bold text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">W,
+                  A, S, D</span>
+              </div>
+              <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+                <span>Berlari Cepat (Mengonsumsi Stamina)</span>
+                <span
+                  class="font-mono font-bold text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Shift
+                  Kiri</span>
+              </div>
+              <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+                <span>Interaksi / Ambil Kunci / Buka Gembok</span>
+                <span
+                  class="font-mono font-bold text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Tombol
+                  E / Klik Kiri</span>
+              </div>
+              <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+                <span>Nyalakan / Matikan Lentera Senter</span>
+                <span
+                  class="font-mono font-bold text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Tombol
+                  F</span>
+              </div>
+              <div class="flex items-center justify-between py-1.5">
+                <span>Jeda Permainan / Pengaturan</span>
+                <span
+                  class="font-mono font-bold text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Esc</span>
+              </div>
+            </div>
           </div>
 
-          <!-- Metadata Teknis (Gaya Jurnal Kurasi) -->
-          <div class="grid grid-cols-3 gap-3 pt-4 border-t border-[#8C6D46]/20 text-xs">
-            <div>
-              <span class="text-[10px] text-[#E5D8BE]/50 uppercase tracking-wider block font-sans">Sudut Pandang</span>
-              <span class="font-serif font-semibold text-[#FAF7F2]">First-Person (VR / PC)</span>
-            </div>
-            <div>
-              <span class="text-[10px] text-[#E5D8BE]/50 uppercase tracking-wider block font-sans">Format Suara</span>
-              <span class="font-serif font-semibold text-[#FAF7F2]">Audio Spasial 3D</span>
-            </div>
-            <div>
-              <span class="text-[10px] text-[#E5D8BE]/50 uppercase tracking-wider block font-sans">Kompatibilitas</span>
-              <span class="font-serif font-semibold text-[#FAF7F2]">Meta Quest &amp; Windows</span>
+          <!-- Kolom Oculus VR Touch -->
+          <div class="space-y-3">
+            <span class="font-serif font-bold text-sm text-[#C5A572] block border-b border-[#8C6D46]/20 pb-2">
+              Mode Kacamata Virtual Reality (Oculus Quest 2 / 3)
+            </span>
+
+            <div class="space-y-2 text-[#E5D8BE]/85">
+              <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+                <span>Pergerakan Bebas (Smooth Locomotion)</span>
+                <span class="font-mono text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Analog
+                  Kiri</span>
+              </div>
+              <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+                <span>Putar Pandangan (Snap Turn 45°)</span>
+                <span class="font-mono text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Analog
+                  Kanan</span>
+              </div>
+              <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+                <span>Genggam Kunci &amp; Putar Gembok</span>
+                <span class="font-mono text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Grip
+                  / Trigger</span>
+              </div>
+              <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+                <span>Deteksi Pandangan Mata Merah</span>
+                <span class="font-mono text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Head
+                  Tracking 6DoF</span>
+              </div>
+              <div class="flex items-center justify-between py-1.5">
+                <span>Menu Lingkungan / Kalibrasi</span>
+                <span class="font-mono text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Oculus
+                  Home Button</span>
+              </div>
             </div>
           </div>
 
         </div>
-
-        <!-- Kolom Kanan: Diorama Visual Candi & Bayangan Wayang Buto (5 Cols) -->
-        <div class="lg:col-span-5">
-          <div class="stone-card overflow-hidden relative">
-
-            <!-- Frame Header -->
-            <div class="px-5 py-3.5 bg-[#20150D] border-b border-[#8C6D46]/30 flex items-center justify-between">
-              <span class="text-xs font-serif font-semibold text-[#FAF7F2]">
-                Diorama Gerbang Candi
-              </span>
-              <span class="text-[10.5px] font-mono text-[#C5A572]">
-                Abad ke-8 Masehi
-              </span>
-            </div>
-
-            <!-- Visual Stage: Relief Candi & Bayangan Buto Abang -->
-            <div class="relative w-full aspect-[4/3.2] bg-[#0C0704] overflow-hidden flex items-center justify-center">
-
-              <!-- Background Relief Batu Andesit -->
-              <img src="assets/articles/borobudur-relief.jpg" alt="Relief Batu Candi Borobudur"
-                class="absolute inset-0 w-full h-full object-cover opacity-35 filter brightness-75 contrast-125">
-
-              <!-- Gradien Kabut Gelap Malam -->
-              <div class="absolute inset-0 bg-gradient-to-t from-[#100B07] via-transparent to-[#100B07]/80"></div>
-
-              <!-- Bayangan Wayang Buto Abang Terpajang Temaram -->
-              <div class="relative z-10 flex flex-col items-center text-center p-6">
-                <img src="assets/wayang_buto_abang.png" alt="Siluet Buto Abang"
-                  class="h-44 sm:h-52 object-contain drop-shadow-[0_10px_25px_rgba(0,0,0,0.9)] opacity-90 transition-transform duration-500 hover:scale-105">
-                <span class="text-[11px] font-serif text-[#C5A572] tracking-wide mt-2 block">
-                  Sosok Bayangan Buto Abang
-                </span>
-              </div>
-
-              <!-- Indikator Sudut Lentera -->
-              <div
-                class="absolute bottom-3 left-4 right-4 z-20 flex items-center justify-between text-[10.5px] text-[#E5D8BE]/75">
-                <span>Pelataran Teras III</span>
-                <span class="text-[#C5A572]">Segel Gembok: 3 Pusaka</span>
-              </div>
-
-            </div>
-
-            <!-- Catatan Kuratorial Singkat -->
-            <div class="p-4 bg-[#140D08] border-t border-[#8C6D46]/20">
-              <p class="text-xs text-[#E5D8BE]/80 font-serif leading-relaxed italic">
-                &ldquo;Jangan menatap mata merahnya terlalu lama; suara detak jantung akan semakin menderu saat ia kian
-                mendekat.&rdquo;
-              </p>
-            </div>
-
-          </div>
-        </div>
-
       </div>
 
     </div>
   </section>
 
-
-  <!-- ==================== 4. TABEL PANDUAN KONTROL & SPESIFIKASI ==================== -->
-  <section class="max-w-6xl mx-auto px-5 pb-16 w-full">
-
-    <div class="p-6 sm:p-8 rounded-2xl bg-[#140D08] border border-[#8C6D46]/30">
-
-      <div
-        class="mb-6 border-b border-[#8C6D46]/20 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-        <div>
-          <h3 class="font-display text-lg font-bold text-white">
-            Panduan Kendali &amp; Navigasi Permainan
-          </h3>
-          <p class="text-xs text-[#E5D8BE]/70">
-            Dapat dimainkan di perangkat komputer (PC) maupun kacamata Virtual Reality (Oculus Quest 2/3).
-          </p>
-        </div>
-        <span class="text-xs font-mono text-[#C5A572]">Standar OpenXR &amp; Windows</span>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs">
-
-        <!-- Kolom PC Keyboard & Mouse -->
-        <div class="space-y-3">
-          <span class="font-serif font-bold text-sm text-[#C5A572] block border-b border-[#8C6D46]/20 pb-1.5">
-            Mode Keyboard &amp; Mouse (Desktop Windows)
-          </span>
-
-          <div class="space-y-2 text-[#E5D8BE]/85">
-            <div class="flex items-center justify-between py-1 border-b border-white/5">
-              <span>Berjalan Maju, Mundur, Samping</span>
-              <span
-                class="font-mono font-bold text-white bg-[#26180F] px-2 py-0.5 rounded border border-[#8C6D46]/40">W, A,
-                S, D</span>
-            </div>
-            <div class="flex items-center justify-between py-1 border-b border-white/5">
-              <span>Berlari Cepat (Mengonsumsi Stamina)</span>
-              <span
-                class="font-mono font-bold text-white bg-[#26180F] px-2 py-0.5 rounded border border-[#8C6D46]/40">Shift
-                Kiri</span>
-            </div>
-            <div class="flex items-center justify-between py-1 border-b border-white/5">
-              <span>Interaksi / Ambil Kunci / Buka Gembok</span>
-              <span
-                class="font-mono font-bold text-white bg-[#26180F] px-2 py-0.5 rounded border border-[#8C6D46]/40">Tombol
-                E / Klik Kiri</span>
-            </div>
-            <div class="flex items-center justify-between py-1 border-b border-white/5">
-              <span>Nyalakan / Matikan Lentera Senter</span>
-              <span
-                class="font-mono font-bold text-white bg-[#26180F] px-2 py-0.5 rounded border border-[#8C6D46]/40">Tombol
-                F</span>
-            </div>
-            <div class="flex items-center justify-between py-1">
-              <span>Jeda Permainan / Pengaturan</span>
-              <span
-                class="font-mono font-bold text-white bg-[#26180F] px-2 py-0.5 rounded border border-[#8C6D46]/40">Esc</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Kolom Oculus VR Touch -->
-        <div class="space-y-3">
-          <span class="font-serif font-bold text-sm text-[#C5A572] block border-b border-[#8C6D46]/20 pb-1.5">
-            Mode Kacamata Virtual Reality (Oculus Quest 2 / 3)
-          </span>
-
-          <div class="space-y-2 text-[#E5D8BE]/85">
-            <div class="flex items-center justify-between py-1 border-b border-white/5">
-              <span>Pergerakan Bebas (Smooth Locomotion)</span>
-              <span class="font-mono text-white bg-[#26180F] px-2 py-0.5 rounded border border-[#8C6D46]/40">Analog
-                Kiri</span>
-            </div>
-            <div class="flex items-center justify-between py-1 border-b border-white/5">
-              <span>Putar Pandangan (Snap Turn 45°)</span>
-              <span class="font-mono text-white bg-[#26180F] px-2 py-0.5 rounded border border-[#8C6D46]/40">Analog
-                Kanan</span>
-            </div>
-            <div class="flex items-center justify-between py-1 border-b border-white/5">
-              <span>Genggam Kunci &amp; Putar Gembok</span>
-              <span class="font-mono text-white bg-[#26180F] px-2 py-0.5 rounded border border-[#8C6D46]/40">Grip /
-                Trigger</span>
-            </div>
-            <div class="flex items-center justify-between py-1 border-b border-white/5">
-              <span>Deteksi Pandangan Mata Merah</span>
-              <span class="font-mono text-white bg-[#26180F] px-2 py-0.5 rounded border border-[#8C6D46]/40">Head
-                Tracking 6DoF</span>
-            </div>
-            <div class="flex items-center justify-between py-1">
-              <span>Menu Lingkungan / Kalibrasi</span>
-              <span class="font-mono text-white bg-[#26180F] px-2 py-0.5 rounded border border-[#8C6D46]/40">Oculus Home
-                Button</span>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- ==================== 5. FOOTER ==================== -->
-  <footer class="mt-auto bg-[#0E0905] py-6 text-center text-xs text-[#E5D8BE]/60">
-    <div class="max-w-6xl mx-auto px-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-      <span>&copy; 2026 Lelana Jateng &bull; Warisan Budaya Adiluhung &amp; Pengalaman Horor VR Candi Borobudur</span>
-      <div class="flex items-center gap-4 text-[#E5D8BE]/75">
-        <a href="index.html" class="hover:text-white transition-colors">Beranda</a>
-        <a href="studio-canting.html" class="hover:text-white transition-colors">Studio Canting</a>
-        <a href="history.html" class="hover:text-white transition-colors">History</a>
-      </div>
+  <!-- ==================== 4. FOOTER ==================== -->
+  <footer class="mt-auto bg-[#070402] py-6 text-center text-xs text-[#E5D8BE]/60 border-t border-[#8C6D46]/15">
+    <div class="max-w-6xl mx-auto px-5 flex items-center justify-center">
+      <span>&copy; 2026 Lelana Jateng &bull; Warisan Budaya Adiluhung &amp; Pengalaman Horor VR Candi
+        Borobudur</span>
     </div>
   </footer>
 
   <!-- Scripts -->
   <script src="js/game-launcher.js"></script>
   <script>
-    // Audio Ambience Controller
-    (function () {
-      const btn = document.getElementById('btnToggleAmbience');
-      const audio = document.getElementById('ambientAudio');
-      const label = document.getElementById('ambienceLabel');
+      // Audio Ambience Controller
+      (function () {
+        const btn = document.getElementById('btnToggleAmbience');
+        const audio = document.getElementById('ambientAudio');
+        const label = document.getElementById('ambienceLabel');
 
-      if (!btn || !audio) return;
+        if (!btn || !audio) return;
 
-      btn.addEventListener('click', () => {
-        if (audio.paused) {
-          audio.volume = 0.5;
-          audio.play().then(() => {
-            label.textContent = 'Jeda Suara Ambience';
-            btn.classList.add('border-[#C5A572]', 'bg-[#2E1E12]');
-          }).catch(err => {
-            console.warn('Autoplay terhalang oleh izin browser:', err);
-          });
-        } else {
-          audio.pause();
-          label.textContent = 'Dengarkan Ambience Malam';
-          btn.classList.remove('border-[#C5A572]', 'bg-[#2E1E12]');
-        }
-      });
-    })();
+        btn.addEventListener('click', () => {
+          if (audio.paused) {
+            audio.volume = 0.5;
+            audio.play().then(() => {
+              label.textContent = 'Jeda Suara Ambience';
+              btn.classList.add('border-[#C5A572]', 'bg-[#2E1E12]');
+            }).catch(err => {
+              console.warn('Autoplay terhalang oleh izin browser:', err);
+            });
+          } else {
+            audio.pause();
+            label.textContent = 'Dengarkan Ambience Malam';
+            btn.classList.remove('border-[#C5A572]', 'bg-[#2E1E12]');
+          }
+        });
+      })();
 
     // Mobile Navigation Dropdown Toggle
     (function () {

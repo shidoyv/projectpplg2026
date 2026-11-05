@@ -52,170 +52,143 @@
 
   <!-- ==================== 1. NAVBAR ==================== -->
   <header id="main-navbar"
-    class="sticky top-0 z-50 w-full transition-all duration-300 backdrop-blur-md bg-[#16110d]/92 border-b border-[#8c6d46]/30 shadow-lg">
-    <div class="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-14 py-3.5 flex items-center justify-between">
+    class="sticky top-0 z-50 w-full transition-all duration-300 backdrop-blur-md bg-black/60 border-b border-white/10 shadow-lg">
+    <div class="max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-14 py-3.5 flex items-center justify-between relative">
 
       <!-- Brand Logo & Name -->
       <div class="flex items-center gap-3">
-        <a href="index.html" class="flex items-center gap-3 group">
+        <a href="index.html#beranda" class="flex items-center gap-3 group">
           <img src="assets/image-removebg-preview.png" alt="Lelana Jateng Logo"
-            class="h-9 md:h-10 w-auto object-contain drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]"
+            class="h-9 md:h-10 w-auto object-contain drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)]"
             onerror="this.src='https://placehold.co/160x50/transparent/white?text=Lelana+Jateng'" />
           <span
-            class="text-base sm:text-lg md:text-xl font-bold tracking-tight text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
+            class="text-base sm:text-lg md:text-xl font-bold tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
             Lelana Jateng
           </span>
         </a>
       </div>
 
-      <!-- Navigation Links -->
-      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-white/80" aria-label="Navigasi Utama">
-        <a href="index.html#beranda" class="text-white/80 hover:text-white transition-colors py-1">
+      <!-- Navigation Links (Centered, Identical to index.html & arvr.html, No Underline Line, No Galeri Pameran) -->
+      <nav class="hidden md:flex items-center gap-5 lg:gap-7 text-sm font-medium text-white/80 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" aria-label="Navigasi Utama">
+        <a href="index.html#beranda" class="text-white/75 hover:text-white transition-colors py-1">
           Beranda
         </a>
-        <a href="index.html#destinasi" class="text-white/80 hover:text-white transition-colors py-1">
+        <a href="index.html#destinasi" class="text-white/75 hover:text-white transition-colors py-1">
           Destinasi
         </a>
-        <!-- Active Page: Studio Canting -->
-        <a href="studio-canting.html"
-          class="text-white font-semibold py-1 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#8c6d46] after:rounded-full">
+        <a href="studio-canting.html" class="text-white hover:text-white transition-colors py-1 font-semibold">
           Studio Canting
         </a>
         <a href="arvr.html" class="text-white/75 hover:text-white transition-colors py-1">
           AR/VR
         </a>
-        <a href="history.html" class="text-white/80 hover:text-white transition-colors py-1">
+        <a href="history.html" class="text-white/75 hover:text-white transition-colors py-1">
           History
-        </a>
-        <a href="#pameran-virtual" class="text-white/80 hover:text-white transition-colors py-1">
-          Galeri Pameran
         </a>
       </nav>
 
-      <!-- Right Action Items -->
+      <!-- Right Action Items (Matches index.html exactly) -->
       <div class="flex items-center gap-3">
-        <a href="#pameran-virtual"
-          class="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-[#faf7f2] bg-[#2f1c10] hover:bg-[#3d2516] border border-[#8c6d46]/45 rounded-full backdrop-blur-md transition-all shadow-sm">
-          <svg class="w-3.5 h-3.5 text-[#e5d8be]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          <span>Pameran Virtual</span>
-        </a>
-
         <!-- Mobile hamburger toggle button -->
-        <button id="mobile-nav-toggle"
-          class="md:hidden p-2 text-white/90 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8c6d46] rounded-lg transition-colors cursor-pointer"
-          aria-label="Buka Menu Navigasi" aria-expanded="false" aria-controls="mobile-nav-dropdown">
-          <!-- Hamburger Icon -->
-          <svg id="hamburger-icon-svg" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button id="mobile-nav-toggle" class="md:hidden p-1.5 text-white/90 hover:text-white focus:outline-none"
+          aria-label="Buka Menu Navigasi">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-          </svg>
-          <!-- Close (X) Icon -->
-          <svg id="close-icon-svg" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
 
     </div>
 
-    <!-- Mobile Navigation Dropdown -->
+    <!-- Mobile Navigation Dropdown (No Pameran Virtual link) -->
     <div id="mobile-nav-dropdown"
-      class="hidden md:hidden px-6 pb-5 pt-3 border-t border-[#8c6d46]/25 bg-[#16110d]/98 backdrop-blur-xl shadow-2xl space-y-1">
+      class="hidden md:hidden px-6 pb-4 pt-2 border-t border-white/10 bg-black/95 backdrop-blur-lg space-y-2">
       <a href="index.html#beranda"
-        class="block px-3 py-2.5 text-sm text-white/90 font-medium rounded-lg hover:bg-white/5 hover:text-[#e5d8be] transition-colors">Beranda</a>
+        class="block py-2 text-sm text-white font-medium hover:text-amber-300 transition-colors">Beranda</a>
       <a href="index.html#destinasi"
-        class="block px-3 py-2.5 text-sm text-white/90 rounded-lg hover:bg-white/5 hover:text-[#e5d8be] transition-colors">Destinasi</a>
+        class="block py-2 text-sm text-white/80 hover:text-amber-300 transition-colors">Destinasi</a>
       <a href="studio-canting.html"
-        class="block px-3 py-2.5 text-sm text-[#e5d8be] font-semibold bg-[#8c6d46]/20 border border-[#8c6d46]/40 rounded-lg">Studio Canting (Aktif)</a>
+        class="block py-2 text-sm text-white font-semibold hover:text-[#e5d8be] transition-colors">Studio Canting</a>
       <a href="arvr.html"
-        class="block px-3 py-2.5 text-sm text-[#e5d8be]/90 rounded-lg hover:bg-white/5 hover:text-white transition-colors">AR/VR</a>
+        class="block py-2 text-sm text-white/80 hover:text-amber-300 transition-colors">AR/VR</a>
       <a href="history.html"
-        class="block px-3 py-2.5 text-sm text-[#e5d8be]/90 rounded-lg hover:bg-white/5 hover:text-white transition-colors">History</a>
-      <a href="#pameran-virtual"
-        class="block px-3 py-2.5 text-sm text-[#e5d8be]/85 rounded-lg hover:bg-white/5 hover:text-white transition-colors flex items-center justify-between">
-        <span>Pameran Busana Virtual</span>
-        <svg class="w-4 h-4 text-[#8c6d46]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </a>
+        class="block py-2 text-sm text-white/80 hover:text-amber-300 transition-colors">History</a>
     </div>
   </header>
 
   <!-- Immediate Mobile Navigation Initializer -->
   <script>
-    (function () {
-      function initMobileNav() {
-        const toggleBtn = document.getElementById('mobile-nav-toggle');
-        const dropdown = document.getElementById('mobile-nav-dropdown');
-        const hamburgerIcon = document.getElementById('hamburger-icon-svg');
-        const closeIcon = document.getElementById('close-icon-svg');
+      (function () {
+        function initMobileNav() {
+          const toggleBtn = document.getElementById('mobile-nav-toggle');
+          const dropdown = document.getElementById('mobile-nav-dropdown');
+          const hamburgerIcon = document.getElementById('hamburger-icon-svg');
+          const closeIcon = document.getElementById('close-icon-svg');
 
-        if (!toggleBtn || !dropdown) return;
-        if (toggleBtn.dataset.navBound === 'true') return;
-        toggleBtn.dataset.navBound = 'true';
+          if (!toggleBtn || !dropdown) return;
+          if (toggleBtn.dataset.navBound === 'true') return;
+          toggleBtn.dataset.navBound = 'true';
 
-        function openNav() {
-          dropdown.classList.remove('hidden');
-          toggleBtn.setAttribute('aria-expanded', 'true');
-          if (hamburgerIcon) hamburgerIcon.classList.add('hidden');
-          if (closeIcon) closeIcon.classList.remove('hidden');
-        }
-
-        function closeNav() {
-          dropdown.classList.add('hidden');
-          toggleBtn.setAttribute('aria-expanded', 'false');
-          if (hamburgerIcon) hamburgerIcon.classList.remove('hidden');
-          if (closeIcon) closeIcon.classList.add('hidden');
-        }
-
-        function toggleNav(e) {
-          if (e) e.stopPropagation();
-          const isClosed = dropdown.classList.contains('hidden');
-          if (isClosed) {
-            openNav();
-          } else {
-            closeNav();
+          function openNav() {
+            dropdown.classList.remove('hidden');
+            toggleBtn.setAttribute('aria-expanded', 'true');
+            if (hamburgerIcon) hamburgerIcon.classList.add('hidden');
+            if (closeIcon) closeIcon.classList.remove('hidden');
           }
-        }
 
-        toggleBtn.addEventListener('click', toggleNav);
+          function closeNav() {
+            dropdown.classList.add('hidden');
+            toggleBtn.setAttribute('aria-expanded', 'false');
+            if (hamburgerIcon) hamburgerIcon.classList.remove('hidden');
+            if (closeIcon) closeIcon.classList.add('hidden');
+          }
 
-        dropdown.querySelectorAll('a').forEach(function (link) {
-          link.addEventListener('click', function () {
-            closeNav();
-          });
-        });
-
-        document.addEventListener('click', function (e) {
-          if (!dropdown.classList.contains('hidden')) {
-            const header = document.getElementById('main-navbar');
-            if (header && !header.contains(e.target)) {
+          function toggleNav(e) {
+            if (e) e.stopPropagation();
+            const isClosed = dropdown.classList.contains('hidden');
+            if (isClosed) {
+              openNav();
+            } else {
               closeNav();
             }
           }
-        });
 
-        document.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape' && !dropdown.classList.contains('hidden')) {
-            closeNav();
-          }
-        });
+          toggleBtn.addEventListener('click', toggleNav);
 
-        window.addEventListener('resize', function () {
-          if (window.innerWidth >= 768 && !dropdown.classList.contains('hidden')) {
-            closeNav();
-          }
-        });
-      }
+          dropdown.querySelectorAll('a').forEach(function (link) {
+            link.addEventListener('click', function () {
+              closeNav();
+            });
+          });
 
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initMobileNav);
-      } else {
-        initMobileNav();
-      }
-    })();
+          document.addEventListener('click', function (e) {
+            if (!dropdown.classList.contains('hidden')) {
+              const header = document.getElementById('main-navbar');
+              if (header && !header.contains(e.target)) {
+                closeNav();
+              }
+            }
+          });
+
+          document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && !dropdown.classList.contains('hidden')) {
+              closeNav();
+            }
+          });
+
+          window.addEventListener('resize', function () {
+            if (window.innerWidth >= 768 && !dropdown.classList.contains('hidden')) {
+              closeNav();
+            }
+          });
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initMobileNav);
+        } else {
+          initMobileNav();
+        }
+      })();
   </script>
 
   <!-- ==================== 2. PEMBUKA ATELIER KRIYA (EDITORIAL HERO) ==================== -->
@@ -233,30 +206,20 @@
         </h1>
       </div>
 
-      <!-- Narrative Lead -->
+      <!-- Narrative Lead with Full Cultural Craft Context -->
       <p
         class="text-base sm:text-lg text-[#E5D8BE]/95 font-serif italic leading-relaxed max-w-2xl mx-auto drop-shadow-sm">
-        Bawalah lembaran mori ke bilik kriya digital Lelana Jateng. Goreskan malam hangat canting tulis dan stempel cap
-        tembaga pada siluet Kemeja Pria, Kebaya Kartini, maupun Beskap Keraton, lalu kenakan busana adi karya Anda di
-        hadapan cermin Photo Booth budaya.
+        Bawalah lembaran mori ke bilik kriya digital Lelana Jateng. Goreskan malam hangat canting tulis dan cap tembaga
+        bercorak Parang, Kawung, hingga Buketan pada siluet Kemeja Pria, Kebaya Kartini, maupun Beskap Keraton, lalu
+        kenakan adi karya berpewarna Sogan dan Indigo ini di hadapan cermin Photo Booth budaya.
       </p>
 
-      <!-- Authentic Craft Credentials (Bespoke Editorial Line - No AI Slop Boxes) -->
-      <div
-        class="inline-flex flex-wrap items-center justify-center gap-3 py-2 px-5 rounded-full bg-[#18110B] border border-[#8C6D46]/35 text-xs text-[#E5D8BE]/90 font-serif shadow-sm">
-        <span class="font-bold text-white">3 Siluet Adat:</span>
-        <span>Kemeja, Kebaya &amp; Beskap</span>
-        <span class="text-[#8C6D46]">•</span>
-        <span class="font-bold text-white">Motif:</span>
-        <span>Parang, Kawung &amp; Buketan</span>
-        <span class="text-[#8C6D46]">•</span>
-        <span class="font-bold text-white">Pewarnaan:</span>
-        <span>Sogan &amp; Indigo</span>
-      </div>
-
       <!-- Cultural Proverb Strip -->
-      <p class="text-xs sm:text-sm text-[#E5D8BE]/85 font-serif italic max-w-xl mx-auto drop-shadow-sm">
-        "Ajining raga ana ing busana, ajining diri ana ing lathi."
+      <p
+        class="text-xs sm:text-sm text-[#E5D8BE]/85 font-serif italic max-w-xl mx-auto drop-shadow-sm flex items-center justify-center gap-2.5 pt-2">
+        <span class="text-[#8C6D46]/60 text-xs select-none">❖</span>
+        <span>"Ajining raga ana ing busana, ajining diri ana ing lathi."</span>
+        <span class="text-[#8C6D46]/60 text-xs select-none">❖</span>
       </p>
     </div>
   </section>
@@ -1128,13 +1091,6 @@
         <span class="opacity-40">&bull;</span>
         <span class="opacity-75">Studio Canting & Photo Booth Busana Batik</span>
       </div>
-
-      <nav class="flex items-center gap-4 opacity-80 font-sans text-xs">
-        <a href="index.html#beranda" class="hover:text-white transition-colors">Beranda</a>
-        <a href="index.html#destinasi" class="hover:text-white transition-colors">Destinasi</a>
-        <a href="studio-canting.html" class="text-white font-semibold">Studio Canting</a>
-        <a href="arvr.html" class="hover:text-white transition-colors">AR/VR</a>
-      </nav>
 
       <p class="opacity-60 text-center sm:text-right">
         &copy; 2026 Lelana Jateng &bull; Warisan Budaya Adiluhung Jawa Tengah.

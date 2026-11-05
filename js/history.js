@@ -1771,7 +1771,6 @@
           
           <div class="history-reader-badge">
             <span class="badge-tag">
-              <span class="badge-dot" aria-hidden="true"></span>
               <span>${art.kicker}</span>
             </span>
             <span class="hidden sm:inline text-white/30">|</span>

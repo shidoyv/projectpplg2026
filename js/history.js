@@ -1133,7 +1133,7 @@
                 ],
                 figure: {
                   img: 'assets/tokoh/oey-soe-tjoen.png',
-                  caption: 'Potret arsip Maestro Oey Soe Tjoen, pelopor puncak kehalusan batik tulis peranakan teknik cecek pitu Kedungwuni sejak 1925.'
+                  caption: 'Potret arsip dokumentasi pembatik dan maestro sanggar Oey Soe Tjoen Kedungwuni sejak 1925, pelopor puncak kehalusan batik tulis peranakan teknik cecek pitu.'
                 },
                 callout: {
                   title: 'Kekayaan 24 Kali Proses Celup Warna',

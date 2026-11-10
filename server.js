@@ -34,9 +34,19 @@ const server = http.createServer((req, res) => {
   // Handle local game launcher (launches Unity Editor or Game executable on Windows)
   if (req.url === '/api/launch-game' || req.url.startsWith('/api/launch-game')) {
     const { exec } = require('child_process');
-    const unityExe = 'C:\\Program Files\\Unity\\Hub\\Editor\\6000.6.6f1\\Editor\\Unity.exe';
+    const vbsScript = path.join(__dirname, 'js', 'launch_unity.vbs');
     const projectPath = 'C:\\Users\\vincent lim\\arvr_perbaikan';
+    const lockFile = path.join(projectPath, 'Temp', 'UnityLockfile');
     const builtExe = path.join(__dirname, 'game_build', 'MisteriBorobudurVR.exe');
+
+    // Bersihkan lockfile lama jika ada
+    if (fs.existsSync(lockFile)) {
+      try {
+        fs.unlinkSync(lockFile);
+      } catch (err) {
+        // file mungkin sedang aktif digunakan
+      }
+    }
 
     let commandToRun;
     let targetType = 'unity';
@@ -44,7 +54,7 @@ const server = http.createServer((req, res) => {
       commandToRun = `start "" "${builtExe}"`;
       targetType = 'standalone';
     } else {
-      commandToRun = `start "" "${unityExe}" -projectPath "${projectPath}"`;
+      commandToRun = `wscript.exe //nologo "${vbsScript}"`;
       targetType = 'unity';
     }
 
@@ -59,7 +69,7 @@ const server = http.createServer((req, res) => {
         res.end(JSON.stringify({
           success: true,
           targetType,
-          message: targetType === 'standalone' ? 'Game Standalone berhasil dibuka!' : 'Unity Editor berhasil dibuka dengan proyek game!'
+          message: targetType === 'standalone' ? 'Game Standalone berhasil dibuka!' : 'Unity Editor berhasil dibuka dengan proyek arvr_perbaikan!'
         }));
       }
     });

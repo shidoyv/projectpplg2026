@@ -390,9 +390,9 @@
     const g = GARMENTS[state.activeGarment] || GARMENTS.kemeja;
     const bg = BACKGROUNDS[state.activeBg] || BACKGROUNDS.joglo;
 
-    if (els.motifName) els.motifName.textContent = `${g.name} • ${m.name}`;
+    if (els.motifName) els.motifName.textContent = `${g.name} : ${m.name}`;
     if (els.motifDesc) els.motifDesc.textContent = `${g.desc} Dipadukan filosofi ${m.name}: ${m.philosophy}. Berlatar di ${bg.name} (${bg.location}).`;
-    if (els.motifBadge) els.motifBadge.textContent = `${g.tag} • ${m.tag} • ${bg.name}`;
+    if (els.motifBadge) els.motifBadge.textContent = `${g.tag} / ${m.tag} / ${bg.name}`;
     if (els.inputMotif) els.inputMotif.value = `${g.name} (${m.name}) di ${bg.name}`;
     if (els.activeBgLabel) els.activeBgLabel.textContent = bg.name;
 
@@ -2228,7 +2228,7 @@
       c.font = 'italic 400 9px "Plus Jakarta Sans", sans-serif';
       c.fillStyle = '#C5A572';
       c.shadowColor = 'transparent';
-      c.fillText('Buka Kamera • Coba Busana', faceX, faceY + 40);
+      c.fillText('Buka Kamera / Coba Busana', faceX, faceY + 40);
       c.restore();
     }
 

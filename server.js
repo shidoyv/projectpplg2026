@@ -31,51 +31,6 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Handle local game launcher (launches Unity Editor or Game executable on Windows)
-  if (req.url === '/api/launch-game' || req.url.startsWith('/api/launch-game')) {
-    const { exec } = require('child_process');
-    const vbsScript = path.join(__dirname, 'js', 'launch_unity.vbs');
-    const projectPath = 'C:\\Users\\vincent lim\\arvr_perbaikan';
-    const lockFile = path.join(projectPath, 'Temp', 'UnityLockfile');
-    const builtExe = path.join(__dirname, 'game_build', 'MisteriBorobudurVR.exe');
-
-    // Bersihkan lockfile lama jika ada
-    if (fs.existsSync(lockFile)) {
-      try {
-        fs.unlinkSync(lockFile);
-      } catch (err) {
-        // file mungkin sedang aktif digunakan
-      }
-    }
-
-    let commandToRun;
-    let targetType = 'unity';
-    if (fs.existsSync(builtExe)) {
-      commandToRun = `start "" "${builtExe}"`;
-      targetType = 'standalone';
-    } else {
-      commandToRun = `wscript.exe //nologo "${vbsScript}"`;
-      targetType = 'unity';
-    }
-
-    console.log(`[Game Launcher] Menjalankan: ${commandToRun}`);
-    exec(commandToRun, (error) => {
-      if (error) {
-        console.error('[Game Launcher] Gagal:', error);
-        res.writeHead(500, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ success: false, error: error.message }));
-      } else {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({
-          success: true,
-          targetType,
-          message: targetType === 'standalone' ? 'Game Standalone berhasil dibuka!' : 'Unity Editor berhasil dibuka dengan proyek arvr_perbaikan!'
-        }));
-      }
-    });
-    return;
-  }
-
   // API fallback (Backend menggunakan Supabase Cloud)
   if (req.url.startsWith('/api/') || req.url.startsWith('/storage/')) {
     res.writeHead(200, { 'Content-Type': 'application/json' });

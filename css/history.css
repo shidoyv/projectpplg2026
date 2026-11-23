@@ -28,7 +28,7 @@
   width: 100%;
   max-width: 100vw;
   background-color: var(--hist-bg);
-  background-image: 
+  background-image:
     radial-gradient(ellipse 60% 40% at 50% 35%, rgba(201, 42, 42, 0.04) 0%, transparent 70%),
     radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.02) 0%, transparent 60%);
   color: var(--hist-text-primary);
@@ -205,10 +205,13 @@
 }
 
 @keyframes histPulse {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
     opacity: 0.8;
   }
+
   50% {
     transform: scale(1.4);
     opacity: 1;
@@ -1872,86 +1875,466 @@
   }
 }
 
-/* ---------------- Print Stylesheet for Museum Article ---------------- */
+/* ---------------- Print Stylesheet for Museum Article & Monograph ---------------- */
 @media print {
-  body * {
-    visibility: hidden;
-  }
 
-  .history-modal-content.is-article-mode,
-  .history-modal-content.is-article-mode * {
-    visibility: visible;
-  }
+    @page {
+      size: A4 portrait;
+      margin: 10mm 14mm 12mm 14mm;
+    }
 
-  .history-modal-backdrop {
-    position: static !important;
-    background: #ffffff !important;
-    padding: 0 !important;
-    opacity: 1 !important;
-    display: block !important;
-  }
+      /* Force clean white canvas and proper text rendering */
+      html,
+      body {
+        background: #ffffff !important;
+        color: #111111 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+        font-size: 10pt !important;
+        line-height: 1.55 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
 
-  .history-modal-content.is-article-mode {
-    position: static !important;
-    max-width: 100% !important;
-    width: 100% !important;
-    background: #ffffff !important;
-    color: #111111 !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 15mm !important;
-  }
+      /* Completely eliminate background application & page elements from print geometry */
+      #main-navbar,
+      #main-content,
+      footer,
+      #historyAudioBar,
+      .history-toast,
+      body>*:not(#historyModalBackdrop) {
+        display: none !important;
+        height: 0 !important;
+        max-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        visibility: hidden !important;
+      }
 
-  .history-reader-header,
-  .history-article-sidebar,
-  .history-next-article-card,
-  .history-article-footer-actions,
-  .history-modal-close {
-    display: none !important;
-  }
+      /* Reset modal backdrop container so it starts at the top of Page 1 without empty gap */
+      #historyModalBackdrop,
+      .history-modal-backdrop {
+        position: static !important;
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        overflow: visible !important;
+        inset: auto !important;
+        z-index: auto !important;
+        transform: none !important;
+      }
 
-  .history-article-scroll-body {
-    overflow: visible !important;
-    padding: 0 !important;
-    max-height: none !important;
-  }
+      #historyModalContent,
+      .history-modal-content,
+      .history-modal-content.is-article-mode {
+        position: static !important;
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        color: #111111 !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        transform: none !important;
+        overflow: visible !important;
+      }
 
-  .history-article {
-    color: #111111 !important;
-  }
+      /* Hide interactive controls, buttons, reader headers, sidebars */
+      .history-reader-header,
+      .history-article-sidebar,
+      .history-next-article-card,
+      .history-article-footer-actions,
 
-  .history-article-title {
-    color: #000000 !important;
-  }
+        .history-modal-close,
+        .history-tool-close,
+        .history-fs-group,
+        .history-tool-btn,
+        .history-reading-progress,
+        button,
+        .history-article-btn {
+          display: none !important;
+        }
 
-  .history-article-chapter-title {
-    color: #000000 !important;
-  }
 
-  .history-article-p {
-    color: #222222 !important;
-  }
+          /* Article container and flow */
+          .history-article-scroll-body,
+          .history-article-scroll {
+            overflow: visible !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            height: auto !important;
+            max-height: none !important;
+            display: block !important;
+          }
 
-  .history-callout-card {
-    background: #f8f8f8 !important;
-    border: 1px solid #cccccc !important;
-    border-left: 4px solid #c92a2a !important;
-  }
+          .history-article {
+            color: #111111 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            display: block !important;
+            font-size: 10pt !important;
+          }
 
-  .history-callout-text {
-    color: #222222 !important;
-  }
+          .history-article-layout {
+            display: block !important;
+            margin-top: 14px !important;
+            padding: 0 !important;
+            border: none !important;
+            gap: 0 !important;
+          }
 
-  .history-figure-card {
-    background: #fafafa !important;
-    border: 1px solid #ddd !important;
-  }
+          .history-article-main-content {
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
 
-  .history-figure-name {
-    color: #000000 !important;
-  }
+          /* Cover Header on Page 1: compact & well-aligned */
+          .history-article-cover {
+            margin-bottom: 14px !important;
+            padding-bottom: 12px !important;
+            border-bottom: 1.5px solid #222222 !important;
+            page-break-after: avoid !important;
+            break-after: avoid !important;
+          }
 
-  .history-figure-bio {
-    color: #333333 !important;
-  }
-}
+          .history-article-kicker-row {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: 6px !important;
+            margin-bottom: 6px !important;
+          }
+
+          .history-article-meta-badge {
+            background: #f1f1f1 !important;
+            color: #333333 !important;
+            border: 1px solid #d0d0d0 !important;
+            font-size: 8.5pt !important;
+            padding: 2px 6px !important;
+            border-radius: 3px !important;
+          }
+
+          .history-article-title {
+            color: #000000 !important;
+            font-size: 19pt !important;
+            line-height: 1.25 !important;
+            margin: 4px 0 6px 0 !important;
+            page-break-after: avoid !important;
+            break-after: avoid !important;
+          }
+
+          .history-article-subtitle {
+            color: #444444 !important;
+            font-size: 10.5pt !important;
+            line-height: 1.4 !important;
+            margin: 0 0 8px 0 !important;
+            page-break-after: avoid !important;
+            break-after: avoid !important;
+          }
+
+          .history-article-byline {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            margin-bottom: 10px !important;
+          }
+
+          .history-article-avatar {
+            border: 1px solid #888888 !important;
+            color: #111111 !important;
+            background: #eeeeee !important;
+            font-size: 9pt !important;
+            width: 26px !important;
+            height: 26px !important;
+          }
+
+          .history-article-curator {
+            color: #000000 !important;
+            font-weight: 700 !important;
+            font-size: 9.5pt !important;
+          }
+
+          .history-article-date {
+            color: #555555 !important;
+            font-size: 8pt !important;
+          }
+
+          .history-article-hero-wrap {
+            margin: 8px 0 10px 0 !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+
+          .history-article-hero-img {
+            max-height: 220px !important;
+            width: 100% !important;
+            object-fit: cover !important;
+            border-radius: 4px !important;
+            border: 1px solid #cccccc !important;
+            display: block !important;
+          }
+
+          .history-article-hero-caption {
+            color: #555555 !important;
+            font-size: 8pt !important;
+            margin-top: 4px !important;
+            font-style: italic !important;
+          }
+
+          /* Lead section */
+          #art-lead-sec {
+            margin-bottom: 16px !important;
+            padding-top: 0 !important;
+          }
+
+          .history-article-lead {
+            color: #111111 !important;
+            font-size: 10.5pt !important;
+            line-height: 1.6 !important;
+            font-weight: 500 !important;
+          }
+
+          /* Chapters: continuous upwards flow without forced empty pages */
+          .history-article-chapter {
+            page-break-before: auto !important;
+            break-before: auto !important;
+            page-break-inside: auto !important;
+            break-inside: auto !important;
+            page-break-after: auto !important;
+            break-after: auto !important;
+            margin-top: 18px !important;
+            padding-top: 14px !important;
+            border-top: 1px solid #e2e2e2 !important;
+          }
+
+          .history-chapter-kicker {
+            color: #777777 !important;
+            font-size: 8pt !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.12em !important;
+            page-break-after: avoid !important;
+            break-after: avoid !important;
+          }
+
+          .history-chapter-title,
+          .history-article-chapter-title {
+            color: #000000 !important;
+            font-size: 14pt !important;
+            line-height: 1.3 !important;
+            margin: 4px 0 10px 0 !important;
+            page-break-after: avoid !important;
+            break-after: avoid !important;
+          }
+
+          .history-article-p {
+            color: #1a1a1a !important;
+            font-size: 9.5pt !important;
+            line-height: 1.6 !important;
+            margin-bottom: 10px !important;
+            orphans: 3 !important;
+            widows: 3 !important;
+          }
+
+
+            /* Chapter Figures */
+            .history-article-fig {
+              margin: 12px 0 !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+            }
+
+            .history-fig-img {
+              max-height: 200px !important;
+              width: auto !important;
+              max-width: 100% !important;
+              object-fit: cover !important;
+              border: 1px solid #d5d5d5 !important;
+              border-radius: 4px !important;
+            }
+
+            .history-fig-caption {
+              color: #555555 !important;
+              font-size: 8pt !important;
+              margin-top: 3px !important;
+              font-style: italic !important;
+            }
+
+            /* Callout Cards */
+            .history-callout-card,
+            .history-article-callout {
+              background: #f7f7f7 !important;
+              border: 1px solid #d0d0d0 !important;
+              border-left: 4px solid #c92a2a !important;
+              padding: 10px 14px !important;
+              margin: 14px 0 !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+              border-radius: 3px !important;
+            }
+
+              .history-callout-header {
+                display: flex !important;
+                align-items: center !important;
+                gap: 8px !important;
+                margin-bottom: 4px !important;
+              }
+
+              .history-callout-header svg {
+                color: #c92a2a !important;
+                flex-shrink: 0 !important;
+              }
+
+              .history-callout-title {
+                color: #991b1b !important;
+                font-size: 9pt !important;
+                font-weight: 700 !important;
+                margin: 0 !important;
+              }
+
+              .history-callout-text,
+              .history-callout-p {
+                color: #222222 !important;
+                font-size: 9pt !important;
+                line-height: 1.55 !important;
+                margin: 0 !important;
+              }
+
+              /* Chronological Timeline Section */
+              .history-article-timeline {
+                margin-top: 10px !important;
+                border-left: 2px solid #c92a2a !important;
+                padding-left: 14px !important;
+              }
+
+              .history-art-timeline-node {
+                margin-bottom: 12px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+              }
+
+              .history-art-timeline-year {
+                color: #c92a2a !important;
+                font-weight: 700 !important;
+                font-size: 9pt !important;
+              }
+
+              .history-art-timeline-title {
+                color: #000000 !important;
+                font-size: 9.5pt !important;
+                margin: 2px 0 3px 0 !important;
+              }
+
+              .history-art-timeline-desc {
+                color: #333333 !important;
+                font-size: 8.5pt !important;
+                line-height: 1.5 !important;
+                margin: 0 !important;
+              }
+
+              /* Figures Grid */
+              .history-figures-grid {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px !important;
+                margin-top: 10px !important;
+              }
+
+              .history-figure-card {
+                background: #fbfbfb !important;
+                border: 1px solid #e0e0e0 !important;
+                padding: 10px !important;
+                border-radius: 4px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+              }
+
+              .history-figure-avatar {
+                width: 44px !important;
+                height: 44px !important;
+                border-radius: 50% !important;
+                object-fit: cover !important;
+                border: 1px solid #ccc !important;
+                margin-bottom: 6px !important;
+              }
+
+              .history-figure-name {
+                color: #000000 !important;
+                font-size: 9.5pt !important;
+                margin: 0 0 2px 0 !important;
+              }
+
+              .history-figure-role {
+                color: #777777 !important;
+                font-size: 8pt !important;
+              }
+
+              .history-figure-bio {
+                color: #333333 !important;
+                font-size: 8pt !important;
+                line-height: 1.45 !important;
+                margin: 4px 0 0 0 !important;
+              }
+
+              /* Curatorial Quote */
+              .history-article-quote {
+                background: #fafafa !important;
+                border-left: 3px solid #888888 !important;
+                padding: 10px 16px !important;
+                margin: 16px 0 !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+              }
+
+              .history-quote-text {
+                color: #111111 !important;
+                font-size: 10pt !important;
+                font-style: italic !important;
+                line-height: 1.6 !important;
+                margin: 0 0 4px 0 !important;
+              }
+
+              .history-quote-cite {
+                color: #555555 !important;
+                font-size: 8.5pt !important;
+              }
+
+              /* Epilogue */
+              #art-epilogue-sec {
+                background: #f9f9f9 !important;
+                border-left: 3px solid #c92a2a !important;
+                padding: 12px 16px !important;
+                margin-top: 16px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+              }
+
+              #art-epilogue-sec * {
+                color: #222222 !important;
+              }
+
+              .history-article-epilogue {
+                margin-top: 16px !important;
+                padding-top: 10px !important;
+                border-top: 1px solid #cccccc !important;
+                color: #666666 !important;
+                font-size: 8pt !important;
+              }
+            }

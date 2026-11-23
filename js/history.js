@@ -1713,9 +1713,11 @@
 
       if (isArticle) {
         modalContent.classList.add('is-article-mode');
+        document.body.classList.add('has-history-article-open');
         modalContent.innerHTML = html;
       } else {
         modalContent.classList.remove('is-article-mode');
+        document.body.classList.remove('has-history-article-open');
         modalContent.innerHTML = `
           <button class="history-modal-close" id="historyModalCloseBtn" aria-label="Tutup Jendela Informasi">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -1740,6 +1742,7 @@
       if (!modalBackdrop) return;
       modalBackdrop.classList.remove('is-open');
       if (modalContent) modalContent.classList.remove('is-article-mode');
+      document.body.classList.remove('has-history-article-open');
       document.body.style.overflow = '';
     }
 
@@ -1912,12 +1915,6 @@
                   </div>
                 </div>
 
-                <!-- Deep Link to Destination -->
-                <a href="${art.destLink.href}" class="history-article-btn history-article-btn-primary" style="justify-content: center; text-align: center; padding: 10px 14px; font-size: 11.5px;">
-                  <span>${art.destLink.label}</span>
-                  <span aria-hidden="true">↗</span>
-                </a>
-
               </aside>
 
               <!-- Right Column: Main Reading Narrative -->
@@ -1948,9 +1945,12 @@
                     ` : ''}
 
                     ${ch.callout ? `
-                      <div class="history-article-callout">
-                        <h4 class="history-callout-title">${ch.callout.title}</h4>
-                        <p class="history-callout-p">${ch.callout.text}</p>
+                      <div class="history-callout-card history-article-callout">
+                        <div class="history-callout-header">
+                          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                          <h4 class="history-callout-title">${ch.callout.title}</h4>
+                        </div>
+                        <p class="history-callout-text history-callout-p">${ch.callout.text}</p>
                       </div>
                     ` : ''}
                   </section>
@@ -2024,9 +2024,6 @@
                       </svg>
                       <span>Cetak / PDF</span>
                     </button>
-                    <a href="${art.destLink.href}" class="history-article-btn history-article-btn-secondary">
-                      <span>${art.destLink.label} ↗</span>
-                    </a>
                     <button type="button" class="history-article-btn history-article-btn-primary" id="articleCloseBtn">
                       <span>Selesai Membaca</span>
                     </button>

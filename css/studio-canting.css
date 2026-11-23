@@ -592,6 +592,37 @@ textarea:focus-visible,
 }
 
 
+/* AI Kreasi Badges & Modals */
+.sc-ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #3d2516;
+  color: #faf7f2;
+  border: 1px solid rgba(197, 165, 114, 0.6);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.sc-modal-window.max-w-3xl {
+  max-width: 780px;
+}
+
+.sc-modal-window.max-w-xl {
+  max-width: 520px;
+}
+
+.sc-modal-window.max-w-md {
+  max-width: 420px;
+}
+
+.sc-modal-window.max-w-sm {
+  max-width: 360px;
+}
+
 section[id] {
   scroll-margin-top: 5.5rem;
 }

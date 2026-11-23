@@ -184,6 +184,14 @@
     countdownTimer: null,
     isCountingDown: false,
 
+    // AI Generation & Portrait Re-creation state
+    aiGeneratedImg: null,
+    aiGeneratedDataUrl: null,
+    aiOriginalFaceImg: null,
+    aiArtStyle: 'keraton',
+    isGeneratingAI: false,
+    pendingAISave: null,
+
     // Gallery state
     galleryArtworks: []
   };
@@ -255,6 +263,45 @@
     els.flashOverlay = document.getElementById('scCameraFlash');
     els.countdownOverlay = document.getElementById('scCountdownOverlay');
     els.countdownNumber = document.getElementById('scCountdownNumber');
+
+    // AI Generation DOM Elements
+    els.btnSidebarAI = document.getElementById('scBtnSidebarAI');
+    els.btnToolbarAI = document.getElementById('scBtnToolbarAI');
+    els.selectAIStyle = document.getElementById('scSelectAIStyle');
+    els.btnOpenAISettings = document.getElementById('scBtnOpenAISettings');
+    els.postSnapModal = document.getElementById('scPostSnapModal');
+    els.postSnapPreviewImg = document.getElementById('scPostSnapPreviewImg');
+    els.checkPreserveFace = document.getElementById('scCheckPreserveFace');
+    els.checkGlasses = document.getElementById('scCheckGlasses');
+    els.btnClosePostSnap = document.getElementById('scBtnClosePostSnap');
+    els.btnRetakePostSnap = document.getElementById('scBtnRetakePostSnap');
+    els.btnChooseSaveOriginal = document.getElementById('scBtnChooseSaveOriginal');
+    els.btnChooseUseOriginal = document.getElementById('scBtnChooseUseOriginal');
+    els.btnChooseGenerateAI = document.getElementById('scBtnChooseGenerateAI');
+    els.aiLoadingModal = document.getElementById('scAILoadingModal');
+    els.aiLoadingStatus = document.getElementById('scAILoadingStatus');
+    els.aiStep1 = document.getElementById('scAIStep1');
+    els.aiStep2 = document.getElementById('scAIStep2');
+    els.aiStep3 = document.getElementById('scAIStep3');
+    els.aiResultModal = document.getElementById('scAIResultModal');
+    els.btnCloseAIResult = document.getElementById('scBtnCloseAIResult');
+    els.aiOriginalImg = document.getElementById('scAIOriginalImg');
+    els.aiGeneratedImg = document.getElementById('scAIGeneratedImg');
+    els.btnAIFullscreen = document.getElementById('scBtnAIFullscreen');
+    els.aiEngineBadge = document.getElementById('scAIEngineBadge');
+    els.aiResultTitle = document.getElementById('scAIResultTitle');
+    els.aiResultNarrative = document.getElementById('scAIResultNarrative');
+    els.aiFaceLikenessNote = document.getElementById('scAIFaceLikenessNote');
+    els.btnRetakeAIResult = document.getElementById('scBtnRetakeAIResult');
+    els.btnRetakeToolbar = document.getElementById('scBtnRetakeToolbar');
+    els.btnRetakeSidebar = document.getElementById('scBtnRetakeSidebar');
+    els.btnAIDownload = document.getElementById('scBtnAIDownload');
+    els.btnAIApplyCanvas = document.getElementById('scBtnAIApplyCanvas');
+    els.btnAISaveGallery = document.getElementById('scBtnAISaveGallery');
+    els.aiSettingsModal = document.getElementById('scAISettingsModal');
+    els.btnCloseAISettings = document.getElementById('scBtnCloseAISettings');
+    els.inputGeminiKey = document.getElementById('scInputGeminiKey');
+    els.btnSaveAISettings = document.getElementById('scBtnSaveAISettings');
 
     // Atelier Mannequin, Limbs, Headpiece & Background Controls
     els.btnToggleLimbs = document.getElementById('scBtnToggleLimbs');
@@ -354,6 +401,12 @@
     const w = baseCanvas.width;
     const h = baseCanvas.height;
     baseCtx.clearRect(0, 0, w, h);
+
+    // If an AI-generated artwork was applied to canvas, display it directly
+    if (state.aiArtworkOverlay) {
+      baseCtx.drawImage(state.aiArtworkOverlay, 0, 0, w, h);
+      return;
+    }
 
     // 1. Draw Destination Scenic Background or Mori fabric
     drawCanvasBackground(baseCtx, w, h);
@@ -2848,9 +2901,11 @@
       const img = new Image();
       img.onload = () => {
         state.userFaceImg = img;
+        state.aiOriginalFaceImg = img;
         state.photoCaptured = true;
         stopWebcam();
         renderBaseBajuLayer();
+        showPostSnapModal(img.src);
       };
       img.src = loadEvt.target.result;
     };
@@ -2922,9 +2977,11 @@
     const frozenImg = new Image();
     frozenImg.onload = () => {
       state.userFaceImg = frozenImg;
+      state.aiOriginalFaceImg = frozenImg;
       state.photoCaptured = true;
       stopWebcam();
       renderBaseBajuLayer();
+      showPostSnapModal(frozenImg.src);
     };
     frozenImg.src = tempCanvas.toDataURL('image/png');
   }
@@ -2987,6 +3044,7 @@
     if (els.saveModal) {
       els.saveModal.classList.remove('is-open');
     }
+    state.pendingAISave = null;
   }
 
   async function handleSaveSubmit(e) {
@@ -3004,7 +3062,7 @@
     }
 
     const merged = getMergedCanvas();
-    const base64Png = merged.toDataURL('image/png');
+    const base64Png = state.pendingAISave || merged.toDataURL('image/png');
 
     if (els.btnSubmitSave) els.btnSubmitSave.disabled = true;
     if (els.saveSpinner) els.saveSpinner.classList.remove('hidden');
@@ -3097,58 +3155,319 @@
   }
 
   /* =====================================================================
-     9. VIRTUAL EXHIBITION GALLERY (Pameran Kain Virtual - Supabase BaaS)
+     8B. KREASI SENI LUKISAN AI (BATIK PORTRAIT RECREATION)
      ===================================================================== */
-  async function loadExhibitionGallery() {
-    if (!els.galleryGrid) return;
-    let items = [];
+  function showPostSnapModal(src) {
+    if (els.postSnapPreviewImg) {
+      els.postSnapPreviewImg.src = src;
+    }
+    if (els.postSnapModal) {
+      els.postSnapModal.classList.add('is-open');
+    }
+  }
 
-    // Ambil data karya dari database Supabase
-    if (window.LelanaSupabase && window.LelanaSupabase.isConfigured()) {
-      try {
-        const res = await window.LelanaSupabase.getArtworks({ limit: 40 });
-        if (res && res.success && Array.isArray(res.data)) {
-          items = res.data;
+  function closePostSnapModal() {
+    if (els.postSnapModal) {
+      els.postSnapModal.classList.remove('is-open');
+    }
+  }
+
+  function retakePhoto() {
+    closePostSnapModal();
+    closeAIResultModal();
+    if (els.saveModal) els.saveModal.classList.remove('is-open');
+
+    state.userFaceImg = null;
+    state.aiOriginalFaceImg = null;
+    state.photoCaptured = false;
+    state.aiArtworkOverlay = null;
+    state.aiGeneratedImg = null;
+    state.aiGeneratedDataUrl = null;
+    state.pendingAISave = null;
+
+      if (state.mode !== 'photobooth') {
+        switchMode('photobooth');
+      }
+
+      renderBaseBajuLayer();
+      stopWebcam();
+      startWebcam();
+    }
+
+    function updateAILoadingStep(step, text) {
+      if (els.aiLoadingStatus) {
+        els.aiLoadingStatus.textContent = text;
+      }
+      const steps = [els.aiStep1, els.aiStep2, els.aiStep3];
+      steps.forEach((st, idx) => {
+        if (!st) return;
+        const numSpan = st.querySelector('span:first-child');
+        if (idx + 1 < step) {
+          st.className = 'flex items-center gap-2.5 text-emerald-400';
+          if (numSpan) {
+            numSpan.className = 'w-4 h-4 rounded-full bg-emerald-500 text-black text-[10px] font-bold flex items-center justify-center';
+            numSpan.textContent = '✓';
+          }
+        } else if (idx + 1 === step) {
+          st.className = 'flex items-center gap-2.5 text-[#FAF7F2] font-semibold';
+          if (numSpan) {
+            numSpan.className = 'w-4 h-4 rounded-full bg-[#C5A572] text-[#160E08] text-[10px] font-bold flex items-center justify-center animate-pulse';
+            numSpan.textContent = (idx + 1).toString();
+          }
+        } else {
+          st.className = 'flex items-center gap-2.5 text-[#E5D8BE]/50';
+          if (numSpan) {
+            numSpan.className = 'w-4 h-4 rounded-full bg-white/20 text-white text-[10px] font-bold flex items-center justify-center';
+            numSpan.textContent = (idx + 1).toString();
+          }
         }
-      } catch (e) {
-        console.log('Loading exhibition from local cache fallback...');
+      });
+    }
+
+    async function triggerAIGeneration() {
+      if (!state.userFaceImg && !state.photoCaptured) {
+        alert('Silakan ambil foto potret wajah terlebih dahulu melalui kamera Photo Booth atau unggah foto dari berkas.');
+        if (state.mode !== 'photobooth') switchMode('photobooth');
+        if (!state.cameraActive && !videoEl?.srcObject) startWebcam();
+        return;
+      }
+
+      if (!window.LelanaAI) {
+        alert('Modul AI Studio Canting belum siap. Silakan muat ulang peramban.');
+        return;
+      }
+
+      if (state.isGeneratingAI) return;
+      state.isGeneratingAI = true;
+
+      // Tampilkan modal progres
+      if (els.aiLoadingModal) {
+        els.aiLoadingModal.classList.add('is-open');
+      }
+      updateAILoadingStep(1, 'Menganalisis komposisi potret wajah & siluet busana adat Jawa...');
+
+      const chosenStyle = 'keraton';
+      state.aiArtStyle = chosenStyle;
+
+      const hasGlasses = els.checkGlasses ? els.checkGlasses.checked : true;
+      const preserveFacialShape = els.checkPreserveFace ? els.checkPreserveFace.checked : true;
+
+      const options = {
+        garment: state.activeGarment,
+        motif: state.activeMotif,
+        palette: state.activeColorName || 'Sogan Cokelat Keraton',
+        background: state.activeBg,
+        hasHeadpiece: state.showHeadpiece,
+        style: chosenStyle,
+        hasGlasses: hasGlasses,
+        preserveFacialShape: preserveFacialShape,
+        faceDataUrl: state.aiOriginalFaceImg ? state.aiOriginalFaceImg.src : (state.userFaceImg ? state.userFaceImg.src : null)
+      };
+
+      try {
+        const result = await window.LelanaAI.generateArtwork(options, (progress) => {
+          updateAILoadingStep(progress.step, progress.text);
+        });
+
+        if (result && result.success && result.dataUrl) {
+          state.aiGeneratedDataUrl = result.dataUrl;
+          openAIResultModal(result);
+        } else {
+          const errMsg = (result && result.error) ? result.error : 'Server AI belum dapat memproses saat ini.';
+          alert(errMsg);
+        }
+      } catch (err) {
+        console.error('Gagal generate AI:', err);
+        alert('Terjadi kendala saat menghasilkan lukisan AI: ' + (err.message || 'Koneksi terputus. Silakan coba lagi.'));
+      } finally {
+        state.isGeneratingAI = false;
+        if (els.aiLoadingModal) {
+          els.aiLoadingModal.classList.remove('is-open');
+        }
       }
     }
 
-    const localItems = getLocalCache();
-    const mergedMap = new Map();
+    function openAIResultModal(result) {
+      if (els.aiOriginalImg) {
+        els.aiOriginalImg.src = (state.aiOriginalFaceImg && state.aiOriginalFaceImg.src)
+          ? state.aiOriginalFaceImg.src
+          : (state.userFaceImg ? state.userFaceImg.src : '');
+      }
 
-    // Gabungkan item lokal dengan item Supabase (utamakan Supabase)
-    localItems.forEach(item => mergedMap.set(item.nama_kain || item.id, item));
-    items.forEach(item => {
-      mergedMap.set(item.nama_kain || item.id, item);
-    });
+      if (els.aiGeneratedImg) {
+        els.aiGeneratedImg.src = result.dataUrl;
+      }
 
-    state.galleryArtworks = Array.from(mergedMap.values());
-    renderGalleryUI(state.galleryArtworks);
-    updateSupabaseBadge();
-  }
+      if (els.aiEngineBadge) {
+        els.aiEngineBadge.textContent = result.provider || 'Mesin Seni Batik AI';
+      }
 
-  function renderGalleryUI(artworks) {
-    if (!els.galleryGrid) return;
-    els.galleryGrid.innerHTML = '';
+      const gName = GARMENTS[state.activeGarment]?.name || 'Busana Batik';
+      const mName = MOTIFS[state.activeMotif]?.name || 'Motif Tradisional';
+      const bgName = BACKGROUNDS[state.activeBg]?.name || 'Studio Joglo';
+      const headpieceText = (state.activeGarment === 'kebaya') ? 'Sanggul Melati' : 'Blangkon Keraton';
 
-    if (!artworks || artworks.length === 0) {
-      if (els.galleryEmpty) els.galleryEmpty.classList.remove('hidden');
-      return;
+      if (els.aiResultTitle) {
+        els.aiResultTitle.textContent = `${gName} Corak ${mName} (${headpieceText})`;
+      }
+
+      if (els.aiResultNarrative) {
+        els.aiResultNarrative.textContent = `Potret Anda telah dilukis ulang secara cerdas menjadi karya seni busana ${gName.toLowerCase()} bermotif ${mName.toLowerCase()} dengan warna ${state.activeColorName || 'Sogan Cokelat'} dan hiasan kepala ${headpieceText} di ${bgName}. Menghadirkan karya seni busana adiluhung budaya Jawa Tengah.`;
+      }
+
+      if (els.aiFaceLikenessNote) {
+        els.aiFaceLikenessNote.textContent = 'Bentuk wajah asli, struktur rahang, mata, dan kacamata berhasil dipertahankan pada karya seni.';
+      }
+
+      if (els.aiResultModal) {
+        els.aiResultModal.classList.add('is-open');
+      }
     }
 
-    if (els.galleryEmpty) els.galleryEmpty.classList.add('hidden');
+    function closeAIResultModal() {
+      if (els.aiResultModal) {
+        els.aiResultModal.classList.remove('is-open');
+      }
+    }
 
-    artworks.forEach((art, idx) => {
-      const card = document.createElement('div');
-      card.className = 'sc-gallery-card flex flex-col justify-between relative group';
+    function applyAIToCanvas() {
+      if (!state.aiGeneratedDataUrl) return;
 
-      const paletArray = Array.isArray(art.palet_warna)
-        ? art.palet_warna
-        : (art.palet_warna ? String(art.palet_warna).split(',') : []);
+      const aiImg = new Image();
+      aiImg.onload = () => {
+        state.aiArtworkOverlay = aiImg;
+        renderBaseBajuLayer();
+        closeAIResultModal();
+        alert('Karya potret buatan AI berhasil diterapkan ke kanvas Studio Canting.');
+      };
+      aiImg.src = state.aiGeneratedDataUrl;
+    }
 
-      card.innerHTML = `
+    function saveAIToGallery() {
+      if (!state.aiGeneratedDataUrl) return;
+
+      closeAIResultModal();
+
+      const gName = GARMENTS[state.activeGarment]?.name || 'Busana Batik';
+      const mName = MOTIFS[state.activeMotif]?.name || 'Motif Tradisional';
+      const bgName = BACKGROUNDS[state.activeBg]?.name || 'Studio Joglo';
+      const styleName = window.LelanaAI?.STYLES[state.aiArtStyle]?.name || 'Lukisan Seni Keraton';
+
+      if (els.previewThumb) {
+        els.previewThumb.src = state.aiGeneratedDataUrl;
+      }
+
+      if (els.inputNamaKain) {
+        els.inputNamaKain.value = `${gName} ${mName} (${styleName} - Kreasi AI)`;
+      }
+
+      if (els.inputFilosofi) {
+        els.inputFilosofi.value = `Karya lukisan seni digital buatan AI yang merekonstruksi potret wajah pemakai berbalut busana ${gName} dengan corak ${mName} berpewarna ${state.activeColorName || 'Sogan Alami'} di ${bgName}. Menghormati keluhuran filosofi busana adat Jawa Tengah.`;
+      }
+
+      if (els.inputPalet) {
+        els.inputPalet.value = Array.from(state.usedColors).join(', ');
+      }
+
+      // Set pending AI save data URL
+      state.pendingAISave = state.aiGeneratedDataUrl;
+
+      if (els.saveModal) {
+        els.saveModal.classList.add('is-open');
+      }
+    }
+
+    function downloadAIArtwork() {
+      if (!state.aiGeneratedDataUrl) return;
+      const filename = `batik-ai-${state.activeGarment}-${state.activeMotif}-${Date.now()}.png`;
+      downloadImage(state.aiGeneratedDataUrl, filename);
+    }
+
+    function openAIFullImage() {
+      if (!state.aiGeneratedDataUrl) return;
+      const w = window.open('');
+      if (w) {
+        w.document.write(`<!DOCTYPE html><html><head><title>Lukisan Batik AI - Resolusi Penuh</title><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>body{margin:0;background:#0e0906;display:flex;align-items:center;justify-content:center;min-height:100vh;}img{max-width:100%;max-height:100vh;object-fit:contain;box-shadow:0 0 40px rgba(0,0,0,0.9);}</style></head><body><img src="${state.aiGeneratedDataUrl}" alt="Lukisan Batik AI Penuh" /></body></html>`);
+        w.document.close();
+      }
+    }
+
+    function openAISettingsModal() {
+      if (els.inputGeminiKey && window.LelanaAI) {
+        els.inputGeminiKey.value = window.LelanaAI.getGeminiKey() || '';
+      }
+      if (els.aiSettingsModal) {
+        els.aiSettingsModal.classList.add('is-open');
+      }
+    }
+
+    function closeAISettingsModal() {
+      if (els.aiSettingsModal) {
+        els.aiSettingsModal.classList.remove('is-open');
+      }
+    }
+
+    function handleSaveAISettings() {
+      if (els.inputGeminiKey && window.LelanaAI) {
+        window.LelanaAI.setGeminiKey(els.inputGeminiKey.value.trim());
+        alert('Pengaturan kunci Google Gemini AI berhasil disimpan!');
+      }
+      closeAISettingsModal();
+    }
+
+    /* =====================================================================
+       9. VIRTUAL EXHIBITION GALLERY (Pameran Kain Virtual - Supabase BaaS)
+       ===================================================================== */
+    async function loadExhibitionGallery() {
+      if (!els.galleryGrid) return;
+      let items = [];
+
+      // Ambil data karya dari database Supabase
+      if (window.LelanaSupabase && window.LelanaSupabase.isConfigured()) {
+        try {
+          const res = await window.LelanaSupabase.getArtworks({ limit: 40 });
+          if (res && res.success && Array.isArray(res.data)) {
+            items = res.data;
+          }
+        } catch (e) {
+          console.log('Loading exhibition from local cache fallback...');
+        }
+      }
+
+      const localItems = getLocalCache();
+      const mergedMap = new Map();
+
+      // Gabungkan item lokal dengan item Supabase (utamakan Supabase)
+      localItems.forEach(item => mergedMap.set(item.nama_kain || item.id, item));
+      items.forEach(item => {
+        mergedMap.set(item.nama_kain || item.id, item);
+      });
+
+      state.galleryArtworks = Array.from(mergedMap.values());
+      renderGalleryUI(state.galleryArtworks);
+      updateSupabaseBadge();
+    }
+
+    function renderGalleryUI(artworks) {
+      if (!els.galleryGrid) return;
+      els.galleryGrid.innerHTML = '';
+
+      if (!artworks || artworks.length === 0) {
+        if (els.galleryEmpty) els.galleryEmpty.classList.remove('hidden');
+        return;
+      }
+
+      if (els.galleryEmpty) els.galleryEmpty.classList.add('hidden');
+
+      artworks.forEach((art, idx) => {
+        const card = document.createElement('div');
+        card.className = 'sc-gallery-card flex flex-col justify-between relative group';
+
+        const paletArray = Array.isArray(art.palet_warna)
+          ? art.palet_warna
+          : (art.palet_warna ? String(art.palet_warna).split(',') : []);
+
+        card.innerHTML = `
         <div>
           <div class="relative overflow-hidden cursor-pointer" data-action="preview" data-idx="${idx}">
             <img src="${art.file_gambar_url}" alt="${art.nama_kain}" class="sc-gallery-img" loading="lazy" />
@@ -3162,9 +3481,9 @@
           </div>
           <div class="p-4">
             <div class="flex items-center justify-between gap-2 mb-1.5">
-              <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#2F1C10] text-[#E5D8BE] border border-[#8C6D46]/40">
-                ${art.motif || 'Batik Klasik'}
-              </span>
+              ${(art.nama_kain && (art.nama_kain.includes('AI') || art.nama_kain.includes('Kreasi AI')))
+            ? '<span class="sc-ai-badge">Buatan AI</span>'
+            : `<span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#2F1C10] text-[#E5D8BE] border border-[#8C6D46]/40">${art.motif || 'Batik Klasik'}</span>`}
               <span class="text-[11px] text-[#E5D8BE]/70">
                 ${formatDate(art.created_at)}
               </span>
@@ -3205,63 +3524,63 @@
         </div>
       `;
 
-      els.galleryGrid.appendChild(card);
-    });
-  }
+        els.galleryGrid.appendChild(card);
+      });
+    }
 
-  async function deleteArtwork(idx) {
-    const item = state.galleryArtworks[idx];
-    if (!item) return;
+    async function deleteArtwork(idx) {
+      const item = state.galleryArtworks[idx];
+      if (!item) return;
 
-    const confirmMsg = `Hapus karya busana "${item.nama_kain}" dari Pameran Virtual?`;
-    if (!confirm(confirmMsg)) return;
+      const confirmMsg = `Hapus karya busana "${item.nama_kain}" dari Pameran Virtual?`;
+      if (!confirm(confirmMsg)) return;
 
-    // Hapus dari Supabase jika terdaftar di cloud
-    if (item.id && !String(item.id).startsWith('local_') && window.LelanaSupabase && window.LelanaSupabase.isConfigured()) {
-      try {
-        await window.LelanaSupabase.deleteArtwork(item.id, item.file_gambar_url);
-      } catch (err) {
-        console.warn('Gagal menghapus dari Supabase:', err);
+      // Hapus dari Supabase jika terdaftar di cloud
+      if (item.id && !String(item.id).startsWith('local_') && window.LelanaSupabase && window.LelanaSupabase.isConfigured()) {
+        try {
+          await window.LelanaSupabase.deleteArtwork(item.id, item.file_gambar_url);
+        } catch (err) {
+          console.warn('Gagal menghapus dari Supabase:', err);
+        }
       }
+
+      removeFromLocalCache(item.nama_kain, item.id);
+      closeDetailModal();
+      await loadExhibitionGallery();
     }
 
-    removeFromLocalCache(item.nama_kain, item.id);
-    closeDetailModal();
-    await loadExhibitionGallery();
-  }
+    async function clearAllGallery() {
+      if (!state.galleryArtworks || state.galleryArtworks.length === 0) {
+        alert('Pameran galeri saat ini sudah kosong.');
+        return;
+      }
 
-  async function clearAllGallery() {
-    if (!state.galleryArtworks || state.galleryArtworks.length === 0) {
-      alert('Pameran galeri saat ini sudah kosong.');
-      return;
-    }
+      if (!confirm('Apakah Anda yakin ingin menghapus SEMUA karya busana di Pameran Virtual?')) {
+        return;
+      }
 
-    if (!confirm('Apakah Anda yakin ingin menghapus SEMUA karya busana di Pameran Virtual?')) {
-      return;
-    }
+      if (window.LelanaSupabase && window.LelanaSupabase.isConfigured()) {
+        try {
+          await window.LelanaSupabase.clearAll();
+        } catch (e) {
+          console.warn('Gagal mengosongkan Supabase:', e);
+        }
+      }
 
-    if (window.LelanaSupabase && window.LelanaSupabase.isConfigured()) {
       try {
-        await window.LelanaSupabase.clearAll();
+        localStorage.removeItem(LOCAL_STORAGE_KEY);
       } catch (e) {
-        console.warn('Gagal mengosongkan Supabase:', e);
+        console.warn('LocalStorage clear error:', e);
       }
+
+      closeDetailModal();
+      await loadExhibitionGallery();
     }
 
-    try {
-      localStorage.removeItem(LOCAL_STORAGE_KEY);
-    } catch (e) {
-      console.warn('LocalStorage clear error:', e);
-    }
-
-    closeDetailModal();
-    await loadExhibitionGallery();
-  }
-
-  /* =====================================================================
-     9.5. SUPABASE SETTINGS & MODAL CONTROLS
-     ===================================================================== */
-  const SUPABASE_SCHEMA_SQL = `-- =====================================================================
+    /* =====================================================================
+       9.5. SUPABASE SETTINGS & MODAL CONTROLS
+       ===================================================================== */
+    const SUPABASE_SCHEMA_SQL = `-- =====================================================================
 -- Lelana Jateng: Skema Database & Storage Supabase untuk Studio Canting
 -- Jalankan di SQL Editor Supabase: https://supabase.com
 -- =====================================================================
@@ -3309,592 +3628,678 @@ CREATE POLICY "Public Upload Karya Batik Storage" ON storage.objects FOR INSERT 
 DROP POLICY IF EXISTS "Public Delete Karya Batik Storage" ON storage.objects;
 CREATE POLICY "Public Delete Karya Batik Storage" ON storage.objects FOR DELETE USING (bucket_id = 'karya-batik');`;
 
-  function updateSupabaseBadge() {
-    if (!els.supabaseStatusDot || !els.supabaseStatusText) return;
-    if (window.LelanaSupabase && window.LelanaSupabase.isConfigured()) {
-      els.supabaseStatusDot.className = 'w-2 h-2 rounded-full bg-[#3ECF8E] shadow-[0_0_8px_#3ECF8E]';
-      els.supabaseStatusText.textContent = 'Supabase Terhubung';
-    } else {
-      els.supabaseStatusDot.className = 'w-2 h-2 rounded-full bg-amber-400';
-      els.supabaseStatusText.textContent = 'Supabase (Mode Lokal)';
-    }
-  }
-
-  function openSupabaseModal() {
-    if (!els.supabaseModal) return;
-    const cfg = window.LelanaSupabase ? window.LelanaSupabase.getConfig() : { url: '', anonKey: '' };
-    if (els.inputSupabaseUrl) els.inputSupabaseUrl.value = cfg.url;
-    if (els.inputSupabaseKey) els.inputSupabaseKey.value = cfg.anonKey;
-
-    if (els.supabaseTestResult) {
-      els.supabaseTestResult.className = 'hidden';
-      els.supabaseTestResult.textContent = '';
-    }
-
-    if (window.LelanaSupabase && window.LelanaSupabase.isConfigured()) {
-      if (els.supabaseBannerDot) els.supabaseBannerDot.className = 'w-2.5 h-2.5 rounded-full bg-[#3ECF8E] shadow-[0_0_8px_#3ECF8E] mt-1 shrink-0';
-      if (els.supabaseBannerTitle) els.supabaseBannerTitle.textContent = 'Terhubung ke Supabase Cloud';
-      if (els.supabaseBannerDesc) {
-        els.supabaseBannerDesc.textContent = `Proyek aktif: ${cfg.url}. Gambar dan data busana tersimpan di PostgreSQL & Storage Supabase.`;
-      }
-    } else {
-      if (els.supabaseBannerDot) els.supabaseBannerDot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 mt-1 shrink-0';
-      if (els.supabaseBannerTitle) els.supabaseBannerTitle.textContent = 'Mode Cadangan Lokal Aktif';
-      if (els.supabaseBannerDesc) {
-        els.supabaseBannerDesc.textContent = 'Supabase belum terhubung. Masukkan Project URL & Anon Key di bawah ini untuk menghubungkan database cloud.';
+    function updateSupabaseBadge() {
+      if (!els.supabaseStatusDot || !els.supabaseStatusText) return;
+      if (window.LelanaSupabase && window.LelanaSupabase.isConfigured()) {
+        els.supabaseStatusDot.className = 'w-2 h-2 rounded-full bg-[#3ECF8E] shadow-[0_0_8px_#3ECF8E]';
+        els.supabaseStatusText.textContent = 'Supabase Terhubung';
+      } else {
+        els.supabaseStatusDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+        els.supabaseStatusText.textContent = 'Supabase (Mode Lokal)';
       }
     }
 
-    els.supabaseModal.classList.add('is-open');
-  }
+    function openSupabaseModal() {
+      if (!els.supabaseModal) return;
+      const cfg = window.LelanaSupabase ? window.LelanaSupabase.getConfig() : { url: '', anonKey: '' };
+      if (els.inputSupabaseUrl) els.inputSupabaseUrl.value = cfg.url;
+      if (els.inputSupabaseKey) els.inputSupabaseKey.value = cfg.anonKey;
 
-  function closeSupabaseModal() {
-    if (els.supabaseModal) {
-      els.supabaseModal.classList.remove('is-open');
+      if (els.supabaseTestResult) {
+        els.supabaseTestResult.className = 'hidden';
+        els.supabaseTestResult.textContent = '';
+      }
+
+      if (window.LelanaSupabase && window.LelanaSupabase.isConfigured()) {
+        if (els.supabaseBannerDot) els.supabaseBannerDot.className = 'w-2.5 h-2.5 rounded-full bg-[#3ECF8E] shadow-[0_0_8px_#3ECF8E] mt-1 shrink-0';
+        if (els.supabaseBannerTitle) els.supabaseBannerTitle.textContent = 'Terhubung ke Supabase Cloud';
+        if (els.supabaseBannerDesc) {
+          els.supabaseBannerDesc.textContent = `Proyek aktif: ${cfg.url}. Gambar dan data busana tersimpan di PostgreSQL & Storage Supabase.`;
+        }
+      } else {
+        if (els.supabaseBannerDot) els.supabaseBannerDot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 mt-1 shrink-0';
+        if (els.supabaseBannerTitle) els.supabaseBannerTitle.textContent = 'Mode Cadangan Lokal Aktif';
+        if (els.supabaseBannerDesc) {
+          els.supabaseBannerDesc.textContent = 'Supabase belum terhubung. Masukkan Project URL & Anon Key di bawah ini untuk menghubungkan database cloud.';
+        }
+      }
+
+      els.supabaseModal.classList.add('is-open');
     }
-  }
 
-  async function handleSaveSupabaseConfig(e) {
-    if (e) e.preventDefault();
-    const url = els.inputSupabaseUrl ? els.inputSupabaseUrl.value.trim() : '';
-    const key = els.inputSupabaseKey ? els.inputSupabaseKey.value.trim() : '';
-
-    if (!url || !key) {
-      showSupabaseFeedback('Mohon isi Project URL dan Anon Key Supabase Anda.', false);
-      return;
+    function closeSupabaseModal() {
+      if (els.supabaseModal) {
+        els.supabaseModal.classList.remove('is-open');
+      }
     }
 
-    if (els.supabaseSaveSpinner) els.supabaseSaveSpinner.classList.remove('hidden');
+    async function handleSaveSupabaseConfig(e) {
+      if (e) e.preventDefault();
+      const url = els.inputSupabaseUrl ? els.inputSupabaseUrl.value.trim() : '';
+      const key = els.inputSupabaseKey ? els.inputSupabaseKey.value.trim() : '';
 
-    const testRes = await window.LelanaSupabase.testConnection(url, key);
+      if (!url || !key) {
+        showSupabaseFeedback('Mohon isi Project URL dan Anon Key Supabase Anda.', false);
+        return;
+      }
 
-    if (els.supabaseSaveSpinner) els.supabaseSaveSpinner.classList.add('hidden');
+      if (els.supabaseSaveSpinner) els.supabaseSaveSpinner.classList.remove('hidden');
 
-    if (testRes.success) {
-      window.LelanaSupabase.setConfig(url, key);
-      showSupabaseFeedback('✅ ' + testRes.message, true);
-      updateSupabaseBadge();
-      setTimeout(() => {
-        closeSupabaseModal();
+      const testRes = await window.LelanaSupabase.testConnection(url, key);
+
+      if (els.supabaseSaveSpinner) els.supabaseSaveSpinner.classList.add('hidden');
+
+      if (testRes.success) {
+        window.LelanaSupabase.setConfig(url, key);
+        showSupabaseFeedback('✅ ' + testRes.message, true);
+        updateSupabaseBadge();
+        setTimeout(() => {
+          closeSupabaseModal();
+          loadExhibitionGallery();
+        }, 1200);
+      } else {
+        showSupabaseFeedback('⚠️ ' + testRes.message, false);
+      }
+    }
+
+    function handleResetSupabaseConfig() {
+      if (confirm('Kembalikan konfigurasi Supabase ke mode awal (Local Cache)?')) {
+        if (window.LelanaSupabase) {
+          window.LelanaSupabase.setConfig('', '');
+        }
+        if (els.inputSupabaseUrl) els.inputSupabaseUrl.value = '';
+        if (els.inputSupabaseKey) els.inputSupabaseKey.value = '';
+        showSupabaseFeedback('Pengaturan Supabase dikosongkan. Beralih ke penyimpanan lokal.', true);
+        updateSupabaseBadge();
         loadExhibitionGallery();
-      }, 1200);
-    } else {
-      showSupabaseFeedback('⚠️ ' + testRes.message, false);
-    }
-  }
-
-  function handleResetSupabaseConfig() {
-    if (confirm('Kembalikan konfigurasi Supabase ke mode awal (Local Cache)?')) {
-      if (window.LelanaSupabase) {
-        window.LelanaSupabase.setConfig('', '');
       }
-      if (els.inputSupabaseUrl) els.inputSupabaseUrl.value = '';
-      if (els.inputSupabaseKey) els.inputSupabaseKey.value = '';
-      showSupabaseFeedback('Pengaturan Supabase dikosongkan. Beralih ke penyimpanan lokal.', true);
-      updateSupabaseBadge();
-      loadExhibitionGallery();
     }
-  }
 
-  function showSupabaseFeedback(msg, isSuccess) {
-    if (!els.supabaseTestResult) return;
-    els.supabaseTestResult.className = `p-3 rounded-lg text-xs leading-relaxed border ${
-      isSuccess
+    function showSupabaseFeedback(msg, isSuccess) {
+      if (!els.supabaseTestResult) return;
+      els.supabaseTestResult.className = `p-3 rounded-lg text-xs leading-relaxed border ${isSuccess
         ? 'bg-[#12281E] border-[#3ECF8E]/60 text-[#3ECF8E]'
         : 'bg-[#2D1612] border-red-700/60 text-red-200'
-    }`;
-    els.supabaseTestResult.textContent = msg;
-    els.supabaseTestResult.classList.remove('hidden');
-  }
-
-  function openSqlModal() {
-    if (els.sqlSchemaCode) {
-      els.sqlSchemaCode.textContent = SUPABASE_SCHEMA_SQL;
+        }`;
+      els.supabaseTestResult.textContent = msg;
+      els.supabaseTestResult.classList.remove('hidden');
     }
-    if (els.copySqlSuccess) els.copySqlSuccess.classList.add('hidden');
-    if (els.supabaseSqlModal) els.supabaseSqlModal.classList.add('is-open');
-  }
 
-  function closeSqlModal() {
-    if (els.supabaseSqlModal) els.supabaseSqlModal.classList.remove('is-open');
-  }
-
-  async function handleCopySql() {
-    try {
-      await navigator.clipboard.writeText(SUPABASE_SCHEMA_SQL);
-      if (els.copySqlSuccess) els.copySqlSuccess.classList.remove('hidden');
-      setTimeout(() => {
-        if (els.copySqlSuccess) els.copySqlSuccess.classList.add('hidden');
-      }, 3000);
-    } catch (err) {
-      alert('Gagal menyalin otomatis, silakan salin teks SQL secara manual.');
+    function openSqlModal() {
+      if (els.sqlSchemaCode) {
+        els.sqlSchemaCode.textContent = SUPABASE_SCHEMA_SQL;
+      }
+      if (els.copySqlSuccess) els.copySqlSuccess.classList.add('hidden');
+      if (els.supabaseSqlModal) els.supabaseSqlModal.classList.add('is-open');
     }
-  }
 
-  function openDetailModal(idx) {
-    const art = state.galleryArtworks[idx];
-    if (!art) return;
+    function closeSqlModal() {
+      if (els.supabaseSqlModal) els.supabaseSqlModal.classList.remove('is-open');
+    }
 
-    if (els.detailImg) els.detailImg.src = art.file_gambar_url;
-    if (els.detailTitle) els.detailTitle.textContent = art.nama_kain;
-    if (els.detailAuthor) els.detailAuthor.textContent = `Pengrajin: ${art.pembuat || 'Pengrajin Lelana'}`;
-    if (els.detailPhilosophy) els.detailPhilosophy.textContent = art.filosofi_karya;
-    if (els.detailDate) els.detailDate.textContent = `Dibuat pada: ${formatDate(art.created_at)}`;
+    async function handleCopySql() {
+      try {
+        await navigator.clipboard.writeText(SUPABASE_SCHEMA_SQL);
+        if (els.copySqlSuccess) els.copySqlSuccess.classList.remove('hidden');
+        setTimeout(() => {
+          if (els.copySqlSuccess) els.copySqlSuccess.classList.add('hidden');
+        }, 3000);
+      } catch (err) {
+        alert('Gagal menyalin otomatis, silakan salin teks SQL secara manual.');
+      }
+    }
 
-    if (els.detailPalette) {
-      const arr = Array.isArray(art.palet_warna) ? art.palet_warna : (art.palet_warna ? art.palet_warna.split(',') : []);
-      els.detailPalette.innerHTML = arr.map(c => `
+    function openDetailModal(idx) {
+      const art = state.galleryArtworks[idx];
+      if (!art) return;
+
+      if (els.detailImg) els.detailImg.src = art.file_gambar_url;
+      if (els.detailTitle) els.detailTitle.textContent = art.nama_kain;
+      if (els.detailAuthor) els.detailAuthor.textContent = `Pengrajin: ${art.pembuat || 'Pengrajin Lelana'}`;
+      if (els.detailPhilosophy) els.detailPhilosophy.textContent = art.filosofi_karya;
+      if (els.detailDate) els.detailDate.textContent = `Dibuat pada: ${formatDate(art.created_at)}`;
+
+      if (els.detailPalette) {
+        const arr = Array.isArray(art.palet_warna) ? art.palet_warna : (art.palet_warna ? art.palet_warna.split(',') : []);
+        els.detailPalette.innerHTML = arr.map(c => `
         <span class="px-2.5 py-1 text-xs rounded-full bg-[#2F1C10] border border-[#8C6D46]/40 text-[#FAF7F2]">
           ${c.trim()}
         </span>
       `).join('');
-    }
+      }
 
-    if (els.btnDownloadArtwork) {
-      els.btnDownloadArtwork.onclick = () => downloadImage(art.file_gambar_url, art.nama_kain);
-    }
+      if (els.btnDownloadArtwork) {
+        els.btnDownloadArtwork.onclick = () => downloadImage(art.file_gambar_url, art.nama_kain);
+      }
 
-    if (els.btnDeleteArtwork) {
-      els.btnDeleteArtwork.onclick = () => deleteArtwork(idx);
-    }
+      if (els.btnDeleteArtwork) {
+        els.btnDeleteArtwork.onclick = () => deleteArtwork(idx);
+      }
 
-    if (els.previewModal) {
-      els.previewModal.classList.add('is-open');
-    }
-  }
-
-  function closeDetailModal() {
-    if (els.previewModal) {
-      els.previewModal.classList.remove('is-open');
-    }
-  }
-
-  function downloadImage(url, title) {
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${title.toLowerCase().replace(/\s+/g, '-')}-lelana-jateng.png`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  }
-
-  function formatDate(isoStr) {
-    if (!isoStr) return 'Hari ini';
-    try {
-      const d = new Date(isoStr);
-      return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-    } catch (e) {
-      return 'Hari ini';
-    }
-  }
-
-  /* =====================================================================
-     10. MODE SWITCHER & EVENT BINDINGS
-     ===================================================================== */
-  function switchMode(newMode) {
-    state.mode = newMode;
-    if (newMode === 'photobooth') {
-      if (els.tabModePhoto) els.tabModePhoto.classList.add('active');
-      if (els.tabModeDoodle) els.tabModeDoodle.classList.remove('active');
-      if (els.photoBoothPanel) els.photoBoothPanel.classList.remove('hidden');
-    } else {
-      if (els.tabModeDoodle) els.tabModeDoodle.classList.add('active');
-      if (els.tabModePhoto) els.tabModePhoto.classList.remove('active');
-      if (els.photoBoothPanel) els.photoBoothPanel.classList.add('hidden');
-    }
-  }
-
-  function bindEvents() {
-    // Canvas pointer events
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mousemove', drawMove);
-    window.addEventListener('mouseup', stopDrawing);
-
-    canvas.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      startDrawing(e);
-    }, { passive: false });
-
-    canvas.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-      drawMove(e);
-    }, { passive: false });
-
-    window.addEventListener('touchend', stopDrawing);
-
-    // Mode Switcher Tabs
-    if (els.tabModeDoodle) {
-      els.tabModeDoodle.addEventListener('click', () => switchMode('doodle'));
-    }
-    if (els.tabModePhoto) {
-      els.tabModePhoto.addEventListener('click', () => {
-        switchMode('photobooth');
-        if (!state.cameraActive && !state.userFaceImg) {
-          startWebcam();
-        }
-      });
-    }
-
-    // Garment Selection Buttons (Kemeja, Kebaya, Beskap)
-    document.querySelectorAll('[data-garment]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-garment]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.activeGarment = btn.getAttribute('data-garment');
-        syncHeadpieceLabels();
-        renderBaseBajuLayer();
-      });
-    });
-
-    // Motif Selection Buttons (Parang, Kawung, Buketan, Polos)
-    document.querySelectorAll('[data-motif]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-motif]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.activeMotif = btn.getAttribute('data-motif');
-        renderBaseBajuLayer();
-      });
-    });
-
-    // Background Selection Buttons (Mori, Borobudur, Prambanan, Dieng, etc.)
-    document.querySelectorAll('[data-bg]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-bg]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.activeBg = btn.getAttribute('data-bg');
-
-        const bg = BACKGROUNDS[state.activeBg];
-        if (bg && bg.src && (!bgImagesCache[state.activeBg] || !bgImagesCache[state.activeBg].complete)) {
-          const img = new Image();
-          img.onload = () => {
-            bgImagesCache[state.activeBg] = img;
-            renderBaseBajuLayer();
-          };
-          img.src = bg.src;
-        }
-
-        renderBaseBajuLayer();
-      });
-    });
-
-    // Tangan & Kaki (Figur Busana Lengkap) Toggle
-    if (els.btnToggleLimbs) {
-      els.btnToggleLimbs.addEventListener('click', () => {
-        state.showBodyLimbs = !state.showBodyLimbs;
-        els.btnToggleLimbs.classList.toggle('active', state.showBodyLimbs);
-        if (els.poseSelectorPanel) {
-          els.poseSelectorPanel.classList.toggle('hidden', !state.showBodyLimbs);
-        }
-        renderBaseBajuLayer();
-      });
-    }
-
-    // Pose Buttons (Ngapurancang, Santai, Salam)
-    document.querySelectorAll('[data-limb-pose]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-limb-pose]').forEach(b => {
-          b.classList.remove('active', 'bg-[#4e311d]', 'text-white', 'font-bold');
-          b.classList.add('text-[#e5d8be]', 'hover:bg-white/10');
-        });
-        btn.classList.add('active', 'bg-[#4e311d]', 'text-white', 'font-bold');
-        btn.classList.remove('text-[#e5d8be]', 'hover:bg-white/10');
-        state.activeLimbPose = btn.getAttribute('data-limb-pose');
-        renderBaseBajuLayer();
-      });
-    });
-
-    // Atelier Mannequin Stand Toggle
-    if (els.btnToggleMannequin) {
-      els.btnToggleMannequin.addEventListener('click', () => {
-        state.showMannequinStand = !state.showMannequinStand;
-        els.btnToggleMannequin.classList.toggle('active', state.showMannequinStand);
-        renderBaseBajuLayer();
-      });
-    }
-
-    // Atelier Traditional Headpiece Toggle
-    if (els.btnToggleHeadpiece) {
-      els.btnToggleHeadpiece.addEventListener('click', () => {
-        state.showHeadpiece = !state.showHeadpiece;
-        state.showBlangkon = state.showHeadpiece;
-        els.btnToggleHeadpiece.classList.toggle('active', state.showHeadpiece);
-        if (els.btnToggleBlangkon) {
-          els.btnToggleBlangkon.classList.toggle('active', state.showHeadpiece);
-        }
-        renderBaseBajuLayer();
-      });
-    }
-
-    // Tool Toggles: Canting vs Cap
-    if (els.btnCanting) {
-      els.btnCanting.addEventListener('click', () => {
-        state.activeTool = 'canting';
-        els.btnCanting.classList.add('active');
-        els.btnCap.classList.remove('active');
-        els.stampSelector.classList.add('hidden');
-        els.canvasWrapper.className = 'sc-mori-canvas-wrapper sc-cursor-canting';
-      });
-    }
-
-    if (els.btnCap) {
-      els.btnCap.addEventListener('click', () => {
-        state.activeTool = 'cap';
-        els.btnCap.classList.add('active');
-        els.btnCanting.classList.remove('active');
-        els.stampSelector.classList.remove('hidden');
-        els.canvasWrapper.className = 'sc-mori-canvas-wrapper sc-cursor-cap';
-      });
-    }
-
-    // Color Swatches (strictly non-yellow)
-    document.querySelectorAll('[data-color]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-color]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.activeColor = btn.getAttribute('data-color');
-        state.activeColorName = btn.getAttribute('data-name');
-        state.usedColors.add(state.activeColorName);
-
-        if (els.colorReadout) {
-          els.colorReadout.textContent = state.activeColorName;
-        }
-      });
-    });
-
-    // Stroke Width Buttons
-    document.querySelectorAll('[data-stroke]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-stroke]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.strokeWidth = parseInt(btn.getAttribute('data-stroke'), 10);
-      });
-    });
-
-    // Stamp Selection Buttons
-    document.querySelectorAll('[data-stamp]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-stamp]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.activeStamp = btn.getAttribute('data-stamp');
-      });
-    });
-
-    // Photo Booth Controls
-    if (els.btnStartCamera) {
-      els.btnStartCamera.addEventListener('click', () => {
-        if (state.cameraActive) {
-          stopWebcam();
-        } else {
-          startWebcam();
-        }
-      });
-    }
-
-    if (els.btnSwitchCamera) {
-      els.btnSwitchCamera.addEventListener('click', switchCameraFacing);
-    }
-
-    if (els.btnUploadSelfie && selfieInput) {
-      els.btnUploadSelfie.addEventListener('click', () => selfieInput.click());
-      selfieInput.addEventListener('change', handleSelfieUpload);
-    }
-
-    if (els.faceZoomSlider) {
-      els.faceZoomSlider.addEventListener('input', (e) => {
-        state.faceScale = parseFloat(e.target.value);
-        renderBaseBajuLayer();
-      });
-    }
-
-    if (els.btnToggleBlangkon) {
-      els.btnToggleBlangkon.addEventListener('click', () => {
-        state.showHeadpiece = !state.showHeadpiece;
-        state.showBlangkon = state.showHeadpiece;
-        els.btnToggleBlangkon.classList.toggle('active', state.showHeadpiece);
-        if (els.btnToggleHeadpiece) {
-          els.btnToggleHeadpiece.classList.toggle('active', state.showHeadpiece);
-        }
-        renderBaseBajuLayer();
-      });
-    }
-
-    if (els.btnResetFacePos) {
-      els.btnResetFacePos.addEventListener('click', () => {
-        state.faceOffsetX = 0;
-        state.faceOffsetY = 0;
-        state.faceScale = 1.0;
-        if (els.faceZoomSlider) els.faceZoomSlider.value = 1.0;
-        renderBaseBajuLayer();
-      });
-    }
-
-    // Photo Snapshot Trigger Button
-    if (els.btnSnapPhoto) {
-      els.btnSnapPhoto.addEventListener('click', triggerPhotoBoothSnapshot);
-    }
-
-    // Canvas History & Reset
-    if (els.btnUndo) els.btnUndo.addEventListener('click', undo);
-    if (els.btnRedo) els.btnRedo.addEventListener('click', redo);
-    if (els.btnClear) els.btnClear.addEventListener('click', clearCanvas);
-    if (els.btnResetMotif) els.btnResetMotif.addEventListener('click', resetMotifStencil);
-
-    // Save & Quick Download
-    if (els.btnSave) els.btnSave.addEventListener('click', openSaveModal);
-    if (els.btnQuickDownload) els.btnQuickDownload.addEventListener('click', downloadCurrentArtwork);
-    if (els.btnCancelSave) els.btnCancelSave.addEventListener('click', closeSaveModal);
-    if (els.saveForm) els.saveForm.addEventListener('submit', handleSaveSubmit);
-
-    // Gallery Actions
-    if (els.btnRefreshGallery) els.btnRefreshGallery.addEventListener('click', loadExhibitionGallery);
-    if (els.btnClearAllGallery) els.btnClearAllGallery.addEventListener('click', clearAllGallery);
-    if (els.btnCloseDetail) els.btnCloseDetail.addEventListener('click', closeDetailModal);
-
-    // Supabase Configuration & Modal Events
-    if (els.btnSupabaseConfig) els.btnSupabaseConfig.addEventListener('click', openSupabaseModal);
-    if (els.btnCloseSupabaseModal) els.btnCloseSupabaseModal.addEventListener('click', closeSupabaseModal);
-    if (els.supabaseConfigForm) els.supabaseConfigForm.addEventListener('submit', handleSaveSupabaseConfig);
-    if (els.btnResetSupabase) els.btnResetSupabase.addEventListener('click', handleResetSupabaseConfig);
-    if (els.btnOpenSqlSchema) els.btnOpenSqlSchema.addEventListener('click', openSqlModal);
-    if (els.btnCloseSqlModal) els.btnCloseSqlModal.addEventListener('click', closeSqlModal);
-    if (els.btnCopySql) els.btnCopySql.addEventListener('click', handleCopySql);
-    if (els.btnToggleKeyVisibility && els.inputSupabaseKey) {
-      els.btnToggleKeyVisibility.addEventListener('click', () => {
-        const isPassword = els.inputSupabaseKey.getAttribute('type') === 'password';
-        els.inputSupabaseKey.setAttribute('type', isPassword ? 'text' : 'password');
-      });
-    }
-
-    if (els.galleryGrid) {
-      els.galleryGrid.addEventListener('click', (e) => {
-        const targetBtn = e.target.closest('[data-action]');
-        if (!targetBtn) return;
-        const action = targetBtn.getAttribute('data-action');
-        const idx = parseInt(targetBtn.getAttribute('data-idx'), 10);
-        if (isNaN(idx)) return;
-
-        if (action === 'delete') {
-          e.stopPropagation();
-          deleteArtwork(idx);
-        } else if (action === 'preview') {
-          openDetailModal(idx);
-        } else if (action === 'download') {
-          const item = state.galleryArtworks[idx];
-          if (item) downloadImage(item.file_gambar_url, item.nama_kain);
-        }
-      });
-    }
-
-    // Modal Backdrop Dismiss
-    if (els.saveModal) {
-      els.saveModal.addEventListener('click', (e) => {
-        if (e.target === els.saveModal) closeSaveModal();
-      });
-    }
-    if (els.previewModal) {
-      els.previewModal.addEventListener('click', (e) => {
-        if (e.target === els.previewModal) closeDetailModal();
-      });
-    }
-    if (els.supabaseModal) {
-      els.supabaseModal.addEventListener('click', (e) => {
-        if (e.target === els.supabaseModal) closeSupabaseModal();
-      });
-    }
-    if (els.supabaseSqlModal) {
-      els.supabaseSqlModal.addEventListener('click', (e) => {
-        if (e.target === els.supabaseSqlModal) closeSqlModal();
-      });
-    }
-
-    // Mobile Navigation Toggle
-    setupMobileNav();
-  }
-
-  function setupMobileNav() {
-    const mobileNavToggle = document.getElementById('mobile-nav-toggle');
-    const mobileNavDropdown = document.getElementById('mobile-nav-dropdown');
-    const hamburgerIcon = document.getElementById('hamburger-icon-svg');
-    const closeIcon = document.getElementById('close-icon-svg');
-
-    if (!mobileNavToggle || !mobileNavDropdown) return;
-    if (mobileNavToggle.dataset.navBound === 'true') return;
-    mobileNavToggle.dataset.navBound = 'true';
-
-    function openNav() {
-      mobileNavDropdown.classList.remove('hidden');
-      mobileNavToggle.setAttribute('aria-expanded', 'true');
-      if (hamburgerIcon) hamburgerIcon.classList.add('hidden');
-      if (closeIcon) closeIcon.classList.remove('hidden');
-    }
-
-    function closeNav() {
-      mobileNavDropdown.classList.add('hidden');
-      mobileNavToggle.setAttribute('aria-expanded', 'false');
-      if (hamburgerIcon) hamburgerIcon.classList.remove('hidden');
-      if (closeIcon) closeIcon.classList.add('hidden');
-    }
-
-    function toggleNav(e) {
-      if (e) e.stopPropagation();
-      const isHidden = mobileNavDropdown.classList.contains('hidden');
-      if (isHidden) {
-        openNav();
-      } else {
-        closeNav();
+      if (els.previewModal) {
+        els.previewModal.classList.add('is-open');
       }
     }
 
-    mobileNavToggle.addEventListener('click', toggleNav);
+    function closeDetailModal() {
+      if (els.previewModal) {
+        els.previewModal.classList.remove('is-open');
+      }
+    }
 
-    mobileNavDropdown.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        closeNav();
+    function downloadImage(url, title) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${title.toLowerCase().replace(/\s+/g, '-')}-lelana-jateng.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function formatDate(isoStr) {
+      if (!isoStr) return 'Hari ini';
+      try {
+        const d = new Date(isoStr);
+        return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+      } catch (e) {
+        return 'Hari ini';
+      }
+    }
+
+    /* =====================================================================
+       10. MODE SWITCHER & EVENT BINDINGS
+       ===================================================================== */
+    function switchMode(newMode) {
+      state.mode = newMode;
+      if (newMode === 'photobooth') {
+        if (els.tabModePhoto) els.tabModePhoto.classList.add('active');
+        if (els.tabModeDoodle) els.tabModeDoodle.classList.remove('active');
+        if (els.photoBoothPanel) els.photoBoothPanel.classList.remove('hidden');
+      } else {
+        if (els.tabModeDoodle) els.tabModeDoodle.classList.add('active');
+        if (els.tabModePhoto) els.tabModePhoto.classList.remove('active');
+        if (els.photoBoothPanel) els.photoBoothPanel.classList.add('hidden');
+      }
+    }
+
+    function bindEvents() {
+      // Canvas pointer events
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mousemove', drawMove);
+      window.addEventListener('mouseup', stopDrawing);
+
+      canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        startDrawing(e);
+      }, { passive: false });
+
+      canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        drawMove(e);
+      }, { passive: false });
+
+      window.addEventListener('touchend', stopDrawing);
+
+      // Mode Switcher Tabs
+      if (els.tabModeDoodle) {
+        els.tabModeDoodle.addEventListener('click', () => switchMode('doodle'));
+      }
+      if (els.tabModePhoto) {
+        els.tabModePhoto.addEventListener('click', () => {
+          switchMode('photobooth');
+          if (!state.cameraActive && !state.userFaceImg) {
+            startWebcam();
+          }
+        });
+      }
+
+      // Garment Selection Buttons (Kemeja, Kebaya, Beskap)
+      document.querySelectorAll('[data-garment]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('[data-garment]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.activeGarment = btn.getAttribute('data-garment');
+          syncHeadpieceLabels();
+          renderBaseBajuLayer();
+        });
       });
-    });
 
-    document.addEventListener('click', (e) => {
-      if (!mobileNavDropdown.classList.contains('hidden')) {
-        const header = document.getElementById('main-navbar');
-        if (header && !header.contains(e.target)) {
+      // Motif Selection Buttons (Parang, Kawung, Buketan, Polos)
+      document.querySelectorAll('[data-motif]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('[data-motif]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.activeMotif = btn.getAttribute('data-motif');
+          renderBaseBajuLayer();
+        });
+      });
+
+      // Background Selection Buttons (Mori, Borobudur, Prambanan, Dieng, etc.)
+      document.querySelectorAll('[data-bg]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('[data-bg]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.activeBg = btn.getAttribute('data-bg');
+
+          const bg = BACKGROUNDS[state.activeBg];
+          if (bg && bg.src && (!bgImagesCache[state.activeBg] || !bgImagesCache[state.activeBg].complete)) {
+            const img = new Image();
+            img.onload = () => {
+              bgImagesCache[state.activeBg] = img;
+              renderBaseBajuLayer();
+            };
+            img.src = bg.src;
+          }
+
+          renderBaseBajuLayer();
+        });
+      });
+
+      // Tangan & Kaki (Figur Busana Lengkap) Toggle
+      if (els.btnToggleLimbs) {
+        els.btnToggleLimbs.addEventListener('click', () => {
+          state.showBodyLimbs = !state.showBodyLimbs;
+          els.btnToggleLimbs.classList.toggle('active', state.showBodyLimbs);
+          if (els.poseSelectorPanel) {
+            els.poseSelectorPanel.classList.toggle('hidden', !state.showBodyLimbs);
+          }
+          renderBaseBajuLayer();
+        });
+      }
+
+      // Pose Buttons (Ngapurancang, Santai, Salam)
+      document.querySelectorAll('[data-limb-pose]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('[data-limb-pose]').forEach(b => {
+            b.classList.remove('active', 'bg-[#4e311d]', 'text-white', 'font-bold');
+            b.classList.add('text-[#e5d8be]', 'hover:bg-white/10');
+          });
+          btn.classList.add('active', 'bg-[#4e311d]', 'text-white', 'font-bold');
+          btn.classList.remove('text-[#e5d8be]', 'hover:bg-white/10');
+          state.activeLimbPose = btn.getAttribute('data-limb-pose');
+          renderBaseBajuLayer();
+        });
+      });
+
+      // Atelier Mannequin Stand Toggle
+      if (els.btnToggleMannequin) {
+        els.btnToggleMannequin.addEventListener('click', () => {
+          state.showMannequinStand = !state.showMannequinStand;
+          els.btnToggleMannequin.classList.toggle('active', state.showMannequinStand);
+          renderBaseBajuLayer();
+        });
+      }
+
+      // Atelier Traditional Headpiece Toggle
+      if (els.btnToggleHeadpiece) {
+        els.btnToggleHeadpiece.addEventListener('click', () => {
+          state.showHeadpiece = !state.showHeadpiece;
+          state.showBlangkon = state.showHeadpiece;
+          els.btnToggleHeadpiece.classList.toggle('active', state.showHeadpiece);
+          if (els.btnToggleBlangkon) {
+            els.btnToggleBlangkon.classList.toggle('active', state.showHeadpiece);
+          }
+          renderBaseBajuLayer();
+        });
+      }
+
+      // Tool Toggles: Canting vs Cap
+      if (els.btnCanting) {
+        els.btnCanting.addEventListener('click', () => {
+          state.activeTool = 'canting';
+          els.btnCanting.classList.add('active');
+          els.btnCap.classList.remove('active');
+          els.stampSelector.classList.add('hidden');
+          els.canvasWrapper.className = 'sc-mori-canvas-wrapper sc-cursor-canting';
+        });
+      }
+
+      if (els.btnCap) {
+        els.btnCap.addEventListener('click', () => {
+          state.activeTool = 'cap';
+          els.btnCap.classList.add('active');
+          els.btnCanting.classList.remove('active');
+          els.stampSelector.classList.remove('hidden');
+          els.canvasWrapper.className = 'sc-mori-canvas-wrapper sc-cursor-cap';
+        });
+      }
+
+      // Color Swatches (strictly non-yellow)
+      document.querySelectorAll('[data-color]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('[data-color]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.activeColor = btn.getAttribute('data-color');
+          state.activeColorName = btn.getAttribute('data-name');
+          state.usedColors.add(state.activeColorName);
+
+          if (els.colorReadout) {
+            els.colorReadout.textContent = state.activeColorName;
+          }
+        });
+      });
+
+      // Stroke Width Buttons
+      document.querySelectorAll('[data-stroke]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('[data-stroke]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.strokeWidth = parseInt(btn.getAttribute('data-stroke'), 10);
+        });
+      });
+
+      // Stamp Selection Buttons
+      document.querySelectorAll('[data-stamp]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('[data-stamp]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.activeStamp = btn.getAttribute('data-stamp');
+        });
+      });
+
+      // Photo Booth Controls
+      if (els.btnStartCamera) {
+        els.btnStartCamera.addEventListener('click', () => {
+          if (state.cameraActive) {
+            stopWebcam();
+          } else {
+            startWebcam();
+          }
+        });
+      }
+
+      if (els.btnSwitchCamera) {
+        els.btnSwitchCamera.addEventListener('click', switchCameraFacing);
+      }
+
+      if (els.btnUploadSelfie && selfieInput) {
+        els.btnUploadSelfie.addEventListener('click', () => selfieInput.click());
+        selfieInput.addEventListener('change', handleSelfieUpload);
+      }
+
+      if (els.faceZoomSlider) {
+        els.faceZoomSlider.addEventListener('input', (e) => {
+          state.faceScale = parseFloat(e.target.value);
+          renderBaseBajuLayer();
+        });
+      }
+
+      if (els.btnToggleBlangkon) {
+        els.btnToggleBlangkon.addEventListener('click', () => {
+          state.showHeadpiece = !state.showHeadpiece;
+          state.showBlangkon = state.showHeadpiece;
+          els.btnToggleBlangkon.classList.toggle('active', state.showHeadpiece);
+          if (els.btnToggleHeadpiece) {
+            els.btnToggleHeadpiece.classList.toggle('active', state.showHeadpiece);
+          }
+          renderBaseBajuLayer();
+        });
+      }
+
+      if (els.btnResetFacePos) {
+        els.btnResetFacePos.addEventListener('click', () => {
+          state.faceOffsetX = 0;
+          state.faceOffsetY = 0;
+          state.faceScale = 1.0;
+          if (els.faceZoomSlider) els.faceZoomSlider.value = 1.0;
+          renderBaseBajuLayer();
+        });
+      }
+
+      // Photo Snapshot Trigger Button
+      if (els.btnSnapPhoto) {
+        els.btnSnapPhoto.addEventListener('click', triggerPhotoBoothSnapshot);
+      }
+
+      // Post-Snapshot Choice Dialog Actions
+      if (els.btnClosePostSnap) {
+        els.btnClosePostSnap.addEventListener('click', closePostSnapModal);
+      }
+      if (els.btnRetakePostSnap) {
+        els.btnRetakePostSnap.addEventListener('click', retakePhoto);
+      }
+      if (els.btnChooseSaveOriginal) {
+        els.btnChooseSaveOriginal.addEventListener('click', () => {
+          closePostSnapModal();
+          openSaveModal();
+        });
+      }
+      if (els.btnChooseUseOriginal) {
+        els.btnChooseUseOriginal.addEventListener('click', closePostSnapModal);
+      }
+      if (els.btnChooseGenerateAI) {
+        els.btnChooseGenerateAI.addEventListener('click', () => {
+          closePostSnapModal();
+          triggerAIGeneration();
+        });
+      }
+
+      // AI Result Modal Actions
+      if (els.btnCloseAIResult) {
+        els.btnCloseAIResult.addEventListener('click', closeAIResultModal);
+      }
+      if (els.btnRetakeAIResult) {
+        els.btnRetakeAIResult.addEventListener('click', retakePhoto);
+      }
+      if (els.btnRetakeToolbar) {
+        els.btnRetakeToolbar.addEventListener('click', retakePhoto);
+      }
+      if (els.btnRetakeSidebar) {
+        els.btnRetakeSidebar.addEventListener('click', retakePhoto);
+      }
+      if (els.btnAIDownload) {
+        els.btnAIDownload.addEventListener('click', downloadAIArtwork);
+      }
+      if (els.btnAIFullscreen) {
+        els.btnAIFullscreen.addEventListener('click', openAIFullImage);
+      }
+      if (els.aiGeneratedImg) {
+        els.aiGeneratedImg.addEventListener('click', openAIFullImage);
+      }
+      if (els.btnAIApplyCanvas) {
+        els.btnAIApplyCanvas.addEventListener('click', applyAIToCanvas);
+      }
+      if (els.btnAISaveGallery) {
+        els.btnAISaveGallery.addEventListener('click', saveAIToGallery);
+      }
+
+      // AI Settings Modal
+      if (els.btnOpenAISettings) {
+        els.btnOpenAISettings.addEventListener('click', openAISettingsModal);
+      }
+      if (els.btnCloseAISettings) {
+        els.btnCloseAISettings.addEventListener('click', closeAISettingsModal);
+      }
+      if (els.btnSaveAISettings) {
+        els.btnSaveAISettings.addEventListener('click', handleSaveAISettings);
+      }
+
+      // Canvas History & Reset
+      if (els.btnUndo) els.btnUndo.addEventListener('click', undo);
+      if (els.btnRedo) els.btnRedo.addEventListener('click', redo);
+      if (els.btnClear) els.btnClear.addEventListener('click', clearCanvas);
+      if (els.btnResetMotif) els.btnResetMotif.addEventListener('click', resetMotifStencil);
+
+      // Save & Quick Download
+      if (els.btnSave) els.btnSave.addEventListener('click', openSaveModal);
+      if (els.btnQuickDownload) els.btnQuickDownload.addEventListener('click', downloadCurrentArtwork);
+      if (els.btnCancelSave) els.btnCancelSave.addEventListener('click', closeSaveModal);
+      if (els.saveForm) els.saveForm.addEventListener('submit', handleSaveSubmit);
+
+      // Gallery Actions
+      if (els.btnRefreshGallery) els.btnRefreshGallery.addEventListener('click', loadExhibitionGallery);
+      if (els.btnClearAllGallery) els.btnClearAllGallery.addEventListener('click', clearAllGallery);
+      if (els.btnCloseDetail) els.btnCloseDetail.addEventListener('click', closeDetailModal);
+
+      // Supabase Configuration & Modal Events
+      if (els.btnSupabaseConfig) els.btnSupabaseConfig.addEventListener('click', openSupabaseModal);
+      if (els.btnCloseSupabaseModal) els.btnCloseSupabaseModal.addEventListener('click', closeSupabaseModal);
+      if (els.supabaseConfigForm) els.supabaseConfigForm.addEventListener('submit', handleSaveSupabaseConfig);
+      if (els.btnResetSupabase) els.btnResetSupabase.addEventListener('click', handleResetSupabaseConfig);
+      if (els.btnOpenSqlSchema) els.btnOpenSqlSchema.addEventListener('click', openSqlModal);
+      if (els.btnCloseSqlModal) els.btnCloseSqlModal.addEventListener('click', closeSqlModal);
+      if (els.btnCopySql) els.btnCopySql.addEventListener('click', handleCopySql);
+      if (els.btnToggleKeyVisibility && els.inputSupabaseKey) {
+        els.btnToggleKeyVisibility.addEventListener('click', () => {
+          const isPassword = els.inputSupabaseKey.getAttribute('type') === 'password';
+          els.inputSupabaseKey.setAttribute('type', isPassword ? 'text' : 'password');
+        });
+      }
+
+      if (els.galleryGrid) {
+        els.galleryGrid.addEventListener('click', (e) => {
+          const targetBtn = e.target.closest('[data-action]');
+          if (!targetBtn) return;
+          const action = targetBtn.getAttribute('data-action');
+          const idx = parseInt(targetBtn.getAttribute('data-idx'), 10);
+          if (isNaN(idx)) return;
+
+          if (action === 'delete') {
+            e.stopPropagation();
+            deleteArtwork(idx);
+          } else if (action === 'preview') {
+            openDetailModal(idx);
+          } else if (action === 'download') {
+            const item = state.galleryArtworks[idx];
+            if (item) downloadImage(item.file_gambar_url, item.nama_kain);
+          }
+        });
+      }
+
+      // Modal Backdrop Dismiss
+      if (els.saveModal) {
+        els.saveModal.addEventListener('click', (e) => {
+          if (e.target === els.saveModal) closeSaveModal();
+        });
+      }
+      if (els.previewModal) {
+        els.previewModal.addEventListener('click', (e) => {
+          if (e.target === els.previewModal) closeDetailModal();
+        });
+      }
+      if (els.supabaseModal) {
+        els.supabaseModal.addEventListener('click', (e) => {
+          if (e.target === els.supabaseModal) closeSupabaseModal();
+        });
+      }
+      if (els.supabaseSqlModal) {
+        els.supabaseSqlModal.addEventListener('click', (e) => {
+          if (e.target === els.supabaseSqlModal) closeSqlModal();
+        });
+      }
+      if (els.postSnapModal) {
+        els.postSnapModal.addEventListener('click', (e) => {
+          if (e.target === els.postSnapModal) closePostSnapModal();
+        });
+      }
+      if (els.aiResultModal) {
+        els.aiResultModal.addEventListener('click', (e) => {
+          if (e.target === els.aiResultModal) closeAIResultModal();
+        });
+      }
+      if (els.aiSettingsModal) {
+        els.aiSettingsModal.addEventListener('click', (e) => {
+          if (e.target === els.aiSettingsModal) closeAISettingsModal();
+        });
+      }
+
+      // Mobile Navigation Toggle
+      setupMobileNav();
+    }
+
+    function setupMobileNav() {
+      const mobileNavToggle = document.getElementById('mobile-nav-toggle');
+      const mobileNavDropdown = document.getElementById('mobile-nav-dropdown');
+      const hamburgerIcon = document.getElementById('hamburger-icon-svg');
+      const closeIcon = document.getElementById('close-icon-svg');
+
+      if (!mobileNavToggle || !mobileNavDropdown) return;
+      if (mobileNavToggle.dataset.navBound === 'true') return;
+      mobileNavToggle.dataset.navBound = 'true';
+
+      function openNav() {
+        mobileNavDropdown.classList.remove('hidden');
+        mobileNavToggle.setAttribute('aria-expanded', 'true');
+        if (hamburgerIcon) hamburgerIcon.classList.add('hidden');
+        if (closeIcon) closeIcon.classList.remove('hidden');
+      }
+
+      function closeNav() {
+        mobileNavDropdown.classList.add('hidden');
+        mobileNavToggle.setAttribute('aria-expanded', 'false');
+        if (hamburgerIcon) hamburgerIcon.classList.remove('hidden');
+        if (closeIcon) closeIcon.classList.add('hidden');
+      }
+
+      function toggleNav(e) {
+        if (e) e.stopPropagation();
+        const isHidden = mobileNavDropdown.classList.contains('hidden');
+        if (isHidden) {
+          openNav();
+        } else {
           closeNav();
         }
       }
-    });
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !mobileNavDropdown.classList.contains('hidden')) {
-        closeNav();
-      }
-    });
+      mobileNavToggle.addEventListener('click', toggleNav);
 
-    window.addEventListener('resize', () => {
-      if (window.innerWidth >= 768 && !mobileNavDropdown.classList.contains('hidden')) {
-        closeNav();
-      }
-    });
+      mobileNavDropdown.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          closeNav();
+        });
+      });
 
-    // Keyboard Shortcuts (Undo/Redo & Escape to close modals)
-    window.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-        e.preventDefault();
-        if (e.shiftKey) redo();
-        else undo();
-      } else if (e.key === 'Escape') {
-        if (els.saveModal && els.saveModal.classList.contains('is-open')) {
-          closeSaveModal();
+      document.addEventListener('click', (e) => {
+        if (!mobileNavDropdown.classList.contains('hidden')) {
+          const header = document.getElementById('main-navbar');
+          if (header && !header.contains(e.target)) {
+            closeNav();
+          }
         }
-        if (els.previewModal && els.previewModal.classList.contains('is-open')) {
-          closeDetailModal();
-        }
-        if (els.supabaseModal && els.supabaseModal.classList.contains('is-open')) {
-          closeSupabaseModal();
-        }
-        if (els.supabaseSqlModal && els.supabaseSqlModal.classList.contains('is-open')) {
-          closeSqlModal();
-        }
-      }
-    });
-  }
+      });
 
-})();
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !mobileNavDropdown.classList.contains('hidden')) {
+          closeNav();
+        }
+      });
+
+      window.addEventListener('resize', () => {
+        if (window.innerWidth >= 768 && !mobileNavDropdown.classList.contains('hidden')) {
+          closeNav();
+        }
+      });
+
+      // Keyboard Shortcuts (Undo/Redo & Escape to close modals)
+      window.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+          e.preventDefault();
+          if (e.shiftKey) redo();
+          else undo();
+        } else if (e.key === 'Escape') {
+          if (els.saveModal && els.saveModal.classList.contains('is-open')) {
+            closeSaveModal();
+          }
+          if (els.previewModal && els.previewModal.classList.contains('is-open')) {
+            closeDetailModal();
+          }
+          if (els.supabaseModal && els.supabaseModal.classList.contains('is-open')) {
+            closeSupabaseModal();
+          }
+          if (els.supabaseSqlModal && els.supabaseSqlModal.classList.contains('is-open')) {
+            closeSqlModal();
+          }
+          if (els.postSnapModal && els.postSnapModal.classList.contains('is-open')) {
+            closePostSnapModal();
+          }
+          if (els.aiResultModal && els.aiResultModal.classList.contains('is-open')) {
+            closeAIResultModal();
+          }
+          if (els.aiSettingsModal && els.aiSettingsModal.classList.contains('is-open')) {
+            closeAISettingsModal();
+          }
+        }
+      });
+    }
+
+  }) ();

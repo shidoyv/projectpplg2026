@@ -4113,6 +4113,27 @@ CREATE POLICY "Public Delete Karya Batik Storage" ON storage.objects FOR DELETE 
       if (els.btnSaveAISettings) {
         els.btnSaveAISettings.addEventListener('click', handleSaveAISettings);
       }
+      const btnSwitchPuter = document.getElementById('scBtnSwitchPuterAccount');
+      if (btnSwitchPuter) {
+        btnSwitchPuter.addEventListener('click', async () => {
+          try {
+            if (window.puter && window.puter.auth) {
+              if (typeof window.puter.auth.signOut === 'function') {
+                await window.puter.auth.signOut();
+              }
+              if (typeof window.puter.auth.signIn === 'function') {
+                await window.puter.auth.signIn();
+                alert('Berhasil mengganti akun Puter AI! Silakan coba generate AI kembali.');
+              }
+            } else {
+              alert('Layanan Puter AI belum termuat. Silakan muat ulang halaman terlebih dahulu.');
+            }
+          } catch (err) {
+            console.warn('Puter switch account:', err);
+            alert('Silakan login menggunakan akun nellywen675@gmail.com pada jendela Puter yang muncul.');
+          }
+        });
+      }
 
       // Canvas History & Reset
       if (els.btnUndo) els.btnUndo.addEventListener('click', undo);

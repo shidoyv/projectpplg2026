@@ -300,6 +300,8 @@
     els.btnAISaveGallery = document.getElementById('scBtnAISaveGallery');
     els.aiSettingsModal = document.getElementById('scAISettingsModal');
     els.btnCloseAISettings = document.getElementById('scBtnCloseAISettings');
+    els.inputHfToken = document.getElementById('scInputHfToken');
+    els.inputNvidiaKey = document.getElementById('scInputNvidiaKey');
     els.inputGeminiKey = document.getElementById('scInputGeminiKey');
     els.btnSaveAISettings = document.getElementById('scBtnSaveAISettings');
 
@@ -3224,6 +3226,29 @@
       });
     }
 
+    function captureCompositeCanvasForAI() {
+      const targetW = 1024;
+      const targetH = 768;
+      const merged = document.createElement('canvas');
+      merged.width = targetW;
+      merged.height = targetH;
+      const mCtx = merged.getContext('2d');
+
+      // Pastikan layer dasar ter-render terbaru (tanpa overlay AI lama)
+      const prevOverlay = state.aiArtworkOverlay;
+      state.aiArtworkOverlay = null;
+      renderBaseBajuLayer();
+
+      // Gabungkan background + baju batik + foto wajah + blangkon + coretan canting pengguna
+      mCtx.drawImage(baseCanvas, 0, 0, targetW, targetH);
+      mCtx.drawImage(canvas, 0, 0, targetW, targetH);
+
+      state.aiArtworkOverlay = prevOverlay;
+      if (prevOverlay) renderBaseBajuLayer();
+
+      return merged.toDataURL('image/jpeg', 0.90);
+    }
+
     async function triggerAIGeneration() {
       if (!state.userFaceImg && !state.photoCaptured) {
         alert('Silakan ambil foto potret wajah terlebih dahulu melalui kamera Photo Booth atau unggah foto dari berkas.');
@@ -3244,13 +3269,15 @@
       if (els.aiLoadingModal) {
         els.aiLoadingModal.classList.add('is-open');
       }
-      updateAILoadingStep(1, 'Menganalisis komposisi potret wajah & siluet busana adat Jawa...');
+      updateAILoadingStep(1, 'Menangkap kanvas Studio Canting (wajah, baju batik, coretan & latar)...');
 
-      const chosenStyle = 'keraton';
+      const chosenStyle = (els.selectAIStyle && els.selectAIStyle.value) ? els.selectAIStyle.value : 'keraton';
       state.aiArtStyle = chosenStyle;
 
       const hasGlasses = els.checkGlasses ? els.checkGlasses.checked : true;
       const preserveFacialShape = els.checkPreserveFace ? els.checkPreserveFace.checked : true;
+      const canvasSnapshotUrl = captureCompositeCanvasForAI();
+      state.lastCanvasSnapshotUrl = canvasSnapshotUrl;
 
       const options = {
         garment: state.activeGarment,
@@ -3261,6 +3288,7 @@
         style: chosenStyle,
         hasGlasses: hasGlasses,
         preserveFacialShape: preserveFacialShape,
+        canvasDataUrl: canvasSnapshotUrl,
         faceDataUrl: state.aiOriginalFaceImg ? state.aiOriginalFaceImg.src : (state.userFaceImg ? state.userFaceImg.src : null)
       };
 
@@ -3289,9 +3317,10 @@
 
     function openAIResultModal(result) {
       if (els.aiOriginalImg) {
-        els.aiOriginalImg.src = (state.aiOriginalFaceImg && state.aiOriginalFaceImg.src)
-          ? state.aiOriginalFaceImg.src
-          : (state.userFaceImg ? state.userFaceImg.src : '');
+        els.aiOriginalImg.src = state.lastCanvasSnapshotUrl
+          || ((state.aiOriginalFaceImg && state.aiOriginalFaceImg.src)
+            ? state.aiOriginalFaceImg.src
+            : (state.userFaceImg ? state.userFaceImg.src : ''));
       }
 
       if (els.aiGeneratedImg) {
@@ -3393,6 +3422,12 @@
     }
 
     function openAISettingsModal() {
+      if (els.inputHfToken && window.LelanaAI) {
+        els.inputHfToken.value = window.LelanaAI.getHfToken() || '';
+      }
+      if (els.inputNvidiaKey && window.LelanaAI) {
+        els.inputNvidiaKey.value = window.LelanaAI.getNvidiaKey() || '';
+      }
       if (els.inputGeminiKey && window.LelanaAI) {
         els.inputGeminiKey.value = window.LelanaAI.getGeminiKey() || '';
       }
@@ -3408,9 +3443,17 @@
     }
 
     function handleSaveAISettings() {
-      if (els.inputGeminiKey && window.LelanaAI) {
-        window.LelanaAI.setGeminiKey(els.inputGeminiKey.value.trim());
-        alert('Pengaturan kunci Google Gemini AI berhasil disimpan!');
+      if (window.LelanaAI) {
+        if (els.inputHfToken) {
+          window.LelanaAI.setHfToken(els.inputHfToken.value.trim());
+        }
+        if (els.inputNvidiaKey) {
+          window.LelanaAI.setNvidiaKey(els.inputNvidiaKey.value.trim());
+        }
+        if (els.inputGeminiKey) {
+          window.LelanaAI.setGeminiKey(els.inputGeminiKey.value.trim());
+        }
+        alert('Pengaturan kunci AI berhasil disimpan!');
       }
       closeAISettingsModal();
     }

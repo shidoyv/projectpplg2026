@@ -32,6 +32,10 @@ const MIME_TYPES = {
   '.css': 'text/css; charset=UTF-8',
   '.js': 'application/javascript; charset=UTF-8',
   '.json': 'application/json; charset=UTF-8',
+  '.wasm': 'application/wasm',
+  '.data': 'application/octet-stream',
+  '.unityweb': 'application/octet-stream',
+  '.zip': 'application/zip',
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
@@ -419,7 +423,7 @@ async function handleNvidiaImageEdit(req, res) {
     let parsed = null;
     try {
       parsed = JSON.parse(rawText);
-    } catch (_) {}
+    } catch (_) { }
 
     if (!upstream.ok) {
       const detail = (parsed && (parsed.detail || parsed.title || parsed.message || parsed.error))
@@ -538,19 +542,29 @@ const server = http.createServer((req, res) => {
       return;
     }
 
-    const ext = path.extname(filePath).toLowerCase();
-    const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+    let ext = path.extname(filePath).toLowerCase();
+    const headers = {};
 
-    res.writeHead(200, { 'Content-Type': contentType });
+    if (ext === '.gz') {
+      headers['Content-Encoding'] = 'gzip';
+      ext = path.extname(filePath.slice(0, -3)).toLowerCase();
+    } else if (ext === '.br') {
+      headers['Content-Encoding'] = 'br';
+      ext = path.extname(filePath.slice(0, -3)).toLowerCase();
+    }
+
+    headers['Content-Type'] = MIME_TYPES[ext] || 'application/octet-stream';
+
+    res.writeHead(200, headers);
     fs.createReadStream(filePath).pipe(res);
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`Lelana Jateng server running on http://localhost:${PORT}`);
-  if (process.env.NVIDIA_API_KEY) {
-    console.log('NVIDIA NIM AI Proxy: AKTIF (flux-3-image-klein)');
-  } else {
-    console.log('NVIDIA NIM AI Proxy: Menunggu API Key (atur di .env atau Pengaturan AI)');
-  }
-});
+  server.listen(PORT, '0.0.0.0', () => {
+    console.log(`Lelana Jateng server running on http://localhost:${PORT}`);
+    if (process.env.NVIDIA_API_KEY) {
+      console.log('NVIDIA NIM AI Proxy: AKTIF (flux-3-image-klein)');
+    } else {
+      console.log('NVIDIA NIM AI Proxy: Menunggu API Key (atur di .env atau Pengaturan AI)');
+    }
+  });

@@ -176,32 +176,39 @@
         <!-- Tombol Aksi (Taktil, Bersih, Tanpa Glow Slop) -->
         <div class="pt-2 space-y-3">
           <div class="flex flex-wrap items-center gap-3.5">
-            <!-- Tombol Utama: Unduh Aplikasi Game -->
-            <button id="btnMainLaunch" type="button" onclick="window.openDownloadModal(event)"
-              class="inline-flex items-center gap-3 px-6 py-3.5 rounded-lg bg-[#382215] hover:bg-[#4E311D] text-[#FAF7F2] font-semibold text-sm border border-[#C5A572]/40 hover:border-[#C5A572] shadow-[0_8px_24px_rgba(0,0,0,0.7)] transition-all active:scale-[0.98] cursor-pointer group">
-              <svg class="w-4 h-4 text-[#C5A572] group-hover:translate-y-0.5 transition-transform" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-              <span>Unduh Game untuk Laptop (Windows .exe)</span>
-            </button>
+              <!-- Tombol Utama: Mainkan Langsung di Website (HP & Laptop) -->
+              <button id="btnMainLaunch" type="button" onclick="window.launchWebGame(event)"
+                class="inline-flex items-center gap-3 px-6 py-3.5 rounded-lg bg-[#C5A572] hover:bg-[#d6b785] text-[#100B07] font-bold text-sm border border-[#E5D8BE]/60 shadow-[0_8px_24px_rgba(0,0,0,0.7)] transition-all active:scale-[0.98] cursor-pointer group">
+                <svg class="w-4 h-4 text-[#100B07] group-hover:translate-x-0.5 transition-transform" fill="currentColor"
+                  viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+                <span>Mainkan Game di Website (HP &amp; Laptop)</span>
+              </button>
 
-            <!-- Tombol Audio Ambience Kabut Malam -->
-            <button id="btnToggleAmbience" type="button"
-              class="inline-flex items-center gap-2.5 px-5 py-3.5 rounded-lg bg-black/60 hover:bg-black/80 text-xs font-medium text-[#E5D8BE] border border-white/20 backdrop-blur-md transition-all cursor-pointer">
-              <svg id="iconAudio" class="w-4 h-4 text-[#C5A572]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-              </svg>
-              <span id="ambienceLabel">Dengarkan Ambience Malam</span>
-            </button>
-            <audio id="ambientAudio" loop preload="none" src="audio/horror_ambient.mp3"></audio>
+              <!-- Tombol Sekunder: Unduh Aplikasi Game Windows (.exe) -->
+              <button id="btnDownloadDesktop" type="button" onclick="window.openDownloadModal(event)"
+                class="inline-flex items-center gap-2.5 px-5 py-3.5 rounded-lg bg-[#382215]/90 hover:bg-[#4E311D] text-[#FAF7F2] font-semibold text-xs sm:text-sm border border-[#C5A572]/40 hover:border-[#C5A572] shadow-[0_8px_24px_rgba(0,0,0,0.6)] transition-all active:scale-[0.98] cursor-pointer group">
+                <svg class="w-4 h-4 text-[#C5A572] group-hover:translate-y-0.5 transition-transform" fill="none"
+                  stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                <span>Unduh Versi Windows (.exe)</span>
+              </button>
+
+              <!-- Tombol Audio Ambience Kabut Malam -->
+              <button id="btnToggleAmbience" type="button"
+                class="inline-flex items-center gap-2.5 px-5 py-3.5 rounded-lg bg-black/60 hover:bg-black/80 text-xs font-medium text-[#E5D8BE] border border-white/20 backdrop-blur-md transition-all cursor-pointer">
+                <svg id="iconAudio" class="w-4 h-4 text-[#C5A572]" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                </svg>
+                <span id="ambienceLabel">Dengarkan Ambience Malam</span>
+              </button>
+              <audio id="ambientAudio" loop preload="none" src="audio/horror_ambient.mp3"></audio>
           </div>
-
-          <p class="text-[11.5px] text-[#E5D8BE]/65 font-mono">
-            Tersedia untuk Komputer / Laptop Windows (.exe)
-          </p>
         </div>
 
       </div>
@@ -220,93 +227,136 @@
               Panduan Kendali dan Navigasi Permainan
             </h2>
             <p class="text-xs text-[#E5D8BE]/70 font-light mt-1">
-              Dapat dimainkan di perangkat komputer (PC Desktop) maupun kacamata Virtual Reality (Oculus Quest
-              2/3).
+              Dapat dimainkan langsung di browser HP (layar sentuh), Laptop/PC (keyboard &amp; mouse), maupun kacamata
+              Virtual Reality (Oculus Quest 2/3).
             </p>
           </div>
-          <span class="text-xs font-mono text-[#C5A572]">Standar OpenXR &amp; Windows</span>
+          <span class="text-xs font-mono text-[#C5A572]">WebGL (HP &amp; Laptop) | OpenXR</span>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs pt-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-xs pt-4">
 
-          <!-- Kolom PC Keyboard & Mouse -->
-          <div class="space-y-3">
-            <span class="font-serif font-bold text-sm text-[#C5A572] block border-b border-[#8C6D46]/20 pb-2">
-              Mode Keyboard &amp; Mouse (Desktop Windows)
-            </span>
+            <!-- Kolom HP / Tablet Layar Sentuh -->
+            <div class="space-y-3">
+              <span class="font-serif font-bold text-sm text-[#C5A572] block border-b border-[#8C6D46]/20 pb-2">
+                Mode Layar Sentuh (HP &amp; Tablet)
+              </span>
 
-            <div class="space-y-2 text-[#E5D8BE]/85">
-              <div class="flex items-center justify-between py-1.5 border-b border-white/5">
-                <span>Berjalan Maju, Mundur, Samping</span>
-                <span
-                  class="font-mono font-bold text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">W,
-                  A, S, D</span>
-              </div>
-              <div class="flex items-center justify-between py-1.5 border-b border-white/5">
-                <span>Berlari Cepat (Mengonsumsi Stamina)</span>
-                <span
-                  class="font-mono font-bold text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Shift
-                  Kiri</span>
-              </div>
-              <div class="flex items-center justify-between py-1.5 border-b border-white/5">
-                <span>Interaksi / Ambil Kunci / Buka Gembok</span>
-                <span
-                  class="font-mono font-bold text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Tombol
-                  E / Klik Kiri</span>
-              </div>
-              <div class="flex items-center justify-between py-1.5 border-b border-white/5">
-                <span>Nyalakan / Matikan Lentera Senter</span>
-                <span
-                  class="font-mono font-bold text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Tombol
-                  F</span>
-              </div>
-              <div class="flex items-center justify-between py-1.5">
-                <span>Jeda Permainan / Pengaturan</span>
-                <span
-                  class="font-mono font-bold text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Esc</span>
+              <div class="space-y-2 text-[#E5D8BE]/85">
+                <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+                  <span>Berjalan Maju, Mundur, Samping</span>
+                  <span
+                    class="font-mono font-bold text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Analog
+                    Kiri</span>
+                </div>
+                <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+                  <span>Arahkan Kamera / Lihat Sekitar</span>
+                  <span
+                    class="font-mono font-bold text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Geser
+                    Layar Kanan</span>
+                </div>
+                <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+                  <span>Berlari Cepat (Tahan Tombol)</span>
+                  <span
+                    class="font-mono font-bold text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Tombol
+                    LARI</span>
+                </div>
+                <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+                  <span>Nyalakan / Matikan Senter</span>
+                  <span
+                    class="font-mono font-bold text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Tombol
+                    SENTER</span>
+                </div>
+                <div class="flex items-center justify-between py-1.5">
+                  <span>Buka Gerbang / Lompat</span>
+                  <span
+                    class="font-mono font-bold text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">BUKA
+                    / LOMPAT</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Kolom Oculus VR Touch -->
-          <div class="space-y-3">
-            <span class="font-serif font-bold text-sm text-[#C5A572] block border-b border-[#8C6D46]/20 pb-2">
-              Mode Kacamata Virtual Reality (Oculus Quest 2 / 3)
-            </span>
+            <!-- Kolom PC Keyboard & Mouse -->
+            <div class="space-y-3">
+              <span class="font-serif font-bold text-sm text-[#C5A572] block border-b border-[#8C6D46]/20 pb-2">
+                Mode Keyboard &amp; Mouse (Desktop Windows)
+              </span>
 
-            <div class="space-y-2 text-[#E5D8BE]/85">
-              <div class="flex items-center justify-between py-1.5 border-b border-white/5">
-                <span>Pergerakan Bebas (Smooth Locomotion)</span>
-                <span class="font-mono text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Analog
-                  Kiri</span>
-              </div>
-              <div class="flex items-center justify-between py-1.5 border-b border-white/5">
-                <span>Putar Pandangan (Snap Turn 45°)</span>
-                <span class="font-mono text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Analog
-                  Kanan</span>
-              </div>
-              <div class="flex items-center justify-between py-1.5 border-b border-white/5">
-                <span>Genggam Kunci &amp; Putar Gembok</span>
-                <span class="font-mono text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Grip
-                  / Trigger</span>
-              </div>
-              <div class="flex items-center justify-between py-1.5 border-b border-white/5">
-                <span>Deteksi Pandangan Mata Merah</span>
-                <span class="font-mono text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Head
-                  Tracking 6DoF</span>
-              </div>
-              <div class="flex items-center justify-between py-1.5">
-                <span>Menu Lingkungan / Kalibrasi</span>
-                <span class="font-mono text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Oculus
-                  Home Button</span>
+              <div class="space-y-2 text-[#E5D8BE]/85">
+                <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+                  <span>Berjalan Maju, Mundur, Samping</span>
+                  <span
+                    class="font-mono font-bold text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">W,
+                    A, S, D</span>
+                </div>
+                <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+                  <span>Berlari Cepat (Mengonsumsi Stamina)</span>
+                  <span
+                    class="font-mono font-bold text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Shift
+                    Kiri</span>
+                </div>
+                <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+                  <span>Interaksi / Ambil Kunci / Buka Gembok</span>
+                  <span
+                    class="font-mono font-bold text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Tombol
+                    E / Klik Kiri</span>
+                </div>
+                <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+                  <span>Nyalakan / Matikan Lentera Senter</span>
+                  <span
+                    class="font-mono font-bold text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Tombol
+                    F</span>
+                </div>
+                <div class="flex items-center justify-between py-1.5">
+                  <span>Jeda Permainan / Pengaturan</span>
+                  <span
+                    class="font-mono font-bold text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Esc</span>
+                </div>
               </div>
             </div>
-          </div>
 
+            <!-- Kolom Oculus VR Touch -->
+            <div class="space-y-3">
+              <span class="font-serif font-bold text-sm text-[#C5A572] block border-b border-[#8C6D46]/20 pb-2">
+                Mode Kacamata Virtual Reality (Oculus Quest 2 / 3)
+              </span>
+
+              <div class="space-y-2 text-[#E5D8BE]/85">
+                <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+                  <span>Pergerakan Bebas (Smooth Locomotion)</span>
+                  <span
+                    class="font-mono text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Analog
+                    Kiri</span>
+                </div>
+                <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+                  <span>Putar Pandangan (Snap Turn 45°)</span>
+                  <span
+                    class="font-mono text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Analog
+                    Kanan</span>
+                </div>
+                <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+                  <span>Genggam Kunci &amp; Putar Gembok</span>
+                  <span class="font-mono text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Grip
+                    / Trigger</span>
+                </div>
+                <div class="flex items-center justify-between py-1.5 border-b border-white/5">
+                  <span>Deteksi Pandangan Mata Merah</span>
+                  <span class="font-mono text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Head
+                    Tracking 6DoF</span>
+                </div>
+                <div class="flex items-center justify-between py-1.5">
+                  <span>Menu Lingkungan / Kalibrasi</span>
+                  <span
+                    class="font-mono text-white bg-[#1A110A] px-2.5 py-0.5 rounded border border-[#8C6D46]/40">Oculus
+                    Home Button</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
+
       </div>
-
-    </div>
   </section>
 
   <!-- ==================== 4. FOOTER ==================== -->
